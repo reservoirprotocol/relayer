@@ -58,11 +58,13 @@ const fetchOrders = async () =>
                   })
                   .then(() => {
                     log.info(
-                      `Successfully sent ${fetchOrders.length} to NFT indexer`
+                      `Successfully sent ${fetchedOrders.length} orders to the NFT indexer`
                     );
                   })
                   .catch((error) => {
-                    log.error(`Error sending orders to NFT indexer: ${error}`);
+                    log.error(
+                      `Error sending orders to the NFT indexer: ${error}`
+                    );
                   });
 
                 // If all execution contexts are done, resolve
