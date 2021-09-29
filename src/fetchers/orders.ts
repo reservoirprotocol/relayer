@@ -3,6 +3,7 @@ import axios from "axios";
 const throttledQueue = require("throttled-queue");
 
 import config from "../config";
+import log from "../log";
 import { buildFetchOrdersURL, parseOpenseaOrder } from "../utils";
 
 const getFetchInterval = (): [number, number] => {
@@ -56,14 +57,12 @@ const fetchOrders = async () =>
                     orders: fetchedOrders,
                   })
                   .then(() => {
-                    console.log(
+                    log.info(
                       `Successfully sent ${fetchOrders.length} to NFT indexer`
                     );
                   })
                   .catch((error) => {
-                    console.error(
-                      `Error sending orders to NFT indexer: ${error}`
-                    );
+                    log.error(`Error sending orders to NFT indexer: ${error}`);
                   });
 
                 // If all execution contexts are done, resolve
@@ -72,7 +71,7 @@ const fetchOrders = async () =>
             }
           })
           .catch((error) => {
-            console.error(`Error requesting ${url}: ${error}`);
+            log.error(`Error requesting ${url}: ${error}`);
 
             numErrors++;
             if (numErrors < config.maxAllowedErrorsPerFetch) {

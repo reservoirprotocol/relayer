@@ -5,14 +5,15 @@ import cron from "node-cron";
 
 import config from "./config";
 import fetchOrders from "./fetchers/orders";
+import log from "./log";
 
 // Cron job for fetching orders
 cron.schedule(`*/${config.ordersFetchFrequency} * * * *`, async () => {
-  console.log("Orders fetching cron started");
+  log.info("Orders fetching cron started");
 
   fetchOrders()
-    .then(() => console.log("Orders fetching cron done"))
+    .then(() => log.info("Orders fetching cron done"))
     .catch((error) => {
-      console.error(`Error fetching orders: ${error}`);
+      log.error(`Error fetching orders: ${error}`);
     });
 });
