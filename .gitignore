@@ -1,0 +1,9 @@
+# Dependencies
+node_modules
+
+# Secrets
+.env
+
+# Build
+dist
+tsconfig.tsbuildinfo

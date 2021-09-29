@@ -1,0 +1,24 @@
+{
+  "name": "opensea-indexer",
+  "version": "0.0.1",
+  "description": "Service for continuously monitoring/indexing Opensea data",
+  "repository": "https://github.com/reservoirprotocol/opensea-indexer",
+  "author": "Reservoir Team",
+  "license": "MIT",
+  "private": true,
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/index.js"
+  },
+  "devDependencies": {
+    "@georgeroman/wyvern-v2-sdk": "0.0.22",
+    "@types/node": "^16.10.1",
+    "@types/node-cron": "^2.0.4",
+    "axios": "^0.21.4",
+    "dotenv": "^10.0.0",
+    "node-cron": "^3.0.0",
+    "throttled-queue": "^1.0.7",
+    "typescript": "^4.4.3"
+  }
+}

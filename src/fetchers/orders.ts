@@ -1,0 +1,89 @@
+import { Order } from "@georgeroman/wyvern-v2-sdk";
+import axios from "axios";
+const throttledQueue = require("throttled-queue");
+
+import config from "../config";
+import { buildFetchOrdersURL, parseOpenseaOrder } from "../utils";
+
+const getFetchInterval = (): [number, number] => {
+  const listedBefore = Math.floor(Date.now() / 1000);
+  const listedAfter = listedBefore - config.ordersFetchFrequency * 60;
+  return [listedAfter, listedBefore];
+};
+
+const fetchOrders = async () =>
+  new Promise((resolve, reject) => {
+    const queue = throttledQueue(1, config.throttleTime, true);
+    const numExecutionContexts = config.numExecutionContexts;
+    const offset = 0;
+    const limit = 50;
+
+    let numFinishedExecutionContexts = 0;
+    let numErrors = 0;
+
+    // In-memory object of all orders fetched in this batch
+    let fetchedOrders: Order[] = [];
+
+    const [listed_after, listed_before] = getFetchInterval();
+    const execute = (offset: number) =>
+      queue(async () => {
+        const url = buildFetchOrdersURL({
+          listed_after,
+          listed_before,
+          offset,
+          limit,
+        });
+
+        axios
+          .get(url)
+          .then(async (response) => {
+            const orders = response.data.orders;
+            fetchedOrders = [
+              ...fetchedOrders,
+              ...orders.map(parseOpenseaOrder).filter(Boolean),
+            ];
+
+            if (orders.length === limit) {
+              // If we got a full page of results, it means there's more to be fetched
+              execute(offset + numExecutionContexts * limit);
+            } else {
+              // Otherwise, this execution context is done
+              numFinishedExecutionContexts++;
+              if (numFinishedExecutionContexts === numExecutionContexts) {
+                // Send the orders to the indexer
+                await axios
+                  .post(`${config.baseNftIndexerApiUrl}/orders`, {
+                    orders: fetchedOrders,
+                  })
+                  .catch((error) => {
+                    console.error(
+                      `Error sending orders to NFT indexer: ${error}`
+                    );
+                  });
+
+                // If all execution contexts are done, resolve
+                resolve("Successfully fetched");
+              }
+            }
+          })
+          .catch((error) => {
+            console.error(`Error requesting ${url}: ${error}`);
+
+            numErrors++;
+            if (numErrors < config.maxAllowedErrorsPerFetch) {
+              // If we below the error threshold, then retry
+              return execute(offset);
+            } else {
+              // Otherwise, reject
+              reject("Error threshold reached");
+            }
+          });
+      });
+
+    // Parallelize execution (sort of)
+    for (let i = 0; i < numExecutionContexts; i++) {
+      execute(offset + i * limit);
+    }
+  });
+
+export default fetchOrders;
