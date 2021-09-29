@@ -55,6 +55,11 @@ const fetchOrders = async () =>
                   .post(`${config.baseNftIndexerApiUrl}/orders`, {
                     orders: fetchedOrders,
                   })
+                  .then(() => {
+                    console.log(
+                      `Successfully sent ${fetchOrders.length} to NFT indexer`
+                    );
+                  })
                   .catch((error) => {
                     console.error(
                       `Error sending orders to NFT indexer: ${error}`

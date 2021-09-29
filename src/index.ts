@@ -11,8 +11,8 @@ cron.schedule(`*/${config.ordersFetchFrequency} * * * *`, async () => {
   console.log("Orders fetching cron started");
 
   fetchOrders()
+    .then(() => console.log("Orders fetching cron done"))
     .catch((error) => {
       console.error(`Error fetching orders: ${error}`);
-    })
-    .then(() => console.log("Orders fetching cron done"));
+    });
 });
