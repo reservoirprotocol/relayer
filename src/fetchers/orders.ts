@@ -1,10 +1,13 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 const throttledQueue = require("throttled-queue");
 
 import config from "../config";
 import log from "../log";
+import { OpenseaOrder } from "../types";
 import { buildFetchOrdersURL, parseOpenseaOrder } from "../utils";
+
+const prisma = new PrismaClient();
 
 const getFetchInterval = (): [number, number] => {
   const listedBefore = Math.floor(Date.now() / 1000);
@@ -23,7 +26,7 @@ const fetchOrders = async () =>
     let numErrors = 0;
 
     // In-memory object of all orders fetched in this batch
-    let fetchedOrders: Order[] = [];
+    let fetchedOrders: OpenseaOrder[] = [];
 
     const [listed_after, listed_before] = getFetchInterval();
     const execute = (offset: number) =>
@@ -39,10 +42,7 @@ const fetchOrders = async () =>
           .get(url)
           .then(async (response) => {
             const orders = response.data.orders;
-            fetchedOrders = [
-              ...fetchedOrders,
-              ...orders.map(parseOpenseaOrder).filter(Boolean),
-            ];
+            fetchedOrders = [...fetchedOrders, ...orders];
 
             if (orders.length === limit) {
               // If we got a full page of results, it means there's more to be fetched
@@ -51,10 +51,19 @@ const fetchOrders = async () =>
               // Otherwise, this execution context is done
               numFinishedExecutionContexts++;
               if (numFinishedExecutionContexts === numExecutionContexts) {
-                // Send the orders to the indexer
+                // Persist all orders to the database for analytical purposes
+                await prisma.order.createMany({
+                  data: fetchedOrders.map((order) => ({
+                    data: JSON.stringify(order),
+                  })),
+                });
+
+                // Filter and send the valid orders to the indexer
                 await axios
                   .post(`${config.baseNftIndexerApiUrl}/orders`, {
-                    orders: fetchedOrders,
+                    orders: fetchedOrders
+                      .map(parseOpenseaOrder)
+                      .filter(Boolean),
                   })
                   .then(() => {
                     log.info(
