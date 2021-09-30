@@ -1,4 +1,5 @@
 export type OpenseaOrder = {
+  prefixed_hash: string;
   exchange: string;
   asset: { token_id: string; asset_contract: { address: string } };
   maker: { address: string };

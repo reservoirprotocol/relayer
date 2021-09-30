@@ -54,8 +54,10 @@ const fetchOrders = async () =>
                 // Persist all orders to the database for analytical purposes
                 await prisma.order.createMany({
                   data: fetchedOrders.map((order) => ({
+                    hash: order.prefixed_hash,
                     data: JSON.stringify(order),
                   })),
+                  skipDuplicates: true,
                 });
 
                 // Filter and send the valid orders to the indexer

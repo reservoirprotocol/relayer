@@ -8,6 +8,6 @@ generator client {
 }
 
 model Order {
-  id   Int  @id @default(autoincrement())
+  hash String @id
   data Json
 }
