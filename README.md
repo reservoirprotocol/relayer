@@ -4,6 +4,8 @@ Service for continuously monitoring/indexing Opensea data (eg. orders, assets).
 
 ### Setup
 
+In order to run the service, you'll need a Postgres database instance. For running locally, this is conveniently provided via `docker-compose`. Boot it up by running `docker-compose up` in the root directory.
+
 Install dependencies via `yarn`. Build and start the service via `yarn build` and `yarn start`. Make sure to have a `.env` file in the root directory containing the environment variables needed by [`config.ts`](./src/config.ts) (you can also use the defaults available in `.env.mainnet` and `.env.rinkeby`).
 
 ### Deployment and workflow
