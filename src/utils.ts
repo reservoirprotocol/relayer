@@ -1,5 +1,5 @@
 import { AddressZero } from "@ethersproject/constants";
-import { Builders, Order } from "@georgeroman/wyvern-v2-sdk";
+import { Builders, Helpers, Order } from "@georgeroman/wyvern-v2-sdk";
 
 import config from "./config";
 import { OpenseaOrder } from "./types";
@@ -35,7 +35,7 @@ export const parseOpenseaOrder = (
   openseaOrder: OpenseaOrder
 ): Order | undefined => {
   try {
-    return Builders.Erc721.SingleItem.sell({
+    const order = Builders.Erc721.SingleItem.sell({
       exchange: openseaOrder.exchange,
       maker: openseaOrder.maker.address,
       target: openseaOrder.asset.asset_contract.address,
@@ -52,6 +52,12 @@ export const parseOpenseaOrder = (
       r: openseaOrder.r,
       s: openseaOrder.s,
     });
+
+    if (Helpers.Order.hash(order) !== openseaOrder.prefixed_hash) {
+      return undefined;
+    }
+
+    return order;
   } catch {
     return undefined;
   }
