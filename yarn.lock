@@ -341,10 +341,10 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/strings" "^5.4.0"
 
-"@georgeroman/wyvern-v2-sdk@0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@georgeroman/wyvern-v2-sdk/-/wyvern-v2-sdk-0.0.22.tgz#2b2bcbc6e3beeb934a8e8cba9f44fcd4d3f0ab37"
-  integrity sha512-eCbiBDNgB0/DsErxTcdNqn+YvvBvlykv61xMmyXm+9veif8cNu/eZR06cOsd3X4ab9Sks+YiYywKrDVVyoJDaQ==
+"@georgeroman/wyvern-v2-sdk@0.0.23":
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@georgeroman/wyvern-v2-sdk/-/wyvern-v2-sdk-0.0.23.tgz#d8801f6cfcb6d03f8c2b572fe3fbdd6ac2192577"
+  integrity sha512-16in/19Juuel631qwGbyYoWjfHaWSI4m+d6dmkvNtNa4ZhT3fXQHktumjRwWDg0v//RUvCbiZFDDaIE5AJY9rQ==
   dependencies:
     ethers "^5.4.6"
     merkletreejs "^0.2.24"

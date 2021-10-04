@@ -10,4 +10,4 @@ Install dependencies via `yarn`. Build and start the service via `yarn build` an
 
 ### Deployment and workflow
 
-Deployment is done via `railway.app` and depends on the `Dockerfile` in the root directory. All changes should first be done against the `dev` branch (which will trigger a deployment on the staging environment) and then merged against the `main` branch (which will trigger a deployment on the production environment).
+Deployment is done via [`railway.app`](https://railway.app/) and depends on the `Dockerfile` in the root directory. All changes should first be done against the `dev` branch (which will trigger a deployment on the staging environment) and then merged against the `main` branch (which will trigger a deployment on the production environment).
