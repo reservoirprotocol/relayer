@@ -18,10 +18,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       type: "INT",
       notNull: true,
     },
-    validated: {
-      type: "BOOLEAN",
-      notNull: true,
-    },
     data: {
       type: "JSONB",
       notNull: true,

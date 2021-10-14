@@ -65,10 +65,9 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                         "target",
                         "maker",
                         "created_at",
-                        "validated",
                         "data"
                       )
-                      VALUES ($1, $2, $3, $4, $5, $6)
+                      VALUES ($1, $2, $3, $4, $5)
                       ON CONFLICT DO NOTHING
                     `,
                     values: [
@@ -76,7 +75,6 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                       order.target,
                       order.maker.address,
                       Math.floor(new Date(order.created_date).getTime() / 1000),
-                      Boolean(parsed),
                       order as any,
                     ],
                   });
