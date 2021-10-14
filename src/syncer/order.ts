@@ -80,7 +80,9 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                   });
                 }
 
-                await db.none(pgp.helpers.concat(insertQueries));
+                if (insertQueries.length) {
+                  await db.none(pgp.helpers.concat(insertQueries));
+                }
 
                 // Filter and send the valid orders to the indexer
                 await axios
