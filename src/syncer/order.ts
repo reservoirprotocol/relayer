@@ -68,7 +68,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                         "validated",
                         "data"
                       )
-                      VALUES ($1, $2, $2, $4, $5, $6)
+                      VALUES ($1, $2, $3, $4, $5, $6)
                       ON CONFLICT DO NOTHING
                     `,
                     values: [
