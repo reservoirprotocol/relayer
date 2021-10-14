@@ -74,7 +74,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                     values: [
                       order.prefixed_hash,
                       order.target,
-                      order.maker,
+                      order.maker.address,
                       Math.floor(new Date(order.created_date).getTime() / 1000),
                       Boolean(parsed),
                       order as any,
