@@ -15,6 +15,8 @@ const queue = throttledQueue(1, config.throttleTime, true);
 
 const fetchOrders = async (listedAfter: number, listedBefore: number) =>
   new Promise((resolve, reject) => {
+    logger.info(`(${listedAfter}, ${listedBefore}) Syncing orders`);
+
     const maxAllowedErrors = 10;
     const numExecutionContexts = config.numExecutionContexts;
     const offset = 0;
@@ -126,9 +128,10 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
   });
 
 export const sync = async (from: number, to: number) => {
-  for (let before = to + 1; before >= from; before -= 60) {
-    const after = Math.max(before - 60, from) - 1;
-    logger.info(`(${after}, ${before}) - Syncing orders`);
-    await fetchOrders(after, before);
+  const MAX_SECONDS = 60;
+
+  for (let before = to; before >= from; before -= MAX_SECONDS) {
+    const after = Math.max(before - MAX_SECONDS + 1, from);
+    await fetchOrders(after - 1, before + 1);
   }
 };
