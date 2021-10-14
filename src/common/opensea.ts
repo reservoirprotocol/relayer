@@ -1,8 +1,35 @@
-import { AddressZero } from "@ethersproject/constants";
 import { Builders, Helpers, Order } from "@georgeroman/wyvern-v2-sdk";
 
-import config from "./config";
-import { OpenseaOrder } from "./types";
+import config from "../config";
+
+export type OpenseaOrder = {
+  prefixed_hash: string;
+  exchange: string;
+  asset: { token_id: string; asset_contract: { address: string } };
+  created_date: string;
+  maker: { address: string };
+  taker: { address: string };
+  maker_relayer_fee: string;
+  taker_relayer_fee: string;
+  fee_recipient: { address: string };
+  side: number;
+  sale_kind: number;
+  target: string;
+  how_to_call: number;
+  calldata: string;
+  replacement_pattern: string;
+  static_target: string;
+  static_extradata: string;
+  payment_token: string;
+  base_price: string;
+  extra: string;
+  listing_time: number;
+  expiration_time: number;
+  salt: string;
+  v?: number;
+  r?: string;
+  s?: string;
+};
 
 type FetchOrdersParams = {
   listed_after: number;
@@ -18,13 +45,6 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     listed_before: String(params.listed_before),
     offset: String(params.offset),
     limit: String(params.limit),
-    // Only ETH sell orders
-    payment_token_address: AddressZero,
-    // Ignore English auction orders which have the signature stripped
-    is_english: "false",
-    bundled: "false",
-    include_bundled: "false",
-    include_invalid: "false",
     // Only sell orders
     side: "1",
   });
@@ -54,6 +74,10 @@ export const parseOpenseaOrder = (
     });
 
     if (Helpers.Order.hash(order) !== openseaOrder.prefixed_hash) {
+      return undefined;
+    }
+
+    if (!Helpers.Order.verifySignature(order)) {
       return undefined;
     }
 

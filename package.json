@@ -1,30 +1,32 @@
 {
-  "name": "opensea-indexer",
+  "name": "@reservoir/opensea-indexer",
   "version": "0.0.1",
-  "description": "Service for continuously monitoring/indexing Opensea data",
+  "description": "Service for continuously monitoring/scraping Opensea data",
   "repository": "https://github.com/reservoirprotocol/opensea-indexer",
   "author": "Reservoir Team",
   "license": "MIT",
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
-    "check": "tsc",
-    "build": "yarn migrate:deploy && tsc",
+    "clean": "rm -rf ./dist tsconfig.tsbuildinfo",
+    "compile": "tsc",
+    "build": "yarn migrate up && yarn clean && yarn compile",
     "start": "node ./dist/index.js",
-    "generate": "prisma generate",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy"
+    "migrate": "ts-node ./node_modules/node-pg-migrate/bin/node-pg-migrate -m ./src/migrations"
   },
   "devDependencies": {
-    "@georgeroman/wyvern-v2-sdk": "0.0.23",
-    "@prisma/client": "^3.1.1",
+    "@georgeroman/wyvern-v2-sdk": "0.0.24",
     "@types/node": "^16.10.1",
     "@types/node-cron": "^2.0.4",
     "axios": "^0.21.4",
     "dotenv": "^10.0.0",
     "node-cron": "^3.0.0",
-    "prisma": "^3.1.1",
+    "node-pg-migrate": "^6.0.0",
+    "pg": "^8.7.1",
+    "pg-promise": "^10.11.0",
+    "tedis": "^0.1.12",
     "throttled-queue": "^1.0.7",
+    "ts-node": "^10.3.0",
     "typescript": "^4.4.3"
   }
 }
