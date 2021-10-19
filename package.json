@@ -15,7 +15,7 @@
     "migrate": "ts-node ./node_modules/node-pg-migrate/bin/node-pg-migrate -m ./src/migrations"
   },
   "devDependencies": {
-    "@georgeroman/wyvern-v2-sdk": "0.0.24",
+    "@georgeroman/wyvern-v2-sdk": "0.0.27",
     "@types/node": "^16.10.1",
     "@types/node-cron": "^2.0.4",
     "axios": "^0.21.4",

@@ -100,6 +100,24 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                     );
                   });
 
+                if (process.env.BASE_RESERVOIR_CORE_API_URL) {
+                  await axios
+                    .post(
+                      `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
+                      validOrders
+                    )
+                    .then(() => {
+                      logger.info(
+                        `(${listedAfter}, ${listedBefore}) Successfully posted ${fetchedOrders.length} orders to Reservoir`
+                      );
+                    })
+                    .catch((error) => {
+                      logger.error(
+                        `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
+                      );
+                    });
+                }
+
                 resolve("Successfully fetched");
               }
             }

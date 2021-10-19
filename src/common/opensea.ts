@@ -5,7 +5,7 @@ import config from "../config";
 export type OpenseaOrder = {
   prefixed_hash: string;
   exchange: string;
-  asset: { token_id: string; asset_contract: { address: string } };
+  metadata: { asset: { id: string; address: string; quantity?: string } };
   created_date: string;
   maker: { address: string };
   taker: { address: string };
@@ -55,23 +55,50 @@ export const parseOpenseaOrder = (
   openseaOrder: OpenseaOrder
 ): Order | undefined => {
   try {
-    const order = Builders.Erc721.SingleItem.sell({
-      exchange: openseaOrder.exchange,
-      maker: openseaOrder.maker.address,
-      target: openseaOrder.asset.asset_contract.address,
-      tokenId: openseaOrder.asset.token_id,
-      paymentToken: openseaOrder.payment_token,
-      basePrice: openseaOrder.base_price,
-      fee: openseaOrder.maker_relayer_fee,
-      feeRecipient: openseaOrder.fee_recipient.address,
-      listingTime: openseaOrder.listing_time,
-      expirationTime: openseaOrder.expiration_time,
-      salt: openseaOrder.salt,
-      extra: openseaOrder.extra,
-      v: openseaOrder.v,
-      r: openseaOrder.r,
-      s: openseaOrder.s,
-    });
+    let order: Order | undefined;
+    if (openseaOrder.metadata.asset.quantity) {
+      // ERC1155
+      order = Builders.Erc1155.SingleItem.sell({
+        exchange: openseaOrder.exchange,
+        maker: openseaOrder.maker.address,
+        target: openseaOrder.metadata.asset.address,
+        tokenId: openseaOrder.metadata.asset.id,
+        paymentToken: openseaOrder.payment_token,
+        basePrice: openseaOrder.base_price,
+        fee: openseaOrder.maker_relayer_fee,
+        feeRecipient: openseaOrder.fee_recipient.address,
+        listingTime: openseaOrder.listing_time.toString(),
+        expirationTime: openseaOrder.expiration_time.toString(),
+        salt: openseaOrder.salt,
+        extra: openseaOrder.extra,
+        v: openseaOrder.v,
+        r: openseaOrder.r,
+        s: openseaOrder.s,
+      });
+    } else {
+      // ERC721
+      order = Builders.Erc721.SingleItem.sell({
+        exchange: openseaOrder.exchange,
+        maker: openseaOrder.maker.address,
+        target: openseaOrder.metadata.asset.address,
+        tokenId: openseaOrder.metadata.asset.id,
+        paymentToken: openseaOrder.payment_token,
+        basePrice: openseaOrder.base_price,
+        fee: openseaOrder.maker_relayer_fee,
+        feeRecipient: openseaOrder.fee_recipient.address,
+        listingTime: openseaOrder.listing_time.toString(),
+        expirationTime: openseaOrder.expiration_time.toString(),
+        salt: openseaOrder.salt,
+        extra: openseaOrder.extra,
+        v: openseaOrder.v,
+        r: openseaOrder.r,
+        s: openseaOrder.s,
+      });
+    }
+
+    if (!order) {
+      return undefined;
+    }
 
     if (Helpers.Order.hash(order) !== openseaOrder.prefixed_hash) {
       return undefined;
