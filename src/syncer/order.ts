@@ -104,7 +104,9 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                   await axios
                     .post(
                       `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
-                      validOrders
+                      {
+                        orders: validOrders,
+                      }
                     )
                     .then(() => {
                       logger.info(
