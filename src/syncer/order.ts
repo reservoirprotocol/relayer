@@ -103,7 +103,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                 if (process.env.BASE_RESERVOIR_CORE_API_URL) {
                   await axios
                     .post(
-                      `${process.env.BASE_RESERVOIR_CORE_API_URL}/loot/orders/wyvern-v2`,
+                      `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
                       {
                         orders: validOrders,
                       }
