@@ -108,7 +108,7 @@ export const parseOpenseaOrder = (
       return undefined;
     }
 
-    return order;
+    return Helpers.Order.normalize(order);
   } catch {
     return undefined;
   }
