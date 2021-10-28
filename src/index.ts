@@ -1,6 +1,7 @@
 import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
+import ApiInit from "./api";
 import WatcherInit from "./watcher";
 
-Promise.all([WatcherInit()]);
+Promise.all([ApiInit(), WatcherInit()]);

@@ -45,8 +45,11 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     listed_before: String(params.listed_before),
     offset: String(params.offset),
     limit: String(params.limit),
-    // Only sell orders
     side: "1",
+    is_english: "false",
+    bundled: "false",
+    include_bundled: "false",
+    include_invalid: "false",
   });
   return `${config.baseOpenseaApiUrl}/orders?${searchParams.toString()}`;
 };
