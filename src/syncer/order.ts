@@ -1,6 +1,5 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
 import axios from "axios";
-const throttledQueue = require("throttled-queue");
+import { backOff } from "exponential-backoff";
 
 import { db, pgp } from "../common/db";
 import logger from "../common/logger";
@@ -11,141 +10,69 @@ import {
 } from "../common/opensea";
 import config from "../config";
 
-const queue = throttledQueue(1, config.throttleTime, true);
+const fetchOrders = async (listedAfter: number, listedBefore: number) => {
+  logger.info(`(${listedAfter}, ${listedBefore}) Syncing orders`);
 
-const fetchOrders = async (listedAfter: number, listedBefore: number) =>
-  new Promise((resolve, reject) => {
-    logger.info(`(${listedAfter}, ${listedBefore}) Syncing orders`);
+  let offset = 0;
+  let limit = 50;
 
-    const maxAllowedErrors = 10;
-    const numExecutionContexts = config.numExecutionContexts;
-    const offset = 0;
-    const limit = 50;
-
-    let numFinishedExecutionContexts = 0;
-    let numErrors = 0;
-
-    // In-memory object of all orders fetched in this batch
-    let fetchedOrders: OpenseaOrder[] = [];
-
-    const execute = (offset: number) =>
-      queue(async () => {
-        const url = buildFetchOrdersURL({
-          listed_after: listedAfter,
-          listed_before: listedBefore,
-          offset,
-          limit,
-        });
-
-        axios
-          .get(url)
-          .then(async (response) => {
-            const orders = response.data.orders;
-            fetchedOrders = [...fetchedOrders, ...orders];
-
-            if (orders.length === limit) {
-              // If we got a full page of results, it means there's more to be fetched
-              execute(offset + numExecutionContexts * limit);
-            } else {
-              // Otherwise, this execution context is done
-              numFinishedExecutionContexts++;
-              if (numFinishedExecutionContexts === numExecutionContexts) {
-                const validOrders: Order[] = [];
-                const insertQueries: any[] = [];
-                for (const order of fetchedOrders) {
-                  const parsed = parseOpenseaOrder(order);
-                  if (parsed) {
-                    validOrders.push(parsed);
-                  }
-
-                  insertQueries.push({
-                    query: `
-                      INSERT INTO "orders"(
-                        "hash",
-                        "target",
-                        "maker",
-                        "created_at",
-                        "data"
-                      )
-                      VALUES ($1, $2, $3, $4, $5)
-                      ON CONFLICT DO NOTHING
-                    `,
-                    values: [
-                      order.prefixed_hash,
-                      order.target,
-                      order.maker.address,
-                      Math.floor(new Date(order.created_date).getTime() / 1000),
-                      order as any,
-                    ],
-                  });
-                }
-
-                if (insertQueries.length) {
-                  await db.none(pgp.helpers.concat(insertQueries));
-                }
-
-                // Filter and send the valid orders to the indexer
-                if (process.env.BASE_NFT_INDEXER_API_URL) {
-                  await axios
-                    .post(`${config.baseNftIndexerApiUrl}/orders`, {
-                      orders: validOrders,
-                    })
-                    .then(() => {
-                      logger.info(
-                        `(${listedAfter}, ${listedBefore}) Successfully posted ${fetchedOrders.length} orders`
-                      );
-                    })
-                    .catch((error) => {
-                      logger.error(
-                        `(${listedAfter}, ${listedBefore}) Failed to post orders: ${error}`
-                      );
-                    });
-                }
-
-                if (process.env.BASE_RESERVOIR_CORE_API_URL) {
-                  await axios
-                    .post(
-                      `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
-                      {
-                        orders: validOrders,
-                      }
-                    )
-                    .then(() => {
-                      logger.info(
-                        `(${listedAfter}, ${listedBefore}) Successfully posted ${fetchedOrders.length} orders to Reservoir`
-                      );
-                    })
-                    .catch((error) => {
-                      logger.error(
-                        `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
-                      );
-                    });
-                }
-
-                resolve("Successfully fetched");
-              }
-            }
-          })
-          .catch((error) => {
-            logger.error(
-              `(${listedAfter}, ${listedBefore}) Failed to sync: ${error}`
-            );
-
-            numErrors++;
-            if (numErrors < maxAllowedErrors) {
-              // Retry
-              return execute(offset);
-            } else {
-              reject("Error threshold reached");
-            }
-          });
+  let done = false;
+  while (!done) {
+    await backOff(async () => {
+      const url = buildFetchOrdersURL({
+        listed_after: listedAfter,
+        listed_before: listedBefore,
+        offset,
+        limit,
       });
 
-    // Parallelize execution (sort of)
-    for (let i = 0; i < numExecutionContexts; i++) {
-      execute(offset + i * limit);
-    }
-  });
+      await axios.get(url).then(async (response: any) => {
+        const orders: OpenseaOrder[] = response.data.orders;
+
+        const insertQueries: any[] = [];
+        for (const order of orders) {
+          const parsed = parseOpenseaOrder(order);
+          if (!parsed) {
+            continue;
+          }
+
+          insertQueries.push({
+            query: `
+              INSERT INTO "orders"(
+                "hash",
+                "target",
+                "maker",
+                "created_at",
+                "data"
+              )
+              VALUES ($1, $2, $3, $4, $5)
+              ON CONFLICT DO NOTHING
+            `,
+            values: [
+              order.prefixed_hash,
+              order.target,
+              order.maker.address,
+              Math.floor(new Date(order.created_date).getTime() / 1000),
+              order as any,
+            ],
+          });
+        }
+
+        if (insertQueries.length) {
+          await db.none(pgp.helpers.concat(insertQueries));
+        }
+
+        if (orders.length < limit) {
+          done = true;
+        } else {
+          offset += limit;
+        }
+      });
+    }).catch((error) => {
+      logger.error(`Failed to sync: ${error}`);
+    });
+  }
+};
 
 export const sync = async (from: number, to: number) => {
   const MAX_SECONDS = 60;
