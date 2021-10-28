@@ -16,6 +16,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
   let offset = 0;
   let limit = 50;
 
+  let numOrders = 0;
   let done = false;
   while (!done) {
     await backOff(async () => {
@@ -67,10 +68,14 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
         } else {
           offset += limit;
         }
+
+        numOrders += orders.length;
       });
     }).catch((error) => {
       logger.error(`Failed to sync: ${error}`);
     });
+
+    logger.info(`Got ${numOrders} orders`);
   }
 };
 
