@@ -1,3 +1,4 @@
+import { Order } from "@georgeroman/wyvern-v2-sdk";
 import axios from "axios";
 import { backOff } from "exponential-backoff";
 
@@ -17,6 +18,8 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
   let limit = 50;
 
   let numOrders = 0;
+  let validOrders: Order[] = [];
+
   let done = false;
   while (!done) {
     await backOff(async () => {
@@ -32,6 +35,11 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
 
         const insertQueries: any[] = [];
         for (const order of orders) {
+          const parsed = parseOpenseaOrder(order);
+          if (parsed) {
+            validOrders.push(parsed);
+          }
+
           insertQueries.push({
             query: `
               INSERT INTO "orders"(
@@ -69,6 +77,30 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
     }).catch((error) => {
       logger.error(`Failed to sync: ${error}`);
     });
+  }
+
+  if (process.env.BASE_NFT_INDEXER_API_URL) {
+    await axios
+      .post(`${config.baseNftIndexerApiUrl}/orders`, {
+        orders: validOrders,
+      })
+      .catch((error) => {
+        logger.error(
+          `(${listedAfter}, ${listedBefore}) Failed to post orders to Indexer: ${error}`
+        );
+      });
+  }
+
+  if (process.env.BASE_RESERVOIR_CORE_API_URL) {
+    await axios
+      .post(`${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`, {
+        orders: validOrders,
+      })
+      .catch((error) => {
+        logger.error(
+          `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
+        );
+      });
   }
 
   logger.info(`Got ${numOrders} orders`);
