@@ -69,9 +69,9 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
     }).catch((error) => {
       logger.error(`Failed to sync: ${error}`);
     });
-
-    logger.info(`Got ${numOrders} orders`);
   }
+
+  logger.info(`Got ${numOrders} orders`);
 };
 
 export const sync = async (from: number, to: number) => {
