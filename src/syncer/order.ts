@@ -32,11 +32,6 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
 
         const insertQueries: any[] = [];
         for (const order of orders) {
-          const parsed = parseOpenseaOrder(order);
-          if (!parsed) {
-            continue;
-          }
-
           insertQueries.push({
             query: `
               INSERT INTO "orders"(
