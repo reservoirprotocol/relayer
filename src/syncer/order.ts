@@ -85,20 +85,22 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) =>
                 }
 
                 // Filter and send the valid orders to the indexer
-                await axios
-                  .post(`${config.baseNftIndexerApiUrl}/orders`, {
-                    orders: validOrders,
-                  })
-                  .then(() => {
-                    logger.info(
-                      `(${listedAfter}, ${listedBefore}) Successfully posted ${fetchedOrders.length} orders`
-                    );
-                  })
-                  .catch((error) => {
-                    logger.error(
-                      `(${listedAfter}, ${listedBefore}) Failed to post orders: ${error}`
-                    );
-                  });
+                if (process.env.BASE_NFT_INDEXER_API_URL) {
+                  await axios
+                    .post(`${config.baseNftIndexerApiUrl}/orders`, {
+                      orders: validOrders,
+                    })
+                    .then(() => {
+                      logger.info(
+                        `(${listedAfter}, ${listedBefore}) Successfully posted ${fetchedOrders.length} orders`
+                      );
+                    })
+                    .catch((error) => {
+                      logger.error(
+                        `(${listedAfter}, ${listedBefore}) Failed to post orders: ${error}`
+                      );
+                    });
+                }
 
                 if (process.env.BASE_RESERVOIR_CORE_API_URL) {
                   await axios
