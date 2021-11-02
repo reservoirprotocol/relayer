@@ -30,7 +30,6 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
 
       await axios.get(url).then(async (response: any) => {
         const orders: OpenseaOrder[] = response.data.orders;
-        console.log(`Num orders: ${orders.length}`);
 
         const validOrders: Order[] = [];
         const insertQueries: any[] = [];
