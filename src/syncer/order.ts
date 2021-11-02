@@ -9,7 +9,6 @@ import {
   buildFetchOrdersURL,
   parseOpenseaOrder,
 } from "../common/opensea";
-import config from "../config";
 
 const fetchOrders = async (listedAfter: number, listedBefore: number) => {
   logger.info(`(${listedAfter}, ${listedBefore}) Syncing orders`);
@@ -18,7 +17,6 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
   let limit = 50;
 
   let numOrders = 0;
-  let validOrders: Order[] = [];
 
   let done = false;
   while (!done) {
@@ -33,6 +31,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
       await axios.get(url).then(async (response: any) => {
         const orders: OpenseaOrder[] = response.data.orders;
 
+        const validOrders: Order[] = [];
         const insertQueries: any[] = [];
         for (const order of orders) {
           const parsed = parseOpenseaOrder(order);
@@ -66,6 +65,21 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
+        if (process.env.BASE_RESERVOIR_CORE_API_URL) {
+          await axios
+            .post(
+              `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
+              {
+                orders: validOrders,
+              }
+            )
+            .catch((error) => {
+              logger.error(
+                `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
+              );
+            });
+        }
+
         if (orders.length < limit) {
           done = true;
         } else {
@@ -77,30 +91,6 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
     }).catch((error) => {
       logger.error(`Failed to sync: ${error}`);
     });
-  }
-
-  if (process.env.BASE_NFT_INDEXER_API_URL) {
-    await axios
-      .post(`${config.baseNftIndexerApiUrl}/orders`, {
-        orders: validOrders,
-      })
-      .catch((error) => {
-        logger.error(
-          `(${listedAfter}, ${listedBefore}) Failed to post orders to Indexer: ${error}`
-        );
-      });
-  }
-
-  if (process.env.BASE_RESERVOIR_CORE_API_URL) {
-    await axios
-      .post(`${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`, {
-        orders: validOrders,
-      })
-      .catch((error) => {
-        logger.error(
-          `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
-        );
-      });
   }
 
   logger.info(`Got ${numOrders} orders`);

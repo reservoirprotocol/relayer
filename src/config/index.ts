@@ -1,7 +1,6 @@
 export default {
   port: Number(process.env.PORT),
 
-  baseNftIndexerApiUrl: String(process.env.BASE_NFT_INDEXER_API_URL),
   baseOpenseaApiUrl: String(process.env.BASE_OPENSEA_API_URL),
 
   // Throttle time between consecutive Opensea API requests in a batch for
