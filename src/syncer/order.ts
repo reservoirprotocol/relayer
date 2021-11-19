@@ -28,19 +28,23 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
         limit,
       });
 
-      await axios.get(url).then(async (response: any) => {
-        const orders: OpenseaOrder[] = response.data.orders;
+      await axios
+        .get(url, {
+          headers: { "x-api-key": "2f6f419a083c46de9d83ce3dbe7db601" },
+        })
+        .then(async (response: any) => {
+          const orders: OpenseaOrder[] = response.data.orders;
 
-        const validOrders: Order[] = [];
-        const insertQueries: any[] = [];
-        for (const order of orders) {
-          const parsed = parseOpenseaOrder(order);
-          if (parsed) {
-            validOrders.push(parsed);
-          }
+          const validOrders: Order[] = [];
+          const insertQueries: any[] = [];
+          for (const order of orders) {
+            const parsed = parseOpenseaOrder(order);
+            if (parsed) {
+              validOrders.push(parsed);
+            }
 
-          insertQueries.push({
-            query: `
+            insertQueries.push({
+              query: `
               INSERT INTO "orders"(
                 "hash",
                 "target",
@@ -51,43 +55,43 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
               VALUES ($1, $2, $3, $4, $5)
               ON CONFLICT DO NOTHING
             `,
-            values: [
-              order.prefixed_hash,
-              order.target,
-              order.maker.address,
-              Math.floor(new Date(order.created_date).getTime() / 1000),
-              order as any,
-            ],
-          });
-        }
-
-        if (insertQueries.length) {
-          await db.none(pgp.helpers.concat(insertQueries));
-        }
-
-        if (process.env.BASE_RESERVOIR_CORE_API_URL) {
-          await axios
-            .post(
-              `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
-              {
-                orders: validOrders,
-              }
-            )
-            .catch((error) => {
-              logger.error(
-                `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
-              );
+              values: [
+                order.prefixed_hash,
+                order.target,
+                order.maker.address,
+                Math.floor(new Date(order.created_date).getTime() / 1000),
+                order as any,
+              ],
             });
-        }
+          }
 
-        if (orders.length < limit) {
-          done = true;
-        } else {
-          offset += limit;
-        }
+          if (insertQueries.length) {
+            await db.none(pgp.helpers.concat(insertQueries));
+          }
 
-        numOrders += orders.length;
-      });
+          if (process.env.BASE_RESERVOIR_CORE_API_URL) {
+            await axios
+              .post(
+                `${process.env.BASE_RESERVOIR_CORE_API_URL}/orders/wyvern-v2`,
+                {
+                  orders: validOrders,
+                }
+              )
+              .catch((error) => {
+                logger.error(
+                  `(${listedAfter}, ${listedBefore}) Failed to post orders to Reservoir: ${error}`
+                );
+              });
+          }
+
+          if (orders.length < limit) {
+            done = true;
+          } else {
+            offset += limit;
+          }
+
+          numOrders += orders.length;
+        });
     }).catch((error) => {
       logger.error(`Failed to sync: ${error}`);
     });
