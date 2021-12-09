@@ -84,6 +84,21 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
               });
           }
 
+          if (process.env.BASE_INDEXER_V2_API_URL) {
+            await axios
+              .post(`${process.env.BASE_RESERVOIR_CORE_API_URL}/orders`, {
+                orders: validOrders.map((data) => ({
+                  kind: "wyvern-v2",
+                  data,
+                })),
+              })
+              .catch((error) => {
+                logger.error(
+                  `(${listedAfter}, ${listedBefore}) Failed to post orders to Indexer v3: ${error}`
+                );
+              });
+          }
+
           if (orders.length < limit) {
             done = true;
           } else {
