@@ -8,6 +8,7 @@ import * as orders from "../syncer/order";
 const init = () => {
   if (!config.skipWatching) {
     // Fetch new orders every 1 minute
+    return;
     cron.schedule("*/1 * * * *", async () =>
       withMutex("orders-sync", async () => {
         const cacheKey = "orders-last-synced-timestamp";
