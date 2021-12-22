@@ -30,7 +30,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
 
       await axios
         .get(url, {
-          headers: { "x-api-key": "2f6f419a083c46de9d83ce3dbe7db601" },
+          headers: { "x-api-key": "4d642fc17536451cb43d0253011334fd" },
         })
         .then(async (response: any) => {
           const orders: OpenseaOrder[] = response.data.orders;
