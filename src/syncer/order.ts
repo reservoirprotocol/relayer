@@ -43,18 +43,21 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
               validOrders.push(parsed);
             }
 
+            // Skip saving any irrelevant information
+            delete (order as any).asset;
+
             insertQueries.push({
               query: `
-              INSERT INTO "orders"(
-                "hash",
-                "target",
-                "maker",
-                "created_at",
-                "data"
-              )
-              VALUES ($1, $2, $3, $4, $5)
-              ON CONFLICT DO NOTHING
-            `,
+                INSERT INTO "orders"(
+                  "hash",
+                  "target",
+                  "maker",
+                  "created_at",
+                  "data"
+                )
+                VALUES ($1, $2, $3, $4, $5)
+                ON CONFLICT DO NOTHING
+              `,
               values: [
                 order.prefixed_hash,
                 order.target,
