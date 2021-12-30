@@ -40,6 +40,13 @@ type FetchOrdersParams = {
 
 // https://docs.opensea.io/reference/retrieving-orders
 export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
+  let baseOpenseaApiUrl: string;
+  if (config.chainId === 1) {
+    baseOpenseaApiUrl = "https://api.opensea.io/wyvern/v1";
+  } else {
+    baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/wyvern/v1";
+  }
+
   const searchParams = new URLSearchParams({
     listed_after: String(params.listed_after),
     listed_before: String(params.listed_before),
@@ -51,9 +58,10 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     include_bundled: "false",
     include_invalid: "false",
   });
-  return `${config.baseOpenseaApiUrl}/orders?${searchParams.toString()}`;
+  return `${baseOpenseaApiUrl}/orders?${searchParams.toString()}`;
 };
 
+// TODO: Replace old SDK with new one
 export const parseOpenseaOrder = (
   openseaOrder: OpenseaOrder
 ): Order | undefined => {

@@ -1,8 +1,9 @@
 import express, { json } from "express";
 import asyncHandler from "express-async-handler";
 
-import logger from "../common/logger";
+import { logger } from "../common/logger";
 import withMutex from "../common/mutex";
+import Redis from "../redis";
 import config from "../config";
 import * as orders from "../syncer/order";
 
@@ -13,10 +14,11 @@ const init = () => {
   app.get(
     "/",
     asyncHandler(async (_req, res) => {
-      res.json({ data: { message: "Success" } });
+      res.json({ message: "Success" });
     })
   );
 
+  // TODO: Did we actually use this?
   app.post(
     "/sync",
     asyncHandler(async (req, res) => {
@@ -25,15 +27,24 @@ const init = () => {
       });
 
       if (triggered) {
-        res.json({ data: { message: "Syncing triggered" } });
+        res.json({ message: "Success" });
       } else {
-        res.json({ data: { message: "Already syncing" } });
+        res.json({ message: "Already syncing" });
       }
     })
   );
 
+  app.post(
+    "/clear",
+    asyncHandler(async (req, res) => {
+      await Redis.deleteKey("orders-last-synced-timestamp");
+
+      res.json({ message: "Success" });
+    })
+  );
+
   app.listen(config.port, () => {
-    logger.info(`API started on port ${config.port}`);
+    logger.info("process", `Started on port ${config.port}`);
   });
 };
 

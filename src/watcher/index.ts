@@ -17,10 +17,10 @@ const init = () => {
 
         if (lastSyncedTimestamp === 0) {
           // No cache, so we only sync the last minute
-          await orders.sync(timestamp - 59, timestamp);
+          await orders.sync(timestamp - 59, timestamp).catch(() => {});
         } else {
           // Sync from last synced timestamp up to current one
-          await orders.sync(lastSyncedTimestamp + 1, timestamp);
+          await orders.sync(lastSyncedTimestamp + 1, timestamp).catch(() => {});
         }
 
         await Redis.setKey(cacheKey, String(timestamp));

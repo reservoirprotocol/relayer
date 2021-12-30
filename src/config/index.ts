@@ -1,16 +1,8 @@
 export default {
   port: Number(process.env.PORT),
+  chainId: Number(process.env.CHAIN_ID),
 
-  baseOpenseaApiUrl: String(process.env.BASE_OPENSEA_API_URL),
-
-  // Throttle time between consecutive Opensea API requests in a batch for
-  // avoiding getting rate-limited
-  throttleTime: Number(process.env.THROTTLE_TIME),
-
-  // Number of logic threads for parallelizing batches of Opensea
-  // API requests in order to avoid delays on waiting for responses
-  // which might sometimes take longer than the throttle time
-  numExecutionContexts: Number(process.env.NUM_EXECUTION_CONTEXTS),
+  openseaApiKey: String(process.env.OPENSEA_API_KEY),
 
   skipWatching: Boolean(process.env.SKIP_WATCHING),
 
