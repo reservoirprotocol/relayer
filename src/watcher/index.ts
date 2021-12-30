@@ -1,5 +1,6 @@
 import cron from "node-cron";
 
+import { logger } from "../common/logger";
 import withMutex from "../common/mutex";
 import config from "../config";
 import Redis from "../redis";
@@ -10,6 +11,8 @@ const init = () => {
     // Fetch new orders every 1 minute
     cron.schedule("*/1 * * * *", async () =>
       withMutex("orders-sync", async () => {
+        logger.info("watcher_cron", "Triggering orders fetch");
+
         const cacheKey = "orders-last-synced-timestamp";
 
         const timestamp = Math.floor(Date.now() / 1000);
