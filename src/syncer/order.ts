@@ -110,6 +110,7 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
                     data,
                   })),
                 })
+                .then((response) => console.log(response.data))
                 .catch((error) => {
                   logger.error(
                     "fetch_orders",
