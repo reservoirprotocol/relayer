@@ -34,9 +34,15 @@ const fetchOrders = async (listedAfter: number, listedBefore: number) => {
         });
 
         await axios
-          .get(url, {
-            headers: { "x-api-key": config.openseaApiKey },
-          })
+          .get(
+            url,
+            config.chainId === 1
+              ? {
+                  headers: { "x-api-key": config.openseaApiKey },
+                }
+              : // Skip including the API key on Rinkeby or else the request will fail
+                undefined
+          )
           .then(async (response: any) => {
             const orders: OpenseaOrder[] = response.data.orders;
 
