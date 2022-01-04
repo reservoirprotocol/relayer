@@ -4,7 +4,6 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import Redis from "../redis";
 import config from "../config";
-import withMutex from "../common/mutex";
 import { relayOrdersToV3 } from "../common/relay";
 
 const init = () => {
@@ -31,8 +30,10 @@ const init = () => {
   // Relay orders to Indexer V3
   app.post(
     "/relay/v3",
-    asyncHandler(async (req, _res) => {
-      withMutex("relay_v3", () => relayOrdersToV3((req.query as any).contract));
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      await relayOrdersToV3((req.query as any).contract);
     })
   );
 
