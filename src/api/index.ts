@@ -2,10 +2,10 @@ import express, { json } from "express";
 import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
-import withMutex from "../common/mutex";
 import Redis from "../redis";
 import config from "../config";
-import * as orders from "../syncer/order";
+import withMutex from "../common/mutex";
+import { relayOrdersToV3 } from "../common/relay";
 
 const init = () => {
   const app = express();
@@ -18,28 +18,21 @@ const init = () => {
     })
   );
 
-  // TODO: Did we actually use this?
-  app.post(
-    "/sync",
-    asyncHandler(async (req, res) => {
-      const triggered = withMutex("sync-lock", async () => {
-        await orders.sync(Number(req.body.from), Number(req.body.to));
-      });
-
-      if (triggered) {
-        res.json({ message: "Success" });
-      } else {
-        res.json({ message: "Already syncing" });
-      }
-    })
-  );
-
+  // Restart syncing from the current timestamp
   app.post(
     "/clear",
-    asyncHandler(async (req, res) => {
+    asyncHandler(async (_req, res) => {
       await Redis.deleteKey("orders-last-synced-timestamp");
 
       res.json({ message: "Success" });
+    })
+  );
+
+  // Relay orders to Indexer V3
+  app.post(
+    "/relay/v3",
+    asyncHandler(async (req, _res) => {
+      withMutex("relay_v3", () => relayOrdersToV3((req.query as any).contract));
     })
   );
 

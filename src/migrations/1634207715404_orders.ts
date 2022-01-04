@@ -27,7 +27,5 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.createConstraint("orders", "orders_pk", {
     primaryKey: "hash",
   });
-  pgm.createIndex("orders", "target");
-  pgm.createIndex("orders", "maker");
-  pgm.createIndex("orders", "created_at");
+  pgm.createIndex("orders", ["target", { name: "created_at", sort: "DESC" }]);
 }
