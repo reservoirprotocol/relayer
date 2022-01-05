@@ -33,7 +33,7 @@ const init = () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await relayOrdersToV3((req.query as any).contract);
+      await relayOrdersToV3(req.body.contract);
     })
   );
 
