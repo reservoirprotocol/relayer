@@ -97,7 +97,7 @@ if (!config.skipWatching) {
     if (lockAcquired) {
       const cacheKey = "opensea-sync-last-minute";
 
-      const minute = Math.floor(Date.now() / 1000 / 60);
+      const minute = Math.floor(Date.now() / 1000 / 60) - 1;
       const lastSyncedMinute = Number(await redis.get(cacheKey));
 
       if (lastSyncedMinute === 0) {
