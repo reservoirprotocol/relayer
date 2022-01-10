@@ -1,6 +1,6 @@
 import tracer from "dd-trace";
 
-import config from "../config";
+import { config } from "../config";
 
 if (process.env.DATADOG_AGENT_URL) {
   const network = config.chainId === 1 ? "mainnet" : "rinkeby";

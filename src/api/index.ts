@@ -2,11 +2,11 @@ import express, { json } from "express";
 import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
-import Redis from "../redis";
-import config from "../config";
+import { redis } from "../common/redis";
 import { relayOrdersToV3 } from "../common/relay";
+import { config } from "../config";
 
-const init = () => {
+export const start = async () => {
   const app = express();
   app.use(json({ limit: "50mb" }));
 
@@ -21,7 +21,7 @@ const init = () => {
   app.post(
     "/clear",
     asyncHandler(async (_req, res) => {
-      await Redis.deleteKey("orders-last-synced-timestamp");
+      await redis.del("opensea-sync-last-minute");
 
       res.json({ message: "Success" });
     })
@@ -41,5 +41,3 @@ const init = () => {
     logger.info("process", `Started on port ${config.port}`);
   });
 };
-
-export default init;

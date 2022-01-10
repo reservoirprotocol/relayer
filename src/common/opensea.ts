@@ -1,6 +1,6 @@
 import { Builders, Helpers, Order } from "@georgeroman/wyvern-v2-sdk";
 
-import config from "../config";
+import { config } from "../config";
 
 export type OpenseaOrder = {
   prefixed_hash: string;

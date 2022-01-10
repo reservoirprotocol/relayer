@@ -1,4 +1,4 @@
-export default {
+export const config = {
   port: Number(process.env.PORT),
   chainId: Number(process.env.CHAIN_ID),
 
@@ -7,8 +7,5 @@ export default {
   skipWatching: Boolean(process.env.SKIP_WATCHING),
 
   databaseUrl: String(process.env.DATABASE_URL),
-
-  redisHost: String(process.env.REDISHOST),
-  redisPort: Number(process.env.REDISPORT),
-  redisPassword: String(process.env.REDISPASSWORD),
+  redisUrl: String(process.env.REDIS_URL),
 };

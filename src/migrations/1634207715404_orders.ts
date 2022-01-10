@@ -3,23 +3,23 @@ import { MigrationBuilder } from "node-pg-migrate";
 export async function up(pgm: MigrationBuilder): Promise<void> {
   pgm.createTable("orders", {
     hash: {
-      type: "TEXT",
+      type: "text",
       notNull: true,
     },
     target: {
-      type: "TEXT",
+      type: "text",
       notNull: true,
     },
     maker: {
-      type: "TEXT",
+      type: "text",
       notNull: true,
     },
     created_at: {
-      type: "INT",
+      type: "int",
       notNull: true,
     },
     data: {
-      type: "JSONB",
+      type: "jsonb",
       notNull: true,
     },
   });

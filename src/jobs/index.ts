@@ -1,0 +1,1 @@
+import "./opensea-sync";

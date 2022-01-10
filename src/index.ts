@@ -2,8 +2,8 @@ import { config as dotEnvConfig } from "dotenv";
 dotEnvConfig();
 
 import "./common/tracer";
+import "./jobs";
 
-import ApiInit from "./api";
-import WatcherInit from "./watcher";
+import { start } from "./api";
 
-Promise.all([ApiInit(), WatcherInit()]);
+start();

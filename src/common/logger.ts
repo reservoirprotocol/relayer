@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from "winston";
 
-import config from "../config";
+import { config } from "../config";
 
 const log = (level: "debug" | "error" | "info") => {
   const network = config.chainId === 1 ? "mainnet" : "rinkeby";
