@@ -65,7 +65,7 @@ const backfillWorker = new Worker(
 
     const listedAfter = minute * 60 - 1;
     const listedBefore = listedAfter + 60 + 1;
-    await fetchOrders(listedAfter, listedBefore);
+    await fetchOrders(listedAfter, listedBefore, true);
   },
   { connection: redis }
 );
@@ -73,7 +73,10 @@ backfillWorker.on("error", (error) => {
   logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
 });
 
-const addToBackfillQueue = async (fromMinute: number, toMinute: number) => {
+export const addToBackfillQueue = async (
+  fromMinute: number,
+  toMinute: number
+) => {
   const minutes = [];
   for (let minute = toMinute; minute >= fromMinute; minute--) {
     minutes.push(minute);

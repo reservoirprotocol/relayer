@@ -2,7 +2,8 @@ export const config = {
   port: Number(process.env.PORT),
   chainId: Number(process.env.CHAIN_ID),
 
-  openseaApiKey: String(process.env.OPENSEA_API_KEY),
+  backfillOpenseaApiKey: String(process.env.BACKFILL_OPENSEA_API_KEY),
+  realtimeOpenseaApiKey: String(process.env.REALTIME_OPENSEA_API_KEY),
 
   skipWatching: Boolean(process.env.SKIP_WATCHING),
 

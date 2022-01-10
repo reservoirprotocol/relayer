@@ -12,7 +12,8 @@ import { config } from "../../config";
 
 export const fetchOrders = async (
   listedAfter: number,
-  listedBefore: number
+  listedBefore: number,
+  backfill = false
 ) => {
   logger.info(
     "fetch_orders",
@@ -38,7 +39,11 @@ export const fetchOrders = async (
         url,
         config.chainId === 1
           ? {
-              headers: { "x-api-key": config.openseaApiKey },
+              headers: {
+                "x-api-key": backfill
+                  ? config.backfillOpenseaApiKey
+                  : config.realtimeOpenseaApiKey,
+              },
             }
           : // Skip including the API key on Rinkeby or else the request will fail
             undefined
