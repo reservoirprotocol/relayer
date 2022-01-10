@@ -3,12 +3,12 @@ import axios from "axios";
 
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
+import { config } from "../../config";
 import {
   OpenseaOrder,
   buildFetchOrdersURL,
   parseOpenseaOrder,
-} from "../../common/opensea";
-import { config } from "../../config";
+} from "../../utils/opensea";
 
 export const fetchOrders = async (
   listedAfter: number,
@@ -28,8 +28,8 @@ export const fetchOrders = async (
   let done = false;
   while (!done) {
     const url = buildFetchOrdersURL({
-      listed_after: listedAfter,
-      listed_before: listedBefore,
+      listedAfter,
+      listedBefore,
       offset,
       limit,
     });

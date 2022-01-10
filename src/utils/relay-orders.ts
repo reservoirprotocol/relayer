@@ -2,8 +2,8 @@ import { Order } from "@georgeroman/wyvern-v2-sdk";
 import axios from "axios";
 import { backOff } from "exponential-backoff";
 
-import { db } from "./db";
-import { logger } from "./logger";
+import { db } from "../common/db";
+import { logger } from "../common/logger";
 import { parseOpenseaOrder } from "./opensea";
 
 export const relayOrdersToV3 = async (contract: string) => {
