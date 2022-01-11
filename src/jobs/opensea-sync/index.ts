@@ -11,9 +11,12 @@ import { config } from "../../config";
 const REALTIME_QUEUE_NAME = "realtime-opensea-sync";
 
 const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
-  connection: redis,
+  connection: redis.duplicate(),
+  defaultJobOptions: {
+    timeout: 60000,
+  },
 });
-new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis });
+new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
 const realtimeWorker = new Worker(
   REALTIME_QUEUE_NAME,
@@ -30,7 +33,7 @@ const realtimeWorker = new Worker(
       throw error;
     }
   },
-  { connection: redis }
+  { connection: redis.duplicate() }
 );
 realtimeWorker.on("error", (error) => {
   logger.error(REALTIME_QUEUE_NAME, `Worker errored: ${error}`);
@@ -45,7 +48,7 @@ const addToRealtimeQueue = async (minute: number) => {
 const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 
 const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
-  connection: redis,
+  connection: redis.duplicate(),
   defaultJobOptions: {
     // Lots of attempts with plenty of delay between them to allow both
     // rate-limiting failures and OpenSea downtime
@@ -54,9 +57,10 @@ const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
       type: "exponential",
       delay: 120000,
     },
+    timeout: 60000,
   },
 });
-new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis });
+new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
 
 const backfillWorker = new Worker(
   BACKFILL_QUEUE_NAME,
@@ -67,7 +71,7 @@ const backfillWorker = new Worker(
     const listedBefore = listedAfter + 60 + 1;
     await fetchOrders(listedAfter, listedBefore, true);
   },
-  { connection: redis }
+  { connection: redis.duplicate() }
 );
 backfillWorker.on("error", (error) => {
   logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);

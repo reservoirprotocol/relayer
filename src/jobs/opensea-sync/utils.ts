@@ -9,6 +9,7 @@ import {
   buildFetchOrdersURL,
   parseOpenseaOrder,
 } from "../../utils/opensea";
+import { addToRelayOrdersQueue } from "../relay-orders";
 
 export const fetchOrders = async (
   listedAfter: number,
@@ -44,9 +45,10 @@ export const fetchOrders = async (
                   ? config.backfillOpenseaApiKey
                   : config.realtimeOpenseaApiKey,
               },
+              timeout: 5000,
             }
           : // Skip including the API key on Rinkeby or else the request will fail
-            undefined
+            { timeout: 5000 }
       )
       .then(async (response: any) => {
         const orders: OpenseaOrder[] = response.data.orders;
@@ -89,37 +91,7 @@ export const fetchOrders = async (
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        // Post orders to Indexer V2
-        // TODO: Remove once Indexer V2 gets deprecated
-        if (process.env.BASE_INDEXER_V2_API_URL) {
-          await axios
-            .post(`${process.env.BASE_INDEXER_V2_API_URL}/orders/wyvern-v2`, {
-              orders: validOrders,
-            })
-            .catch((error) => {
-              logger.error(
-                "fetch_orders",
-                `(${listedAfter}, ${listedBefore}) Failed to post orders to Indexer V2: ${error}`
-              );
-            });
-        }
-
-        // Post orders to Indexer V3
-        if (process.env.BASE_INDEXER_V3_API_URL) {
-          await axios
-            .post(`${process.env.BASE_INDEXER_V3_API_URL}/orders`, {
-              orders: validOrders.map((data) => ({
-                kind: "wyvern-v2",
-                data,
-              })),
-            })
-            .catch((error) => {
-              logger.error(
-                "fetch_orders",
-                `(${listedAfter}, ${listedBefore}) Failed to post orders to Indexer V3: ${error}`
-              );
-            });
-        }
+        await addToRelayOrdersQueue(validOrders);
 
         numOrders += orders.length;
 
