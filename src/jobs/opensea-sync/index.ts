@@ -64,13 +64,8 @@ const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
-    // Lots of attempts with plenty of delay between them to allow both
-    // rate-limiting failures and OpenSea downtime
+    // Lots of attempts to handle both rate-limiting and OpenSea downtime
     attempts: 10,
-    backoff: {
-      type: "exponential",
-      delay: 120000,
-    },
     timeout: 60000,
     removeOnComplete: 100000,
     removeOnFail: 100000,
@@ -99,7 +94,22 @@ const backfillWorker = new Worker(
     const listedBefore = listedAfter + 60 + 1;
     await fetchOrders(listedAfter, listedBefore, true);
   },
-  { connection: redis.duplicate() }
+  {
+    connection: redis.duplicate(),
+    settings: {
+      backoffStrategies: {
+        exponentialBackoffWithJitter: (
+          attemptsMade: number,
+          _error: any,
+          options: { delay: number }
+        ) => {
+          return (
+            (1 + Math.random()) * Math.pow(2, attemptsMade) * options.delay
+          );
+        },
+      },
+    },
+  }
 );
 backfillWorker.on("error", (error) => {
   logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
@@ -118,6 +128,14 @@ export const addToBackfillQueue = async (
     minutes.map((minute) => ({
       name: minute.toString(),
       data: { minute },
+      opts: {
+        backoff: {
+          type: "exponentialBackoffWithJitter",
+          options: {
+            delay: 60000,
+          },
+        },
+      },
     }))
   );
 };
