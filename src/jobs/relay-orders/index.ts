@@ -1,9 +1,10 @@
 import { Order } from "@georgeroman/wyvern-v2-sdk";
 import axios from "axios";
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
+import cron from "node-cron";
 
 import { logger } from "../../common/logger";
-import { redis } from "../../common/redis";
+import { acquireLock, redis } from "../../common/redis";
 
 const QUEUE_NAME = "relay-orders";
 
@@ -16,9 +17,23 @@ const queue = new Queue(QUEUE_NAME, {
       delay: 5000,
     },
     timeout: 60000,
+    removeOnComplete: 100000,
+    removeOnFail: 100000,
   },
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
+
+cron.schedule("*/1 * * * *", async () => {
+  const lockAcquired = await acquireLock(
+    `${QUEUE_NAME}_queue_clean_lock`,
+    1 * 60 - 5
+  );
+  if (lockAcquired) {
+    // Clean up jobs older than 5 minutes
+    await queue.clean(5 * 60 * 1000, 100000, "completed");
+    await queue.clean(5 * 60 * 1000, 100000, "failed");
+  }
+});
 
 export const addToRelayOrdersQueue = async (orders: Order[]) => {
   await queue.add("relay-orders", { orders });
