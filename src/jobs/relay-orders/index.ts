@@ -23,10 +23,10 @@ const queue = new Queue(QUEUE_NAME, {
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-cron.schedule("*/1 * * * *", async () => {
+cron.schedule("*/5 * * * *", async () => {
   const lockAcquired = await acquireLock(
     `${QUEUE_NAME}_queue_clean_lock`,
-    1 * 60 - 5
+    5 * 60 - 5
   );
   if (lockAcquired) {
     // Clean up jobs older than 5 minutes
