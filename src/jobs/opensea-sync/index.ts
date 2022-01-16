@@ -14,9 +14,23 @@ const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     timeout: 60000,
+    removeOnComplete: 100000,
+    removeOnFail: 100000,
   },
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
+
+cron.schedule("*/10 * * * *", async () => {
+  const lockAcquired = await acquireLock(
+    `${REALTIME_QUEUE_NAME}_queue_clean_lock`,
+    10 * 60 - 5
+  );
+  if (lockAcquired) {
+    // Clean up jobs older than 10 minutes
+    await realtimeQueue.clean(10 * 60 * 1000, 100000, "completed");
+    await realtimeQueue.clean(10 * 60 * 1000, 100000, "failed");
+  }
+});
 
 const realtimeWorker = new Worker(
   REALTIME_QUEUE_NAME,
@@ -58,9 +72,23 @@ const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
       delay: 120000,
     },
     timeout: 60000,
+    removeOnComplete: 100000,
+    removeOnFail: 100000,
   },
 });
 new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
+
+cron.schedule("*/10 * * * *", async () => {
+  const lockAcquired = await acquireLock(
+    `${BACKFILL_QUEUE_NAME}_queue_clean_lock`,
+    10 * 60 - 5
+  );
+  if (lockAcquired) {
+    // Clean up jobs older than 10 minutes
+    await backfillQueue.clean(10 * 60 * 1000, 100000, "completed");
+    await backfillQueue.clean(10 * 60 * 1000, 100000, "failed");
+  }
+});
 
 const backfillWorker = new Worker(
   BACKFILL_QUEUE_NAME,
