@@ -98,13 +98,9 @@ const backfillWorker = new Worker(
     connection: redis.duplicate(),
     settings: {
       backoffStrategies: {
-        exponentialBackoffWithJitter: (
-          attemptsMade: number,
-          _error: any,
-          options: { delay: number }
-        ) => {
-          return (
-            (1 + Math.random()) * Math.pow(2, attemptsMade) * options.delay
+        exponentialBackoffWithJitter: (attemptsMade: number, _error: any) => {
+          return Math.round(
+            (Math.pow(2, attemptsMade) - 1) * 60000 * (1 + Math.random())
           );
         },
       },
@@ -131,9 +127,6 @@ export const addToBackfillQueue = async (
       opts: {
         backoff: {
           type: "exponentialBackoffWithJitter",
-          options: {
-            delay: 60000,
-          },
         },
       },
     }))
