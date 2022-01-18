@@ -44,6 +44,9 @@ export const fetchOrders = async (
                 "x-api-key": backfill
                   ? config.backfillOpenseaApiKey
                   : config.realtimeOpenseaApiKey,
+                // https://twitter.com/lefterisjp/status/1483222328595165187?s=21
+                "user-agent":
+                  "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
               },
               timeout: 5000,
             }
