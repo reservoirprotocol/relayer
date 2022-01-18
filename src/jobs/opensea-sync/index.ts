@@ -42,9 +42,10 @@ const realtimeWorker = new Worker(
       const listedBefore = listedAfter + 60 + 1;
       await fetchOrders(listedAfter, listedBefore);
     } catch (error) {
+      // OpenSea got quite restrictive so we're better off not retrying
       // In case of any errors, retry the job via the backfill queue
-      await addToBackfillQueue(minute, minute);
-      throw error;
+      // await addToBackfillQueue(minute, minute);
+      // throw error;
     }
   },
   { connection: redis.duplicate() }
