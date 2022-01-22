@@ -86,12 +86,16 @@ export const syncCollection = async (collection: string) => {
         // Post orders to Indexer V3
         if (process.env.BASE_INDEXER_V3_API_URL) {
           await axios
-            .post(`${process.env.BASE_INDEXER_V3_API_URL}/orders`, {
-              orders: validOrders.map((data) => ({
-                kind: "wyvern-v2",
-                data,
-              })),
-            })
+            .post(
+              `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
+              {
+                orders: validOrders.map((data) => ({
+                  kind: "wyvern-v2",
+                  data,
+                })),
+              },
+              { timeout: 60000 }
+            )
             .catch((error) => {
               logger.error(
                 "sync_collection",
