@@ -15,7 +15,6 @@ const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   defaultJobOptions: {
     timeout: 60000,
     removeOnComplete: 100000,
-    removeOnFail: 100000,
   },
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
@@ -28,7 +27,6 @@ cron.schedule("*/10 * * * *", async () => {
   if (lockAcquired) {
     // Clean up jobs older than 10 minutes
     await realtimeQueue.clean(10 * 60 * 1000, 100000, "completed");
-    await realtimeQueue.clean(10 * 60 * 1000, 100000, "failed");
   }
 });
 
@@ -43,7 +41,7 @@ const realtimeWorker = new Worker(
       await fetchOrders(listedAfter, listedBefore);
     } catch (error) {
       // In case of any errors, retry the job via the backfill queue
-      await addToBackfillQueue(minute, minute);
+      // await addToBackfillQueue(minute, minute);
       throw error;
     }
   },
