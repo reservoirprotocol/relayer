@@ -15,6 +15,7 @@ const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   defaultJobOptions: {
     timeout: 60000,
     removeOnComplete: 100000,
+    removeOnFail: 100000,
   },
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
@@ -27,6 +28,7 @@ cron.schedule("*/10 * * * *", async () => {
   if (lockAcquired) {
     // Clean up jobs older than 10 minutes
     await realtimeQueue.clean(10 * 60 * 1000, 100000, "completed");
+    await realtimeQueue.clean(10 * 60 * 1000, 100000, "failed");
   }
 });
 
@@ -41,7 +43,7 @@ const realtimeWorker = new Worker(
       await fetchOrders(listedAfter, listedBefore);
     } catch (error) {
       // In case of any errors, retry the job via the backfill queue
-      // await addToBackfillQueue(minute, minute);
+      await addToBackfillQueue(minute, minute);
       throw error;
     }
   },
@@ -63,7 +65,12 @@ const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     // Lots of attempts to handle both rate-limiting and OpenSea downtime
-    attempts: 10,
+    // (that is, retry at most 30 times every 2 hours)
+    attempts: 30,
+    backoff: {
+      type: "fixed",
+      delay: 2 * 60 * 3600,
+    },
     timeout: 60000,
     removeOnComplete: 100000,
     removeOnFail: 100000,
@@ -92,18 +99,7 @@ const backfillWorker = new Worker(
     const listedBefore = listedAfter + 60 + 1;
     await fetchOrders(listedAfter, listedBefore, true);
   },
-  {
-    connection: redis.duplicate(),
-    settings: {
-      backoffStrategies: {
-        exponentialBackoffWithJitter: (attemptsMade: number, _error: any) => {
-          return Math.round(
-            (Math.pow(2, attemptsMade) - 1) * 60000 * (1 + Math.random())
-          );
-        },
-      },
-    },
-  }
+  { connection: redis.duplicate() }
 );
 backfillWorker.on("error", (error) => {
   logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
@@ -122,11 +118,6 @@ export const addToBackfillQueue = async (
     minutes.map((minute) => ({
       name: minute.toString(),
       data: { minute },
-      opts: {
-        backoff: {
-          type: "exponentialBackoffWithJitter",
-        },
-      },
     }))
   );
 };
