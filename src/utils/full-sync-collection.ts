@@ -6,8 +6,11 @@ import { logger } from "../common/logger";
 import { config } from "../config";
 import { buildFetchAssetsURL, parseOpenseaOrder } from "./opensea";
 
-export const syncCollection = async (collection: string) => {
-  logger.info("sync_collection", `(${collection}) Syncing`);
+export const fullSyncCollection = async (collection: string) => {
+  logger.info(
+    "full_sync_collection",
+    `Full syncing collection ${collection} from OpenSea`
+  );
 
   let offset = 0;
   let limit = 20;
@@ -98,8 +101,8 @@ export const syncCollection = async (collection: string) => {
             )
             .catch((error) => {
               logger.error(
-                "sync_collection",
-                `(${collection}) Failed to post orders to Indexer V3: ${error}`
+                "full_sync_collection",
+                `Failed to post orders for collection ${collection} to Indexer V3: ${error}`
               );
             });
         }
@@ -119,5 +122,8 @@ export const syncCollection = async (collection: string) => {
       });
   }
 
-  logger.info("sync_collection", `(${collection}) Got ${numOrders} orders`);
+  logger.info(
+    "full_sync_collection",
+    `Got ${numOrders} orders for collection ${collection}`
+  );
 };

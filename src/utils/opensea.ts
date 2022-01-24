@@ -33,9 +33,11 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
 };
 
 type FetchAssetsParams = {
-  collection: string;
-  offset: number;
-  limit: number;
+  contract?: string;
+  tokenIds?: string[];
+  collection?: string;
+  offset?: number;
+  limit?: number;
 };
 
 // https://docs.opensea.io/reference/getting-assets
@@ -47,12 +49,48 @@ export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
     baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
   }
 
+  let searchParams: URLSearchParams;
+  if (params.collection) {
+    searchParams = new URLSearchParams({
+      collection: params.collection,
+      offset: String(params.offset),
+      limit: String(params.limit),
+    });
+  } else if (params.contract && params.tokenIds) {
+    searchParams = new URLSearchParams({
+      asset_contract_address: params.contract,
+    });
+    for (const tokenId of params.tokenIds) {
+      searchParams.append("token_ids", tokenId);
+    }
+  }
+
+  return `${baseOpenseaApiUrl}/assets?${searchParams!.toString()}`;
+};
+
+type FetchListingsParams = {
+  contract: string;
+  offset: number;
+  limit: number;
+};
+
+// https://docs.opensea.io/reference/retrieving-asset-events
+export const buildFetchListingsURL = (params: FetchListingsParams) => {
+  let baseOpenseaApiUrl: string;
+  if (config.chainId === 1) {
+    baseOpenseaApiUrl = "https://api.opensea.io/api/v1";
+  } else {
+    baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
+  }
+
   const searchParams = new URLSearchParams({
-    collection: params.collection,
+    asset_contract_address: params.contract,
+    only_opensea: "false",
+    event_type: "created",
     offset: String(params.offset),
     limit: String(params.limit),
   });
-  return `${baseOpenseaApiUrl}/assets?${searchParams.toString()}`;
+  return `${baseOpenseaApiUrl}/events?${searchParams.toString()}`;
 };
 
 export type OpenseaOrder = {

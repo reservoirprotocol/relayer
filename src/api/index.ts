@@ -3,8 +3,8 @@ import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
-import { addToBackfillQueue } from "../jobs/opensea-sync";
-import { syncCollection } from "../utils/sync-collection";
+import { fastSyncContract } from "../utils/fast-sync-contract";
+import { fullSyncCollection } from "../utils/full-sync-collection";
 import { relayOrdersToV3 } from "../utils/relay-orders";
 
 export const start = async () => {
@@ -19,25 +19,23 @@ export const start = async () => {
   );
 
   app.post(
-    "/collections/sync",
+    "/collections/full-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await syncCollection(req.body.collection);
+      await fullSyncCollection(req.body.collection);
     })
   );
 
-  // Trigger syncing orders in a given time interval
   app.post(
-    "/orders/sync",
+    "/contracts/fast-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await addToBackfillQueue(req.body.fromMinute, req.body.toMinute);
+      await fastSyncContract(req.body.contract, req.body.count || 200);
     })
   );
 
-  // Relay orders to Indexer V3
   app.post(
     "/relay/v3",
     asyncHandler(async (req, res) => {
