@@ -65,8 +65,8 @@ export const fastSyncContract = async (contract: string, count: number) => {
             done = true;
           }
 
-          // Wait for half a second to avoid rate-limiting
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          // Wait for one second to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         });
     }
   }
@@ -138,8 +138,8 @@ export const fastSyncContract = async (contract: string, count: number) => {
             }
           }
 
-          // Wait for half a second to avoid rate-limiting
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          // Wait for one second to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         })
         .catch(() => {
           // Ignore errors
