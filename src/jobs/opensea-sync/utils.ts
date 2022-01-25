@@ -48,10 +48,10 @@ export const fetchOrders = async (
                 "user-agent":
                   "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
               },
-              timeout: 5000,
+              timeout: 10000,
             }
           : // Skip including the API key on Rinkeby or else the request will fail
-            { timeout: 5000 }
+            { timeout: 10000 }
       )
       .then(async (response: any) => {
         const orders: OpenseaOrder[] = response.data.orders;
