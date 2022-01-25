@@ -134,38 +134,18 @@ if (!config.skipWatching && config.chainId === 1) {
   cron.schedule("*/1 * * * *", async () => {
     const lockAcquired = await acquireLock("opensea_rarible_sync_lock", 55);
     if (lockAcquired) {
-      const cacheKey = "opensea_rarible_sync_continuation";
+      try {
+        const cacheKey = "opensea_rarible_sync_continuation";
 
-      const limit = 50;
-      let url = `https://ethereum-api.rarible.org/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
+        const limit = 50;
+        let url = `https://ethereum-api.rarible.org/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
 
-      let continuation = await redis.get(cacheKey);
-      if (!continuation) {
-        url += "&sort=LAST_UPDATE_DESC";
+        let continuation = await redis.get(cacheKey);
+        if (!continuation) {
+          url += "&sort=LAST_UPDATE_DESC";
 
-        await axios.get(url, { timeout: 10000 }).then(async (response: any) => {
-          const orders: OpenSeaRaribleOrder[] = response.data.orders;
-          if (orders.length) {
-            const validOrders = orders
-              .map(parseOpenSeaRaribleOrder)
-              .filter(Boolean)
-              .map((x) => x!);
-
-            await saveOrders(validOrders);
-
-            await redis.set(
-              cacheKey,
-              new Date(orders[0].lastUpdateAt).getTime() + "_" + orders[0].hash
-            );
-          }
-        });
-      } else {
-        url += "&sort=LAST_UPDATE_ASC";
-
-        let done = false;
-        while (!done) {
           await axios
-            .get(`${url}&continuation=${continuation}`, { timeout: 10000 })
+            .get(url, { timeout: 10000 })
             .then(async (response: any) => {
               const orders: OpenSeaRaribleOrder[] = response.data.orders;
               if (orders.length) {
@@ -176,22 +156,55 @@ if (!config.skipWatching && config.chainId === 1) {
 
                 await saveOrders(validOrders);
 
-                if (!response.data.continuation || orders.length < limit) {
-                  done = true;
-                  continuation =
-                    new Date(orders[orders.length - 1].lastUpdateAt).getTime() +
+                await redis.set(
+                  cacheKey,
+                  new Date(orders[0].lastUpdateAt).getTime() +
                     "_" +
-                    orders[orders.length - 1].hash;
-                } else {
-                  continuation = response.data.continuation;
-                }
-
-                await redis.set(cacheKey, continuation!);
-              } else {
-                done = true;
+                    orders[0].hash
+                );
               }
             });
+        } else {
+          url += "&sort=LAST_UPDATE_ASC";
+
+          let done = false;
+          while (!done) {
+            await axios
+              .get(`${url}&continuation=${continuation}`, { timeout: 10000 })
+              .then(async (response: any) => {
+                const orders: OpenSeaRaribleOrder[] = response.data.orders;
+                if (orders.length) {
+                  const validOrders = orders
+                    .map(parseOpenSeaRaribleOrder)
+                    .filter(Boolean)
+                    .map((x) => x!);
+
+                  await saveOrders(validOrders);
+
+                  if (!response.data.continuation || orders.length < limit) {
+                    done = true;
+                    continuation =
+                      new Date(
+                        orders[orders.length - 1].lastUpdateAt
+                      ).getTime() +
+                      "_" +
+                      orders[orders.length - 1].hash;
+                  } else {
+                    continuation = response.data.continuation;
+                  }
+
+                  await redis.set(cacheKey, continuation!);
+                } else {
+                  done = true;
+                }
+              });
+          }
         }
+      } catch (error) {
+        logger.error(
+          "opensea_rarible_sync",
+          `Failed to sync OpenSea orders from Rarible: ${error}`
+        );
       }
     }
   });
