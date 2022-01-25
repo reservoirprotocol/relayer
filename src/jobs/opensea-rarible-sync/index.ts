@@ -143,7 +143,7 @@ if (!config.skipWatching && config.chainId === 1) {
       if (!continuation) {
         url += "&sort=LAST_UPDATE_DESC";
 
-        await axios.get(url).then(async (response: any) => {
+        await axios.get(url, { timeout: 10000 }).then(async (response: any) => {
           const orders: OpenSeaRaribleOrder[] = response.data.orders;
           if (orders.length) {
             const validOrders = orders
@@ -165,7 +165,7 @@ if (!config.skipWatching && config.chainId === 1) {
         let done = false;
         while (!done) {
           await axios
-            .get(`${url}&continuation=${continuation}`)
+            .get(`${url}&continuation=${continuation}`, { timeout: 10000 })
             .then(async (response: any) => {
               const orders: OpenSeaRaribleOrder[] = response.data.orders;
               if (orders.length) {
