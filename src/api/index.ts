@@ -1,8 +1,12 @@
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
+import { ExpressAdapter } from "@bull-board/express";
 import express, { json } from "express";
 import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
+import { allQueues } from "../jobs/index";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { fullSyncCollection } from "../utils/full-sync-collection";
 import { relayOrdersToV3 } from "../utils/relay-orders";
@@ -10,6 +14,16 @@ import { relayOrdersToV3 } from "../utils/relay-orders";
 export const start = async () => {
   const app = express();
   app.use(json({ limit: "50mb" }));
+
+  const serverAdapter = new ExpressAdapter();
+  serverAdapter.setBasePath("/admin/bullmq");
+
+  createBullBoard({
+    queues: allQueues.map((q) => new BullMQAdapter(q)),
+    serverAdapter,
+  });
+
+  app.use("/admin/bullmq", serverAdapter.getRouter());
 
   app.get(
     "/",

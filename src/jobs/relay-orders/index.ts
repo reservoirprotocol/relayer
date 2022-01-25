@@ -8,7 +8,7 @@ import { acquireLock, redis } from "../../common/redis";
 
 const QUEUE_NAME = "relay-orders";
 
-const queue = new Queue(QUEUE_NAME, {
+export const queue = new Queue(QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     attempts: 3,

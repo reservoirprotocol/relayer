@@ -10,7 +10,7 @@ import { config } from "../../config";
 
 const REALTIME_QUEUE_NAME = "realtime-opensea-sync";
 
-const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
+export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     timeout: 60000,
@@ -61,7 +61,7 @@ const addToRealtimeQueue = async (minute: number) => {
 
 const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 
-const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
+export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     // Lots of attempts to handle both rate-limiting and OpenSea downtime
