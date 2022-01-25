@@ -64,6 +64,9 @@ export const fastSyncContract = async (contract: string, count: number) => {
           if (offset >= count) {
             done = true;
           }
+
+          // Wait for half a second to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 500));
         });
     }
   }
@@ -134,6 +137,9 @@ export const fastSyncContract = async (contract: string, count: number) => {
               });
             }
           }
+
+          // Wait for half a second to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 500));
         })
         .catch(() => {
           // Ignore errors

@@ -103,6 +103,9 @@ export const fetchOrders = async (
         } else {
           offset += limit;
         }
+
+        // Wait for half a second to avoid rate-limiting
+        await new Promise((resolve) => setTimeout(resolve, 500));
       });
   }
 

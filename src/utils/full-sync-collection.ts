@@ -119,6 +119,9 @@ export const fullSyncCollection = async (collection: string) => {
         if (offset >= 10000) {
           done = true;
         }
+
+        // Wait for half a second to avoid rate-limiting
+        await new Promise((resolve) => setTimeout(resolve, 500));
       });
   }
 
