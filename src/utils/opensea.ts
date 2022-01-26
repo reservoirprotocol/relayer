@@ -1,5 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 
+import { logger } from "../common/logger";
 import { config } from "../config";
 
 type FetchOrdersParams = {
@@ -158,7 +159,8 @@ export const parseOpenSeaOrder = (
 
     order.checkValidity();
     order.checkSignature();
-  } catch {
+  } catch (error) {
+    logger.error("opensea_utils", `Error parsing orders: ${error}`);
     return undefined;
   }
 };
