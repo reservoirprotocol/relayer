@@ -159,6 +159,8 @@ export const parseOpenSeaOrder = (
 
     order.checkValidity();
     order.checkSignature();
+
+    return order;
   } catch (error) {
     logger.error("opensea_utils", `Error parsing orders: ${error}`);
     return undefined;
