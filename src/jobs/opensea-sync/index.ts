@@ -39,7 +39,7 @@ const realtimeWorker = new Worker(
 
     try {
       const listedAfter = minute * 60 - 1;
-      const listedBefore = listedAfter + 60 + 1;
+      const listedBefore = (minute + 1) * 60 + 1;
       await fetchOrders(listedAfter, listedBefore);
     } catch (error) {
       // In case of any errors, retry the job via the backfill queue
@@ -96,7 +96,7 @@ const backfillWorker = new Worker(
     const { minute } = job.data;
 
     const listedAfter = minute * 60 - 1;
-    const listedBefore = listedAfter + 60 + 1;
+    const listedBefore = (minute + 1) * 60 + 1;
     await fetchOrders(listedAfter, listedBefore, true);
   },
   { connection: redis.duplicate() }

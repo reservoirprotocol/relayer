@@ -242,6 +242,8 @@ if (!config.skipWatching) {
         }
       }),
       new Promise((_, reject) => setTimeout(reject, 55 * 1000)),
-    ]).catch(() => {});
+    ]).catch(() => {
+      // Ignore any errors
+    });
   });
 }
