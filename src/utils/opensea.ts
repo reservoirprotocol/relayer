@@ -1,4 +1,4 @@
-import { Builders, Helpers, Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
 
@@ -11,11 +11,11 @@ type FetchOrdersParams = {
 
 // https://docs.opensea.io/reference/retrieving-orders
 export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
-  let baseOpenseaApiUrl: string;
+  let baseOpenSeaApiUrl: string;
   if (config.chainId === 1) {
-    baseOpenseaApiUrl = "https://api.opensea.io/wyvern/v1";
+    baseOpenSeaApiUrl = "https://api.opensea.io/wyvern/v1";
   } else {
-    baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/wyvern/v1";
+    baseOpenSeaApiUrl = "https://rinkeby-api.opensea.io/wyvern/v1";
   }
 
   const searchParams = new URLSearchParams({
@@ -29,7 +29,7 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     include_bundled: "false",
     include_invalid: "false",
   });
-  return `${baseOpenseaApiUrl}/orders?${searchParams.toString()}`;
+  return `${baseOpenSeaApiUrl}/orders?${searchParams.toString()}`;
 };
 
 type FetchAssetsParams = {
@@ -42,11 +42,11 @@ type FetchAssetsParams = {
 
 // https://docs.opensea.io/reference/getting-assets
 export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
-  let baseOpenseaApiUrl: string;
+  let baseOpenSeaApiUrl: string;
   if (config.chainId === 1) {
-    baseOpenseaApiUrl = "https://api.opensea.io/api/v1";
+    baseOpenSeaApiUrl = "https://api.opensea.io/api/v1";
   } else {
-    baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
+    baseOpenSeaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
   }
 
   let searchParams: URLSearchParams;
@@ -65,7 +65,7 @@ export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
     }
   }
 
-  return `${baseOpenseaApiUrl}/assets?${searchParams!.toString()}`;
+  return `${baseOpenSeaApiUrl}/assets?${searchParams!.toString()}`;
 };
 
 type FetchListingsParams = {
@@ -76,11 +76,11 @@ type FetchListingsParams = {
 
 // https://docs.opensea.io/reference/retrieving-asset-events
 export const buildFetchListingsURL = (params: FetchListingsParams) => {
-  let baseOpenseaApiUrl: string;
+  let baseOpenSeaApiUrl: string;
   if (config.chainId === 1) {
-    baseOpenseaApiUrl = "https://api.opensea.io/api/v1";
+    baseOpenSeaApiUrl = "https://api.opensea.io/api/v1";
   } else {
-    baseOpenseaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
+    baseOpenSeaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
   }
 
   const searchParams = new URLSearchParams({
@@ -90,10 +90,10 @@ export const buildFetchListingsURL = (params: FetchListingsParams) => {
     offset: String(params.offset),
     limit: String(params.limit),
   });
-  return `${baseOpenseaApiUrl}/events?${searchParams.toString()}`;
+  return `${baseOpenSeaApiUrl}/events?${searchParams.toString()}`;
 };
 
-export type OpenseaOrder = {
+export type OpenSeaOrder = {
   prefixed_hash: string;
   exchange: string;
   metadata: { asset: { id: string; address: string; quantity?: string } };
@@ -122,65 +122,42 @@ export type OpenseaOrder = {
   s?: string;
 };
 
-// TODO: Replace old SDK with new one
-export const parseOpenseaOrder = (
-  openseaOrder: OpenseaOrder
-): Order | undefined => {
+export const parseOpenSeaOrder = (
+  openSeaOrder: OpenSeaOrder
+): Sdk.WyvernV2.Order | undefined => {
   try {
-    let order: Order | undefined;
-    if (openseaOrder.metadata.asset.quantity) {
-      // ERC1155
-      order = Builders.Erc1155.SingleItem.sell({
-        exchange: openseaOrder.exchange,
-        maker: openseaOrder.maker.address,
-        target: openseaOrder.metadata.asset.address,
-        tokenId: openseaOrder.metadata.asset.id,
-        paymentToken: openseaOrder.payment_token,
-        basePrice: openseaOrder.base_price,
-        fee: openseaOrder.maker_relayer_fee,
-        feeRecipient: openseaOrder.fee_recipient.address,
-        listingTime: openseaOrder.listing_time.toString(),
-        expirationTime: openseaOrder.expiration_time.toString(),
-        salt: openseaOrder.salt,
-        extra: openseaOrder.extra,
-        v: openseaOrder.v,
-        r: openseaOrder.r,
-        s: openseaOrder.s,
-      });
-    } else {
-      // ERC721
-      order = Builders.Erc721.SingleItem.sell({
-        exchange: openseaOrder.exchange,
-        maker: openseaOrder.maker.address,
-        target: openseaOrder.metadata.asset.address,
-        tokenId: openseaOrder.metadata.asset.id,
-        paymentToken: openseaOrder.payment_token,
-        basePrice: openseaOrder.base_price,
-        fee: openseaOrder.maker_relayer_fee,
-        feeRecipient: openseaOrder.fee_recipient.address,
-        listingTime: openseaOrder.listing_time.toString(),
-        expirationTime: openseaOrder.expiration_time.toString(),
-        salt: openseaOrder.salt,
-        extra: openseaOrder.extra,
-        v: openseaOrder.v,
-        r: openseaOrder.r,
-        s: openseaOrder.s,
-      });
-    }
+    const order = new Sdk.WyvernV2.Order(config.chainId, {
+      exchange: openSeaOrder.exchange,
+      maker: openSeaOrder.maker.address,
+      taker: openSeaOrder.taker.address,
+      makerRelayerFee: Number(openSeaOrder.maker_relayer_fee),
+      takerRelayerFee: Number(openSeaOrder.taker_relayer_fee),
+      feeRecipient: openSeaOrder.fee_recipient.address,
+      side: openSeaOrder.side,
+      saleKind: openSeaOrder.sale_kind,
+      target: openSeaOrder.target,
+      howToCall: openSeaOrder.how_to_call,
+      calldata: openSeaOrder.calldata,
+      replacementPattern: openSeaOrder.replacement_pattern,
+      staticTarget: openSeaOrder.static_target,
+      staticExtradata: openSeaOrder.static_extradata,
+      paymentToken: openSeaOrder.payment_token,
+      basePrice: openSeaOrder.base_price,
+      extra: openSeaOrder.extra,
+      listingTime: openSeaOrder.listing_time,
+      expirationTime: openSeaOrder.expiration_time,
+      salt: openSeaOrder.salt,
+      v: openSeaOrder.v,
+      r: openSeaOrder.r,
+      s: openSeaOrder.s,
+    });
 
-    if (!order) {
+    if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
       return undefined;
     }
 
-    if (Helpers.Order.hash(order) !== openseaOrder.prefixed_hash) {
-      return undefined;
-    }
-
-    if (!Helpers.Order.verifySignature(order)) {
-      return undefined;
-    }
-
-    return Helpers.Order.normalize(order);
+    order.checkValidity();
+    order.checkSignature();
   } catch {
     return undefined;
   }

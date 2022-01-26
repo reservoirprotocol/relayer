@@ -1,13 +1,13 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
 import {
-  OpenseaOrder,
+  OpenSeaOrder,
   buildFetchOrdersURL,
-  parseOpenseaOrder,
+  parseOpenSeaOrder,
 } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
@@ -54,12 +54,12 @@ export const fetchOrders = async (
             { timeout: 10000 }
       )
       .then(async (response: any) => {
-        const orders: OpenseaOrder[] = response.data.orders;
+        const orders: OpenSeaOrder[] = response.data.orders;
 
-        const validOrders: Order[] = [];
+        const validOrders: Sdk.WyvernV2.Order[] = [];
         const insertQueries: any[] = [];
         for (const order of orders) {
-          const parsed = parseOpenseaOrder(order);
+          const parsed = parseOpenSeaOrder(order);
           if (parsed) {
             validOrders.push(parsed);
           }

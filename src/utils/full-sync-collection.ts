@@ -1,10 +1,10 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 
 import { db, pgp } from "../common/db";
 import { logger } from "../common/logger";
 import { config } from "../config";
-import { buildFetchAssetsURL, parseOpenseaOrder } from "./opensea";
+import { buildFetchAssetsURL, parseOpenSeaOrder } from "./opensea";
 
 export const fullSyncCollection = async (collection: string) => {
   logger.info(
@@ -42,14 +42,14 @@ export const fullSyncCollection = async (collection: string) => {
             { timeout: 5000 }
       )
       .then(async (response: any) => {
-        const validOrders: Order[] = [];
+        const validOrders: Sdk.WyvernV2.Order[] = [];
         const insertQueries: any[] = [];
 
         const assets = response.data.assets;
         for (const asset of assets) {
           if (asset.sell_orders) {
             for (const order of asset.sell_orders) {
-              const parsed = parseOpenseaOrder(order);
+              const parsed = parseOpenSeaOrder(order);
               if (parsed) {
                 validOrders.push(parsed);
               }
@@ -92,9 +92,9 @@ export const fullSyncCollection = async (collection: string) => {
             .post(
               `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
               {
-                orders: validOrders.map((data) => ({
+                orders: validOrders.map(({ params }) => ({
                   kind: "wyvern-v2",
-                  data,
+                  data: params,
                 })),
               },
               { timeout: 60000 }

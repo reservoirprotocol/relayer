@@ -1,4 +1,4 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 import cron from "node-cron";
@@ -35,7 +35,7 @@ cron.schedule("*/5 * * * *", async () => {
   }
 });
 
-export const addToRelayOrdersQueue = async (orders: Order[]) => {
+export const addToRelayOrdersQueue = async (orders: Sdk.WyvernV2.Order[]) => {
   await queue.add("relay-orders", { orders });
 };
 
@@ -52,9 +52,9 @@ const worker = new Worker(
         .post(
           `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
           {
-            orders: orders.map((data: any) => ({
+            orders: orders.map(({ params }: Sdk.WyvernV2.Order) => ({
               kind: "wyvern-v2",
-              data,
+              data: params,
             })),
           },
           { timeout: 60000 }

@@ -78,7 +78,7 @@ const parseOpenSeaRaribleOrder = async (order: OpenSeaRaribleOrder) => {
     };
 
     result.order.checkValidity();
-    await result.order.checkSignature();
+    result.order.checkSignature();
 
     return result;
   } catch {
@@ -108,7 +108,7 @@ const saveOrders = async (
     })),
     columns
   );
-  const rowsInserted: any[] = await db.manyOrNone(
+  const rowsInserted: { hash: string }[] = await db.manyOrNone(
     `
       insert into "orders"(
         "hash",
@@ -123,9 +123,33 @@ const saveOrders = async (
     `
   );
 
+  // Post orders to Indexer V3
+  if (process.env.BASE_INDEXER_V3_API_URL) {
+    const newHashes = rowsInserted.map(({ hash }) => hash);
+    await axios
+      .post(
+        `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
+        {
+          orders: data
+            .filter(({ order }) => newHashes.includes(order.prefixHash()))
+            .map(({ order: { params } }) => ({
+              kind: "wyvern-v2",
+              data: params,
+            })),
+        },
+        { timeout: 60000 }
+      )
+      .catch((error) => {
+        logger.error(
+          "opensea_rarible_sync",
+          `Failed to post orders to Indexer V3: ${error}`
+        );
+      });
+  }
+
   logger.info(
     "opensea_rarible_sync",
-    `Got ${rowsInserted.length} new orders from Rarible`
+    `Got ${rowsInserted.length} new OpenSea orders from Rarible`
   );
 };
 
@@ -179,7 +203,7 @@ if (!config.skipWatching && config.chainId === 1) {
 
                     await saveOrders(validOrders);
 
-                    if (!response.data.continuation || orders.length < limit) {
+                    if (orders.length < limit || !response.data.continuation) {
                       done = true;
                       continuation =
                         new Date(

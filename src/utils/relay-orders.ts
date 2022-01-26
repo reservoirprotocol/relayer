@@ -1,10 +1,10 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { backOff } from "exponential-backoff";
 
 import { db } from "../common/db";
 import { logger } from "../common/logger";
-import { parseOpenseaOrder } from "./opensea";
+import { parseOpenSeaOrder } from "./opensea";
 
 export const relayOrdersToV3 = async (contract: string) => {
   const data: { max_created_at: number } = await db.one(
@@ -47,9 +47,9 @@ export const relayOrdersToV3 = async (contract: string) => {
       data.max_created_at = orders[orders.length - 1].created_at - 1;
     }
 
-    const validOrders: Order[] = [];
+    const validOrders: Sdk.WyvernV2.Order[] = [];
     for (const { data } of orders) {
-      const parsed = parseOpenseaOrder(data);
+      const parsed = parseOpenSeaOrder(data);
       if (parsed) {
         validOrders.push(parsed);
       }
@@ -59,9 +59,9 @@ export const relayOrdersToV3 = async (contract: string) => {
       await backOff(
         async () => {
           await axios.post(`${process.env.BASE_INDEXER_V3_API_URL}/orders`, {
-            orders: validOrders.map((data) => ({
+            orders: validOrders.map(({ params }) => ({
               kind: "wyvern-v2",
-              data,
+              data: params,
             })),
           });
         },

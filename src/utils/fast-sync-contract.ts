@@ -1,4 +1,4 @@
-import { Order } from "@georgeroman/wyvern-v2-sdk";
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 
 import { db, pgp } from "../common/db";
@@ -7,7 +7,7 @@ import { config } from "../config";
 import {
   buildFetchAssetsURL,
   buildFetchListingsURL,
-  parseOpenseaOrder,
+  parseOpenSeaOrder,
 } from "./opensea";
 
 export const fastSyncContract = async (contract: string, count: number) => {
@@ -73,7 +73,7 @@ export const fastSyncContract = async (contract: string, count: number) => {
 
   // Fetch sell orders of tokens that had recent listings
   {
-    const validOrders: Order[] = [];
+    const validOrders: Sdk.WyvernV2.Order[] = [];
     const insertQueries: any[] = [];
 
     const tokenIds = [...tokenIdsWithListings.values()];
@@ -106,7 +106,7 @@ export const fastSyncContract = async (contract: string, count: number) => {
         .then(async (response: any) => {
           for (const asset of response.data.assets) {
             for (const order of asset.sell_orders) {
-              const parsed = parseOpenseaOrder(order);
+              const parsed = parseOpenSeaOrder(order);
               if (parsed) {
                 validOrders.push(parsed);
               }
@@ -158,9 +158,9 @@ export const fastSyncContract = async (contract: string, count: number) => {
         .post(
           `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
           {
-            orders: validOrders.map((data) => ({
+            orders: validOrders.map(({ params }) => ({
               kind: "wyvern-v2",
-              data,
+              data: params,
             })),
           },
           { timeout: 60000 }
