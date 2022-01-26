@@ -65,11 +65,11 @@ export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     // Lots of attempts to handle both rate-limiting and OpenSea downtime
-    // (that is, retry at most 30 times every 2 hours)
+    // Retry at most 30 times every 1 hour
     attempts: 30,
     backoff: {
       type: "fixed",
-      delay: 2 * 60 * 3600,
+      delay: 60 * 60 * 1000,
     },
     timeout: 60000,
     removeOnComplete: 100000,

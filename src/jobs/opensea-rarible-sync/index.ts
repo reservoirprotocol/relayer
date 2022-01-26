@@ -1,144 +1,109 @@
-import { splitSignature } from "@ethersproject/bytes";
-import { AddressZero } from "@ethersproject/constants";
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
+import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 import cron from "node-cron";
 
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
-import { redis } from "../../common/redis";
+import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
+import {
+  OpenSeaRaribleOrder,
+  parseOpenSeaRaribleOrder,
+} from "../../utils/opensea-rarible";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
-type OpenSeaRaribleOrder = {
-  hash: string;
-  make: {
-    assetType: {
-      contract: string;
-    };
-  };
-  take: {
-    value: string;
-  };
-  maker: string;
-  salt: string;
-  start: number;
-  end: number;
-  signature: string;
-  lastUpdateAt: string;
-  data: {
-    exchange: string;
-    makerRelayerFee: string;
-    takerRelayerFee: string;
-    makerProtocolFee: string;
-    takerProtocolFee: string;
-    feeRecipient: string;
-    feeMethod: "PROTOCOL_FEE" | "SPLIT_FEE";
-    side: "BUY" | "SELL";
-    saleKind: "FIXED_PRICE" | "DUTCH_AUCTION";
-    howToCall: "CALL" | "DELEGATE_CALL";
-    callData: string;
-    replacementPattern: string;
-    staticTarget: string;
-    staticExtraData: string;
-    extra: string;
-  };
-};
+const QUEUE_NAME = "opensea_rarible_sync";
 
-const parseOpenSeaRaribleOrder = async (order: OpenSeaRaribleOrder) => {
-  try {
-    const { v, r, s } = splitSignature(order.signature);
+export const queue = new Queue(QUEUE_NAME, {
+  connection: redis.duplicate(),
+  defaultJobOptions: {
+    // Retry at most 20 times every 10 minutes
+    attempts: 20,
+    backoff: {
+      type: "fixed",
+      delay: 10 * 60 * 1000,
+    },
+    timeout: 60000,
+    removeOnComplete: 100000,
+    removeOnFail: 100000,
+  },
+});
+new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-    const result = {
-      createdAt: order.lastUpdateAt,
-      order: new Sdk.WyvernV2.Order(config.chainId, {
-        exchange: order.data.exchange,
-        maker: order.maker,
-        taker: AddressZero,
-        makerRelayerFee: Number(order.data.makerRelayerFee),
-        takerRelayerFee: Number(order.data.takerRelayerFee),
-        feeRecipient: order.data.feeRecipient,
-        side: order.data.side === "BUY" ? 0 : 1,
-        saleKind: order.data.saleKind === "FIXED_PRICE" ? 0 : 1,
-        target: order.make.assetType.contract,
-        howToCall: order.data.howToCall === "CALL" ? 0 : 1,
-        calldata: order.data.callData,
-        replacementPattern: order.data.replacementPattern,
-        staticTarget: order.data.staticTarget,
-        staticExtradata: order.data.staticExtraData,
-        paymentToken: Sdk.Common.Addresses.Eth[config.chainId],
-        basePrice: order.take.value,
-        extra: order.data.extra,
-        listingTime: order.start,
-        expirationTime: order.end,
-        salt: order.salt,
-        v,
-        r,
-        s,
-      }),
-    };
-
-    result.order.checkValidity();
-    result.order.checkSignature();
-
-    return result;
-  } catch {
-    return undefined;
+cron.schedule("*/10 * * * *", async () => {
+  const lockAcquired = await acquireLock(
+    `${QUEUE_NAME}_queue_clean_lock`,
+    10 * 60 - 5
+  );
+  if (lockAcquired) {
+    // Clean up jobs older than 10 minutes
+    await queue.clean(10 * 60 * 1000, 100000, "completed");
+    await queue.clean(10 * 60 * 1000, 100000, "failed");
   }
-};
+});
 
-const saveOrders = async (
-  data: {
-    createdAt: string;
-    order: Sdk.WyvernV2.Order;
-  }[]
+export const addToOpenSeaRaribleQueue = async (
+  continuation: string | null,
+  stop: number
 ) => {
-  if (data.length) {
-    const columns = new pgp.helpers.ColumnSet(
-      ["hash", "target", "maker", "created_at", "data"],
-      {
-        table: "orders",
-      }
-    );
-    const values = pgp.helpers.values(
-      data.map(({ createdAt, order }) => ({
-        hash: order.prefixHash(),
-        target: order.params.target,
-        maker: order.params.maker,
-        created_at: Math.floor(new Date(createdAt).getTime() / 1000),
-        data: order.params as any,
-      })),
-      columns
-    );
-    const rowsInserted: { hash: string }[] = await db.manyOrNone(
-      `
-        insert into "orders"(
-          "hash",
-          "target",
-          "maker",
-          "created_at",
-          "data"
-        )
-        values ${values}
-        on conflict do nothing
-        returning "hash"
-      `
-    );
-
-    if (rowsInserted.length) {
-      const newHashes = rowsInserted.map(({ hash }) => hash);
-      const orders = data
-        .filter(({ order }) => newHashes.includes(order.prefixHash()))
-        .map(({ order }) => order);
-      await addToRelayOrdersQueue(orders);
-
-      logger.info(
-        "opensea_rarible_sync",
-        `Got ${orders.length} new OpenSea orders from Rarible`
-      );
-    }
-  }
+  await queue.add(String(stop), { continuation, stop });
 };
+
+const worker = new Worker(
+  QUEUE_NAME,
+  async (job: Job) => {
+    const { continuation, stop } = job.data;
+
+    try {
+      const baseRaribleUrl =
+        config.chainId === 1
+          ? "https://ethereum-api.rarible.org"
+          : "https://ethereum-api-staging.rarible.org";
+      let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus`;
+      url += "?platform=OPEN_SEA";
+      url += "&status=ACTIVE";
+      url += "&limit=50";
+      url += "&sort=LAST_UPDATE_DESC";
+      if (continuation) {
+        url += `&continuation=${continuation}`;
+      }
+
+      await axios.get(url, { timeout: 10000 }).then(async (response: any) => {
+        const orders: OpenSeaRaribleOrder[] = response.data.orders;
+        if (orders.length) {
+          const validOrders = await Promise.all(
+            orders.map(parseOpenSeaRaribleOrder)
+          ).then((o) => o.filter(Boolean).map((x) => x!));
+
+          await saveOrders(validOrders);
+
+          if (response.data.continuation) {
+            const timestamp = Math.floor(
+              Number(response.data.continuation.split("_")[0]) / 1000
+            );
+            if (timestamp <= stop) {
+              await addToOpenSeaRaribleQueue(response.data.continuation, stop);
+            }
+          }
+
+          // Wait for 1 seconds to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+      });
+    } catch (error) {
+      logger.error(
+        QUEUE_NAME,
+        `Failed to fetch OpenSea orders from Rarible: ${error}`
+      );
+      throw error;
+    }
+  },
+  { connection: redis.duplicate() }
+);
+worker.on("error", (error) => {
+  logger.error(QUEUE_NAME, `Worker errored: ${error}`);
+});
 
 if (!config.skipWatching) {
   // Fetch new orders every 1 minute
@@ -230,3 +195,56 @@ if (!config.skipWatching) {
     });
   });
 }
+
+const saveOrders = async (
+  data: {
+    createdAt: string;
+    order: Sdk.WyvernV2.Order;
+  }[]
+) => {
+  if (data.length) {
+    const columns = new pgp.helpers.ColumnSet(
+      ["hash", "target", "maker", "created_at", "data"],
+      {
+        table: "orders",
+      }
+    );
+    const values = pgp.helpers.values(
+      data.map(({ createdAt, order }) => ({
+        hash: order.prefixHash(),
+        target: order.params.target,
+        maker: order.params.maker,
+        created_at: Math.floor(new Date(createdAt).getTime() / 1000),
+        data: order.params as any,
+      })),
+      columns
+    );
+    const rowsInserted: { hash: string }[] = await db.manyOrNone(
+      `
+        insert into "orders"(
+          "hash",
+          "target",
+          "maker",
+          "created_at",
+          "data"
+        )
+        values ${values}
+        on conflict do nothing
+        returning "hash"
+      `
+    );
+
+    if (rowsInserted.length) {
+      const newHashes = rowsInserted.map(({ hash }) => hash);
+      const orders = data
+        .filter(({ order }) => newHashes.includes(order.prefixHash()))
+        .map(({ order }) => order);
+      await addToRelayOrdersQueue(orders);
+
+      logger.info(
+        "opensea_rarible_sync",
+        `Got ${orders.length} new OpenSea orders from Rarible`
+      );
+    }
+  }
+};
