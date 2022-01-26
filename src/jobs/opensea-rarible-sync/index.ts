@@ -153,7 +153,7 @@ const saveOrders = async (
   );
 };
 
-if (!config.skipWatching && config.chainId === 1) {
+if (!config.skipWatching) {
   // Fetch new orders every 1 minute
   cron.schedule("*/1 * * * *", async () => {
     await Promise.race([
@@ -162,7 +162,12 @@ if (!config.skipWatching && config.chainId === 1) {
           const cacheKey = "opensea_rarible_sync_continuation";
 
           const limit = 50;
-          let url = `https://ethereum-api.rarible.org/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
+
+          const baseRaribleUrl =
+            config.chainId === 1
+              ? "https://ethereum-api.rarible.org"
+              : "https://ethereum-api-staging.rarible.org";
+          let url = `${baseRaribleUrl}/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
 
           let continuation = await redis.get(cacheKey);
           if (!continuation) {
