@@ -8,6 +8,7 @@ import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { redis } from "../../common/redis";
 import { config } from "../../config";
+import { addToRelayOrdersQueue } from "../relay-orders";
 
 type OpenSeaRaribleOrder = {
   hash: string;
@@ -125,33 +126,15 @@ const saveOrders = async (
     );
 
     if (rowsInserted.length) {
-      // Post orders to Indexer V3
-      if (process.env.BASE_INDEXER_V3_API_URL) {
-        const newHashes = rowsInserted.map(({ hash }) => hash);
-        await axios
-          .post(
-            `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-            {
-              orders: data
-                .filter(({ order }) => newHashes.includes(order.prefixHash()))
-                .map(({ order: { params } }) => ({
-                  kind: "wyvern-v2",
-                  data: params,
-                })),
-            },
-            { timeout: 60000 }
-          )
-          .catch((error) => {
-            logger.error(
-              "opensea_rarible_sync",
-              `Failed to post orders to Indexer V3: ${error}`
-            );
-          });
-      }
+      const newHashes = rowsInserted.map(({ hash }) => hash);
+      const orders = data
+        .filter(({ order }) => newHashes.includes(order.prefixHash()))
+        .map(({ order }) => order);
+      await addToRelayOrdersQueue(orders);
 
       logger.info(
         "opensea_rarible_sync",
-        `Got ${rowsInserted.length} new OpenSea orders from Rarible`
+        `Got ${orders.length} new OpenSea orders from Rarible`
       );
     }
   }

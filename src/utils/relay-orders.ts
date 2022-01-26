@@ -1,9 +1,8 @@
 import * as Sdk from "@reservoir0x/sdk";
-import axios from "axios";
-import { backOff } from "exponential-backoff";
 
 import { db } from "../common/db";
 import { logger } from "../common/logger";
+import { addToRelayOrdersQueue } from "../jobs/relay-orders";
 import { parseOpenSeaOrder } from "./opensea";
 
 export const relayOrdersToV3 = async (contract: string) => {
@@ -55,24 +54,7 @@ export const relayOrdersToV3 = async (contract: string) => {
       }
     }
 
-    if (process.env.BASE_INDEXER_V3_API_URL) {
-      await backOff(
-        async () => {
-          await axios.post(`${process.env.BASE_INDEXER_V3_API_URL}/orders`, {
-            orders: validOrders.map(({ params }) => ({
-              kind: "wyvern-v2",
-              data: params,
-            })),
-          });
-        },
-        { numOfAttempts: 3 }
-      ).catch((error) => {
-        logger.error(
-          "relay_orders_to_v3",
-          `Failed to post orders to Indexer V3: ${error}`
-        );
-      });
-    }
+    await addToRelayOrdersQueue(validOrders);
   }
 
   logger.info("relay_orders_to_v3", `(${contract}) Done relaying orders`);

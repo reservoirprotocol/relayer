@@ -4,6 +4,7 @@ import axios from "axios";
 import { db, pgp } from "../common/db";
 import { logger } from "../common/logger";
 import { config } from "../config";
+import { addToRelayOrdersQueue } from "../jobs/relay-orders";
 import {
   buildFetchAssetsURL,
   buildFetchListingsURL,
@@ -152,26 +153,7 @@ export const fastSyncContract = async (contract: string, count: number) => {
       await db.none(pgp.helpers.concat(insertQueries));
     }
 
-    // Post orders to Indexer V3
-    if (process.env.BASE_INDEXER_V3_API_URL) {
-      await axios
-        .post(
-          `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-          {
-            orders: validOrders.map(({ params }) => ({
-              kind: "wyvern-v2",
-              data: params,
-            })),
-          },
-          { timeout: 60000 }
-        )
-        .catch((error) => {
-          logger.error(
-            "fast_sync_contract",
-            `Failed to post orders for contract ${contract} to Indexer V3: ${error}`
-          );
-        });
-    }
+    await addToRelayOrdersQueue(validOrders);
 
     logger.info(
       "fast_sync_contract",

@@ -11,7 +11,7 @@ const QUEUE_NAME = "relay-orders";
 export const queue = new Queue(QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
-    attempts: 3,
+    attempts: 5,
     backoff: {
       type: "exponential",
       delay: 5000,
