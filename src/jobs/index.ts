@@ -2,11 +2,13 @@ import "./opensea-rarible-sync";
 import "./opensea-sync";
 import "./relay-orders";
 
-import * as openseaSync from "./opensea-sync";
+import * as openSeaRaribleSync from "./opensea-rarible-sync";
+import * as openSeaSync from "./opensea-sync";
 import * as relayOrders from "./relay-orders";
 
 export const allQueues = [
-  openseaSync.backfillQueue,
-  openseaSync.realtimeQueue,
+  openSeaRaribleSync.queue,
+  openSeaSync.backfillQueue,
+  openSeaSync.realtimeQueue,
   relayOrders.queue,
 ];
