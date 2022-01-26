@@ -13,7 +13,7 @@ import {
 } from "../../utils/opensea-rarible";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
-const QUEUE_NAME = "opensea_rarible_sync";
+const QUEUE_NAME = "opensea-rarible-sync";
 
 export const queue = new Queue(QUEUE_NAME, {
   connection: redis.duplicate(),
@@ -82,7 +82,7 @@ const worker = new Worker(
             const timestamp = Math.floor(
               Number(response.data.continuation.split("_")[0]) / 1000
             );
-            if (timestamp <= stop) {
+            if (timestamp >= stop) {
               await addToOpenSeaRaribleQueue(response.data.continuation, stop);
             }
           }
