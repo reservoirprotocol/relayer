@@ -44,27 +44,29 @@ const worker = new Worker(
   async (job: Job) => {
     const { orders } = job.data;
 
-    logger.info("relay_orders", `Relaying ${orders.length} orders`);
+    if (orders.length) {
+      logger.info("relay_orders", `Relaying ${orders.length} orders`);
 
-    // Post orders to Indexer V3
-    if (process.env.BASE_INDEXER_V3_API_URL) {
-      await axios
-        .post(
-          `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-          {
-            orders: orders.map(({ params }: Sdk.WyvernV2.Order) => ({
-              kind: "wyvern-v2",
-              data: params,
-            })),
-          },
-          { timeout: 60000 }
-        )
-        .catch((error) => {
-          logger.error(
-            "relay_orders",
-            `Failed to relay orders to Indexer V3: ${error}`
-          );
-        });
+      // Post orders to Indexer V3
+      if (process.env.BASE_INDEXER_V3_API_URL) {
+        await axios
+          .post(
+            `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
+            {
+              orders: orders.map(({ params }: Sdk.WyvernV2.Order) => ({
+                kind: "wyvern-v2",
+                data: params,
+              })),
+            },
+            { timeout: 60000 }
+          )
+          .catch((error) => {
+            logger.error(
+              "relay_orders",
+              `Failed to relay orders to Indexer V3: ${error}`
+            );
+          });
+      }
     }
   },
   { connection: redis.duplicate() }
