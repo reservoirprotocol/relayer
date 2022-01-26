@@ -92,65 +92,69 @@ const saveOrders = async (
     order: Sdk.WyvernV2.Order;
   }[]
 ) => {
-  const columns = new pgp.helpers.ColumnSet(
-    ["hash", "target", "maker", "created_at", "data"],
-    {
-      table: "orders",
+  if (data.length) {
+    const columns = new pgp.helpers.ColumnSet(
+      ["hash", "target", "maker", "created_at", "data"],
+      {
+        table: "orders",
+      }
+    );
+    const values = pgp.helpers.values(
+      data.map(({ createdAt, order }) => ({
+        hash: order.prefixHash(),
+        target: order.params.target,
+        maker: order.params.maker,
+        created_at: Math.floor(new Date(createdAt).getTime() / 1000),
+        data: order.params as any,
+      })),
+      columns
+    );
+    const rowsInserted: { hash: string }[] = await db.manyOrNone(
+      `
+        insert into "orders"(
+          "hash",
+          "target",
+          "maker",
+          "created_at",
+          "data"
+        )
+        values ${values}
+        on conflict do nothing
+        returning "hash"
+      `
+    );
+
+    if (rowsInserted.length) {
+      // Post orders to Indexer V3
+      if (process.env.BASE_INDEXER_V3_API_URL) {
+        const newHashes = rowsInserted.map(({ hash }) => hash);
+        await axios
+          .post(
+            `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
+            {
+              orders: data
+                .filter(({ order }) => newHashes.includes(order.prefixHash()))
+                .map(({ order: { params } }) => ({
+                  kind: "wyvern-v2",
+                  data: params,
+                })),
+            },
+            { timeout: 60000 }
+          )
+          .catch((error) => {
+            logger.error(
+              "opensea_rarible_sync",
+              `Failed to post orders to Indexer V3: ${error}`
+            );
+          });
+      }
+
+      logger.info(
+        "opensea_rarible_sync",
+        `Got ${rowsInserted.length} new OpenSea orders from Rarible`
+      );
     }
-  );
-  const values = pgp.helpers.values(
-    data.map(({ createdAt, order }) => ({
-      hash: order.prefixHash(),
-      target: order.params.target,
-      maker: order.params.maker,
-      created_at: Math.floor(new Date(createdAt).getTime() / 1000),
-      data: order.params as any,
-    })),
-    columns
-  );
-  const rowsInserted: { hash: string }[] = await db.manyOrNone(
-    `
-      insert into "orders"(
-        "hash",
-        "target",
-        "maker",
-        "created_at",
-        "data"
-      )
-      values ${values}
-      on conflict do nothing
-      returning "hash"
-    `
-  );
-
-  // Post orders to Indexer V3
-  if (process.env.BASE_INDEXER_V3_API_URL) {
-    const newHashes = rowsInserted.map(({ hash }) => hash);
-    await axios
-      .post(
-        `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-        {
-          orders: data
-            .filter(({ order }) => newHashes.includes(order.prefixHash()))
-            .map(({ order: { params } }) => ({
-              kind: "wyvern-v2",
-              data: params,
-            })),
-        },
-        { timeout: 60000 }
-      )
-      .catch((error) => {
-        logger.error(
-          "opensea_rarible_sync",
-          `Failed to post orders to Indexer V3: ${error}`
-        );
-      });
   }
-
-  logger.info(
-    "opensea_rarible_sync",
-    `Got ${rowsInserted.length} new OpenSea orders from Rarible`
-  );
 };
 
 if (!config.skipWatching) {
