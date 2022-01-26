@@ -167,7 +167,7 @@ if (!config.skipWatching) {
             config.chainId === 1
               ? "https://ethereum-api.rarible.org"
               : "https://ethereum-api-staging.rarible.org";
-          let url = `${baseRaribleUrl}/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
+          let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
 
           let continuation = await redis.get(cacheKey);
           if (!continuation) {
