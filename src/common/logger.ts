@@ -2,7 +2,7 @@ import { createLogger, format, transports } from "winston";
 
 import { config } from "../config";
 
-const log = (level: "debug" | "error" | "info") => {
+const log = (level: "debug" | "error" | "info" | "warn") => {
   const network = config.chainId === 1 ? "mainnet" : "rinkeby";
   const service = `opensea-indexer-${network}`;
 
@@ -34,4 +34,5 @@ export const logger = {
   debug: log("debug"),
   error: log("error"),
   info: log("info"),
+  warn: log("warn"),
 };

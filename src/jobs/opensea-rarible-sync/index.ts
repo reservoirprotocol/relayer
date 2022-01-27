@@ -241,14 +241,20 @@ const saveOrders = async (
         .map(({ order }) => order);
       await addToRelayOrdersQueue(orders);
 
-      logger.error(
-        "opensea_rarible_sync",
-        `Got ${
-          orders.length
-        } new OpenSea orders from Rarible (near timestamp ${Math.floor(
-          new Date(data[0].createdAt).getTime() / 1000
-        )})`
+      const timestamp = Math.floor(
+        new Date(data[data.length - 1].createdAt).getTime() / 1000
       );
+      if (timestamp <= Math.floor(Date.now() / 1000) - 5 * 60) {
+        logger.warn(
+          "opensea_rarible_sync",
+          `Got ${orders.length} old OpenSea orders from Rarible (near timestamp ${timestamp})`
+        );
+      } else {
+        logger.info(
+          "opensea_rarible_sync",
+          `Got ${orders.length} new OpenSea orders from Rarible`
+        );
+      }
     }
   }
 };
