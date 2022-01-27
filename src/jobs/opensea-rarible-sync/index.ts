@@ -55,6 +55,8 @@ const worker = new Worker(
   async (job: Job) => {
     const { continuation, stop } = job.data;
 
+    return;
+
     try {
       const baseRaribleUrl =
         config.chainId === 1
