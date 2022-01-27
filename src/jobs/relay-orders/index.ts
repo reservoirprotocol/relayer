@@ -69,7 +69,7 @@ const worker = new Worker(
       }
     }
   },
-  { connection: redis.duplicate() }
+  { connection: redis.duplicate(), concurrency: 5 }
 );
 worker.on("error", (error) => {
   logger.error(QUEUE_NAME, `Worker errored: ${error}`);
