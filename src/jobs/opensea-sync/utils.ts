@@ -94,7 +94,7 @@ export const fetchOrders = async (
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        await addToRelayOrdersQueue(validOrders);
+        await addToRelayOrdersQueue(validOrders, true);
 
         numOrders += orders.length;
 

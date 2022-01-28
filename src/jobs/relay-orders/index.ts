@@ -35,8 +35,17 @@ cron.schedule("*/5 * * * *", async () => {
   }
 });
 
-export const addToRelayOrdersQueue = async (orders: Sdk.WyvernV2.Order[]) => {
-  await queue.add("relay-orders", { orders });
+export const addToRelayOrdersQueue = async (
+  orders: Sdk.WyvernV2.Order[],
+  prioritized?: boolean
+) => {
+  await queue.add(
+    "relay-orders",
+    { orders },
+    {
+      priority: prioritized ? 1 : undefined,
+    }
+  );
 };
 
 const worker = new Worker(
