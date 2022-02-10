@@ -43,7 +43,7 @@ const realtimeWorker = new Worker(
       await fetchOrders(listedAfter, listedBefore);
     } catch (error) {
       // In case of any errors, retry the job via the backfill queue
-      await addToBackfillQueue(minute, minute);
+      await addToBackfillQueue(minute, minute, true);
       throw error;
     }
   },
@@ -107,7 +107,8 @@ backfillWorker.on("error", (error) => {
 
 export const addToBackfillQueue = async (
   fromMinute: number,
-  toMinute: number
+  toMinute: number,
+  prioritized = false
 ) => {
   const minutes = [];
   for (let minute = toMinute; minute >= fromMinute; minute--) {
@@ -118,6 +119,9 @@ export const addToBackfillQueue = async (
     minutes.map((minute) => ({
       name: minute.toString(),
       data: { minute },
+      opts: {
+        priority: prioritized ? 1 : undefined,
+      },
     }))
   );
 };

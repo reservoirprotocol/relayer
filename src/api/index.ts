@@ -8,6 +8,7 @@ import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs/index";
 import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
+import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { fullSyncCollection } from "../utils/full-sync-collection";
 import { relayOrdersToV3 } from "../utils/relay-orders";
@@ -66,6 +67,17 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await addToOpenSeaRaribleQueue(null, req.body.stop);
+    })
+  );
+
+  app.post(
+    "/backfill",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      const fromMinute = Math.floor(req.body.fromTimestamp / 60) - 1;
+      const toMinute = Math.floor(req.body.toTimestamp) + 1;
+      await addToBackfillQueue(fromMinute, toMinute);
     })
   );
 
