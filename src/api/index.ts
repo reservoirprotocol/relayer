@@ -76,7 +76,7 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       const fromMinute = Math.floor(req.body.fromTimestamp / 60) - 1;
-      const toMinute = Math.floor(req.body.toTimestamp) + 1;
+      const toMinute = Math.floor(req.body.toTimestamp / 60) + 1;
       await addToBackfillQueue(fromMinute, toMinute);
     })
   );
