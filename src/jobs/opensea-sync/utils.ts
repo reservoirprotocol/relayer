@@ -11,6 +11,30 @@ import {
 } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
+const getOrderTarget = (order: Sdk.WyvernV2.Order): string | undefined => {
+  try {
+    if (order.params.kind?.endsWith("single-token-v2")) {
+      if (order.params.kind?.startsWith("erc721")) {
+        const { contract } = new Sdk.WyvernV2.Builders.Erc721.SingleToken.V2(
+          config.chainId
+        ).getDetails(order)!;
+
+        return contract;
+      } else if (order.params.kind?.startsWith("erc1155")) {
+        const { contract } = new Sdk.WyvernV2.Builders.Erc1155.SingleToken.V2(
+          config.chainId
+        ).getDetails(order)!;
+
+        return contract;
+      }
+    } else {
+      return order.params.target;
+    }
+  } catch {
+    return undefined;
+  }
+};
+
 export const fetchOrders = async (
   listedAfter: number,
   listedBefore: number,
@@ -59,9 +83,12 @@ export const fetchOrders = async (
         const validOrders: Sdk.WyvernV2.Order[] = [];
         const insertQueries: any[] = [];
         for (const order of orders) {
+          let orderTarget = order.target;
+
           const parsed = parseOpenSeaOrder(order);
           if (parsed) {
             validOrders.push(parsed);
+            orderTarget = getOrderTarget(parsed) || orderTarget;
           }
 
           // Skip saving any irrelevant information
@@ -82,7 +109,7 @@ export const fetchOrders = async (
             `,
             values: [
               order.prefixed_hash,
-              order.target,
+              orderTarget,
               order.maker.address,
               Math.floor(new Date(order.created_date).getTime() / 1000),
               order as any,
