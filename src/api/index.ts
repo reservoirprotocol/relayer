@@ -11,7 +11,7 @@ import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { fullSyncCollection } from "../utils/full-sync-collection";
-import { relayOrdersToV3 } from "../utils/relay-orders";
+import { relayOrdersToV3, relayAllOrdersToV3 } from "../utils/relay-orders";
 
 export const start = async () => {
   const app = express();
@@ -58,6 +58,15 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await relayOrdersToV3(req.body.contract);
+    })
+  );
+
+  app.post(
+    "/relay-all/v3",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      await relayAllOrdersToV3(req.body.fromTimestamp, req.body.toTimestamp);
     })
   );
 

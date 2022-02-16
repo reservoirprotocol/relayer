@@ -59,3 +59,51 @@ export const relayOrdersToV3 = async (contract: string) => {
 
   logger.info("relay_orders_to_v3", `(${contract}) Done relaying orders`);
 };
+
+export const relayAllOrdersToV3 = async (
+  fromTimestamp: number,
+  toTimestamp: number
+) => {
+  let belowTimestamp = toTimestamp;
+
+  const limit = 300;
+  while (belowTimestamp > fromTimestamp) {
+    logger.info(
+      "relay_all_orders_to_v3",
+      `Relaying all orders created before ${belowTimestamp}`
+    );
+
+    const orders: { created_at: number; data: any }[] = await db.manyOrNone(
+      `
+        select
+          date_part('epoch', "o"."created_at"),
+          "o"."data"
+        from "orders" "o"
+        where "o"."created_at" <= $/belowTimestamp/
+        order by "o"."created_at" desc
+        limit ${limit}
+      `,
+      {
+        belowTimestamp,
+      }
+    );
+
+    if (orders.length < limit) {
+      belowTimestamp = fromTimestamp;
+    } else {
+      belowTimestamp = orders[orders.length - 1].created_at + 1;
+    }
+
+    const validOrders: Sdk.WyvernV2.Order[] = [];
+    for (const { data } of orders) {
+      const parsed = parseOpenSeaOrder(data);
+      if (parsed) {
+        validOrders.push(parsed);
+      }
+    }
+
+    await addToRelayOrdersQueue(validOrders);
+  }
+
+  logger.info("relay_orders_to_v3", `Done relaying all orders`);
+};
