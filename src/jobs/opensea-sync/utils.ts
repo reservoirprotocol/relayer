@@ -89,6 +89,11 @@ export const fetchOrders = async (
           if (parsed) {
             validOrders.push(parsed);
             orderTarget = getOrderTarget(parsed) || orderTarget;
+          } else {
+            logger.info(
+              "fetch_orders",
+              `Skipping order ${JSON.stringify(order)}`
+            );
           }
 
           // Skip saving any irrelevant information
