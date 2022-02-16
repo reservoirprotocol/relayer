@@ -91,8 +91,10 @@ export const relayAllOrdersToV3 = async (
     if (orders.length < limit) {
       belowTimestamp = fromTimestamp;
     } else {
-      belowTimestamp = orders[orders.length - 1].created_at + 1;
+      belowTimestamp = orders[orders.length - 1].created_at;
     }
+
+    console.log(fromTimestamp, belowTimestamp);
 
     const validOrders: Sdk.WyvernV2.Order[] = [];
     for (const { data } of orders) {
