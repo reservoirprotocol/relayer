@@ -1,5 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
+import pLimit from "p-limit";
 
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
@@ -62,11 +63,12 @@ export const fetchOrders = async (
         const validV23Orders: Sdk.WyvernV23.Order[] = [];
 
         const insertQueries: any[] = [];
-        for (const order of orders) {
+
+        const handleOrder = async (order: OpenSeaOrder) => {
           let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
           let orderTarget = order.target;
 
-          const parsed = parseOpenSeaOrder(order);
+          const parsed = await parseOpenSeaOrder(order);
           if (parsed) {
             kind = parsed.kind;
 
@@ -136,7 +138,12 @@ export const fetchOrders = async (
               });
             }
           }
-        }
+        };
+
+        const plimit = pLimit(20);
+        await Promise.all(
+          orders.map((order) => plimit(() => handleOrder(order)))
+        );
 
         if (insertQueries.length) {
           await db.none(pgp.helpers.concat(insertQueries));

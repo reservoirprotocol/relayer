@@ -1,3 +1,4 @@
+import { JsonRpcProvider } from "@ethersproject/providers";
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
@@ -133,9 +134,16 @@ type ParsedOpenSeaOrder =
       order: Sdk.WyvernV23.Order | undefined;
     };
 
-export const parseOpenSeaOrder = (
+const provider = new JsonRpcProvider(
+  `https://eth-${
+    config.chainId === 1 ? "mainnet" : "rinkeby"
+  }.alchemyapi.io/v2/5kzu5Nfv8OySwpTKXUygUbIkli1PRiPT`
+);
+const exchange = new Sdk.WyvernV23.Exchange(config.chainId);
+
+export const parseOpenSeaOrder = async (
   openSeaOrder: OpenSeaOrder
-): ParsedOpenSeaOrder | undefined => {
+): Promise<ParsedOpenSeaOrder | undefined> => {
   let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
 
   try {
@@ -207,7 +215,11 @@ export const parseOpenSeaOrder = (
         listingTime: openSeaOrder.listing_time,
         expirationTime: openSeaOrder.expiration_time,
         salt: openSeaOrder.salt,
-        nonce: openSeaOrder.nonce || "0",
+        nonce:
+          openSeaOrder.nonce ||
+          (
+            await exchange.getNonce(provider, openSeaOrder.maker.address)
+          ).toString(),
         v: openSeaOrder.v,
         r: openSeaOrder.r,
         s: openSeaOrder.s,
