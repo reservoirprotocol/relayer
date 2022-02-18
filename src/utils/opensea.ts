@@ -117,50 +117,116 @@ export type OpenSeaOrder = {
   listing_time: number;
   expiration_time: number;
   salt: string;
+  nonce?: string;
   v?: number;
   r?: string;
   s?: string;
 };
 
+type ParsedOpenSeaOrder =
+  | {
+      kind: "wyvern-v2";
+      order: Sdk.WyvernV2.Order | undefined;
+    }
+  | {
+      kind: "wyvern-v2.3";
+      order: Sdk.WyvernV23.Order | undefined;
+    };
+
 export const parseOpenSeaOrder = (
   openSeaOrder: OpenSeaOrder
-): Sdk.WyvernV2.Order | undefined => {
+): ParsedOpenSeaOrder | undefined => {
+  let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
+
   try {
-    const order = new Sdk.WyvernV2.Order(config.chainId, {
-      exchange: openSeaOrder.exchange,
-      maker: openSeaOrder.maker.address,
-      taker: openSeaOrder.taker.address,
-      makerRelayerFee: Number(openSeaOrder.maker_relayer_fee),
-      takerRelayerFee: Number(openSeaOrder.taker_relayer_fee),
-      feeRecipient: openSeaOrder.fee_recipient.address,
-      side: openSeaOrder.side,
-      saleKind: openSeaOrder.sale_kind,
-      target: openSeaOrder.target,
-      howToCall: openSeaOrder.how_to_call,
-      calldata: openSeaOrder.calldata,
-      replacementPattern: openSeaOrder.replacement_pattern,
-      staticTarget: openSeaOrder.static_target,
-      staticExtradata: openSeaOrder.static_extradata,
-      paymentToken: openSeaOrder.payment_token,
-      basePrice: openSeaOrder.base_price,
-      extra: openSeaOrder.extra,
-      listingTime: openSeaOrder.listing_time,
-      expirationTime: openSeaOrder.expiration_time,
-      salt: openSeaOrder.salt,
-      v: openSeaOrder.v,
-      r: openSeaOrder.r,
-      s: openSeaOrder.s,
-    });
+    let order: Sdk.WyvernV2.Order | Sdk.WyvernV23.Order | undefined;
+    if (
+      openSeaOrder.exchange.toLowerCase() ===
+      Sdk.WyvernV2.Addresses.Exchange[config.chainId]
+    ) {
+      kind = "wyvern-v2";
 
-    if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
-      return undefined;
+      order = new Sdk.WyvernV2.Order(config.chainId, {
+        exchange: openSeaOrder.exchange,
+        maker: openSeaOrder.maker.address,
+        taker: openSeaOrder.taker.address,
+        makerRelayerFee: Number(openSeaOrder.maker_relayer_fee),
+        takerRelayerFee: Number(openSeaOrder.taker_relayer_fee),
+        feeRecipient: openSeaOrder.fee_recipient.address,
+        side: openSeaOrder.side,
+        saleKind: openSeaOrder.sale_kind,
+        target: openSeaOrder.target,
+        howToCall: openSeaOrder.how_to_call,
+        calldata: openSeaOrder.calldata,
+        replacementPattern: openSeaOrder.replacement_pattern,
+        staticTarget: openSeaOrder.static_target,
+        staticExtradata: openSeaOrder.static_extradata,
+        paymentToken: openSeaOrder.payment_token,
+        basePrice: openSeaOrder.base_price,
+        extra: openSeaOrder.extra,
+        listingTime: openSeaOrder.listing_time,
+        expirationTime: openSeaOrder.expiration_time,
+        salt: openSeaOrder.salt,
+        v: openSeaOrder.v,
+        r: openSeaOrder.r,
+        s: openSeaOrder.s,
+      });
+
+      if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
+        throw new Error("Wrong hash");
+      }
+
+      order.checkValidity();
+      order.checkSignature();
+
+      return { kind, order };
+    } else if (
+      openSeaOrder.exchange.toLowerCase() ===
+      Sdk.WyvernV23.Addresses.Exchange[config.chainId]
+    ) {
+      kind = "wyvern-v2.3";
+
+      order = new Sdk.WyvernV23.Order(config.chainId, {
+        exchange: openSeaOrder.exchange,
+        maker: openSeaOrder.maker.address,
+        taker: openSeaOrder.taker.address,
+        makerRelayerFee: Number(openSeaOrder.maker_relayer_fee),
+        takerRelayerFee: Number(openSeaOrder.taker_relayer_fee),
+        feeRecipient: openSeaOrder.fee_recipient.address,
+        side: openSeaOrder.side,
+        saleKind: openSeaOrder.sale_kind,
+        target: openSeaOrder.target,
+        howToCall: openSeaOrder.how_to_call,
+        calldata: openSeaOrder.calldata,
+        replacementPattern: openSeaOrder.replacement_pattern,
+        staticTarget: openSeaOrder.static_target,
+        staticExtradata: openSeaOrder.static_extradata,
+        paymentToken: openSeaOrder.payment_token,
+        basePrice: openSeaOrder.base_price,
+        extra: openSeaOrder.extra,
+        listingTime: openSeaOrder.listing_time,
+        expirationTime: openSeaOrder.expiration_time,
+        salt: openSeaOrder.salt,
+        nonce: openSeaOrder.nonce!,
+        v: openSeaOrder.v,
+        r: openSeaOrder.r,
+        s: openSeaOrder.s,
+      });
+
+      if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
+        throw new Error("Wrong hash");
+      }
+
+      order.checkValidity();
+      order.checkSignature();
+
+      return { kind, order };
     }
-
-    order.checkValidity();
-    order.checkSignature();
-
-    return order;
   } catch {
-    return undefined;
+    if (kind) {
+      return { kind, order: undefined };
+    }
   }
+
+  return undefined;
 };

@@ -5,7 +5,7 @@ import cron from "node-cron";
 
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
-import { acquireLock, redis } from "../../common/redis";
+import { redis } from "../../common/redis";
 import { config } from "../../config";
 import {
   OpenSeaRaribleOrder,
@@ -30,18 +30,6 @@ export const queue = new Queue(QUEUE_NAME, {
   },
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
-
-cron.schedule("*/10 * * * *", async () => {
-  const lockAcquired = await acquireLock(
-    `${QUEUE_NAME}_queue_clean_lock`,
-    10 * 60 - 5
-  );
-  if (lockAcquired) {
-    // Clean up jobs older than 10 minutes
-    await queue.clean(10 * 60 * 1000, 100000, "completed");
-    await queue.clean(10 * 60 * 1000, 100000, "failed");
-  }
-});
 
 export const addToOpenSeaRaribleQueue = async (
   continuation: string | null,
@@ -105,96 +93,97 @@ worker.on("error", (error) => {
   logger.error(QUEUE_NAME, `Worker errored: ${error}`);
 });
 
-if (!config.skipWatching) {
-  // Fetch new orders every 1 minute
-  cron.schedule("*/1 * * * *", async () => {
-    await Promise.race([
-      new Promise(async (resolve, reject) => {
-        try {
-          const cacheKey = "opensea_rarible_sync_continuation";
+// Disable for now
+// if (!config.skipWatching) {
+//   // Fetch new orders every 1 minute
+//   cron.schedule("*/1 * * * *", async () => {
+//     await Promise.race([
+//       new Promise(async (resolve, reject) => {
+//         try {
+//           const cacheKey = "opensea_rarible_sync_continuation";
 
-          const limit = 50;
+//           const limit = 50;
 
-          const baseRaribleUrl =
-            config.chainId === 1
-              ? "https://ethereum-api.rarible.org"
-              : "https://ethereum-api-staging.rarible.org";
-          let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
+//           const baseRaribleUrl =
+//             config.chainId === 1
+//               ? "https://ethereum-api.rarible.org"
+//               : "https://ethereum-api-staging.rarible.org";
+//           let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus?platform=OPEN_SEA&status=ACTIVE&limit=${limit}`;
 
-          let continuation = await redis.get(cacheKey);
-          if (!continuation) {
-            url += "&sort=LAST_UPDATE_DESC";
+//           let continuation = await redis.get(cacheKey);
+//           if (!continuation) {
+//             url += "&sort=LAST_UPDATE_DESC";
 
-            await axios
-              .get(url, { timeout: 10000 })
-              .then(async (response: any) => {
-                const orders: OpenSeaRaribleOrder[] = response.data.orders;
-                if (orders.length) {
-                  const validOrders = await Promise.all(
-                    orders.map(parseOpenSeaRaribleOrder)
-                  ).then((o) => o.filter(Boolean).map((x) => x!));
+//             await axios
+//               .get(url, { timeout: 10000 })
+//               .then(async (response: any) => {
+//                 const orders: OpenSeaRaribleOrder[] = response.data.orders;
+//                 if (orders.length) {
+//                   const validOrders = await Promise.all(
+//                     orders.map(parseOpenSeaRaribleOrder)
+//                   ).then((o) => o.filter(Boolean).map((x) => x!));
 
-                  await saveOrders(validOrders);
+//                   await saveOrders(validOrders);
 
-                  await redis.set(
-                    cacheKey,
-                    new Date(orders[0].lastUpdateAt).getTime() +
-                      "_" +
-                      orders[0].hash
-                  );
-                }
-              });
-          } else {
-            url += "&sort=LAST_UPDATE_ASC";
+//                   await redis.set(
+//                     cacheKey,
+//                     new Date(orders[0].lastUpdateAt).getTime() +
+//                       "_" +
+//                       orders[0].hash
+//                   );
+//                 }
+//               });
+//           } else {
+//             url += "&sort=LAST_UPDATE_ASC";
 
-            let done = false;
-            while (!done) {
-              await axios
-                .get(`${url}&continuation=${continuation}`, { timeout: 10000 })
-                .then(async (response: any) => {
-                  const orders: OpenSeaRaribleOrder[] = response.data.orders;
-                  if (orders.length) {
-                    const validOrders = await Promise.all(
-                      orders.map(parseOpenSeaRaribleOrder)
-                    ).then((o) => o.filter(Boolean).map((x) => x!));
+//             let done = false;
+//             while (!done) {
+//               await axios
+//                 .get(`${url}&continuation=${continuation}`, { timeout: 10000 })
+//                 .then(async (response: any) => {
+//                   const orders: OpenSeaRaribleOrder[] = response.data.orders;
+//                   if (orders.length) {
+//                     const validOrders = await Promise.all(
+//                       orders.map(parseOpenSeaRaribleOrder)
+//                     ).then((o) => o.filter(Boolean).map((x) => x!));
 
-                    await saveOrders(validOrders);
+//                     await saveOrders(validOrders);
 
-                    if (orders.length < limit || !response.data.continuation) {
-                      done = true;
-                      continuation =
-                        new Date(
-                          orders[orders.length - 1].lastUpdateAt
-                        ).getTime() +
-                        "_" +
-                        orders[orders.length - 1].hash;
-                    } else {
-                      continuation = response.data.continuation;
-                    }
+//                     if (orders.length < limit || !response.data.continuation) {
+//                       done = true;
+//                       continuation =
+//                         new Date(
+//                           orders[orders.length - 1].lastUpdateAt
+//                         ).getTime() +
+//                         "_" +
+//                         orders[orders.length - 1].hash;
+//                     } else {
+//                       continuation = response.data.continuation;
+//                     }
 
-                    await redis.set(cacheKey, continuation!);
-                  } else {
-                    done = true;
-                  }
-                });
-            }
-          }
+//                     await redis.set(cacheKey, continuation!);
+//                   } else {
+//                     done = true;
+//                   }
+//                 });
+//             }
+//           }
 
-          resolve(true);
-        } catch (error) {
-          logger.error(
-            "opensea_rarible_sync",
-            `Failed to sync OpenSea orders from Rarible: ${error}`
-          );
-          reject(error);
-        }
-      }),
-      new Promise((_, reject) => setTimeout(reject, 55 * 1000)),
-    ]).catch(() => {
-      // Ignore any errors
-    });
-  });
-}
+//           resolve(true);
+//         } catch (error) {
+//           logger.error(
+//             "opensea_rarible_sync",
+//             `Failed to sync OpenSea orders from Rarible: ${error}`
+//           );
+//           reject(error);
+//         }
+//       }),
+//       new Promise((_, reject) => setTimeout(reject, 55 * 1000)),
+//     ]).catch(() => {
+//       // Ignore any errors
+//     });
+//   });
+// }
 
 const saveOrders = async (
   data: {

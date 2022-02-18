@@ -23,7 +23,7 @@ export const queue = new Queue(QUEUE_NAME, {
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
 export const addToRelayOrdersQueue = async (
-  orders: Sdk.WyvernV2.Order[],
+  orders: any[],
   prioritized?: boolean
 ) => {
   await queue.add(
@@ -45,16 +45,11 @@ const worker = new Worker(
 
       // Post orders to Indexer V3
       if (process.env.BASE_INDEXER_V3_API_URL) {
-        await axios
+        const result = await axios
           .post(
             `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-            {
-              orders: orders.map(({ params }: Sdk.WyvernV2.Order) => ({
-                kind: "wyvern-v2",
-                data: params,
-              })),
-            },
-            { timeout: 120000 }
+            { orders },
+            { timeout: 3 * 60000 }
           )
           .catch((error) => {
             logger.error(

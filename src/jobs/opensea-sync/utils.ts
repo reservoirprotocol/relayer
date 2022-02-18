@@ -11,30 +11,6 @@ import {
 } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
-const getOrderTarget = (order: Sdk.WyvernV2.Order): string | undefined => {
-  try {
-    if (order.params.kind?.endsWith("single-token-v2")) {
-      if (order.params.kind?.startsWith("erc721")) {
-        const { contract } = new Sdk.WyvernV2.Builders.Erc721.SingleToken.V2(
-          config.chainId
-        ).getDetails(order)!;
-
-        return contract;
-      } else if (order.params.kind?.startsWith("erc1155")) {
-        const { contract } = new Sdk.WyvernV2.Builders.Erc1155.SingleToken.V2(
-          config.chainId
-        ).getDetails(order)!;
-
-        return contract;
-      }
-    } else {
-      return order.params.target;
-    }
-  } catch {
-    return undefined;
-  }
-};
-
 export const fetchOrders = async (
   listedAfter: number,
   listedBefore: number,
@@ -59,6 +35,8 @@ export const fetchOrders = async (
       limit,
     });
 
+    console.log(url);
+
     await axios
       .get(
         url,
@@ -80,15 +58,30 @@ export const fetchOrders = async (
       .then(async (response: any) => {
         const orders: OpenSeaOrder[] = response.data.orders;
 
-        const validOrders: Sdk.WyvernV2.Order[] = [];
+        const validV2Orders: Sdk.WyvernV2.Order[] = [];
+        const validV23Orders: Sdk.WyvernV23.Order[] = [];
+
         const insertQueries: any[] = [];
         for (const order of orders) {
+          let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
           let orderTarget = order.target;
 
           const parsed = parseOpenSeaOrder(order);
           if (parsed) {
-            validOrders.push(parsed);
-            orderTarget = getOrderTarget(parsed) || orderTarget;
+            kind = parsed.kind;
+
+            if (parsed.kind === "wyvern-v2" && parsed.order) {
+              validV2Orders.push(parsed.order);
+            } else if (parsed.kind === "wyvern-v2.3" && parsed.order) {
+              validV23Orders.push(parsed.order);
+            }
+
+            if (parsed.order) {
+              const info = parsed.order.getInfo();
+              if (info) {
+                orderTarget = info.contract;
+              }
+            }
           } else {
             logger.info(
               "fetch_orders",
@@ -96,37 +89,77 @@ export const fetchOrders = async (
             );
           }
 
-          // Skip saving any irrelevant information
-          delete (order as any).asset;
+          if (kind) {
+            delete (order as any).asset;
 
-          // TODO: Use multi-row inserts for better performance
-          insertQueries.push({
-            query: `
-              insert into "orders"(
-                "hash",
-                "target",
-                "maker",
-                "created_at",
-                "data"
-              )
-              values ($1, $2, $3, $4, $5)
-              on conflict do nothing
-            `,
-            values: [
-              order.prefixed_hash,
-              orderTarget,
-              order.maker.address,
-              Math.floor(new Date(order.created_date).getTime() / 1000),
-              order as any,
-            ],
-          });
+            if (kind === "wyvern-v2") {
+              insertQueries.push({
+                query: `
+                  insert into "orders"(
+                    "hash",
+                    "target",
+                    "maker",
+                    "created_at",
+                    "data"
+                  )
+                  values ($1, $2, $3, $4, $5)
+                  on conflict do nothing
+                `,
+                values: [
+                  order.prefixed_hash,
+                  orderTarget,
+                  order.maker.address,
+                  Math.floor(new Date(order.created_date).getTime() / 1000),
+                  order as any,
+                ],
+              });
+            } else if (kind === "wyvern-v2.3") {
+              insertQueries.push({
+                query: `
+                  insert into "orders_v23"(
+                    "hash",
+                    "target",
+                    "maker",
+                    "created_at",
+                    "data"
+                  )
+                  values ($1, $2, $3, $4, $5)
+                  on conflict do nothing
+                `,
+                values: [
+                  order.prefixed_hash,
+                  orderTarget,
+                  order.maker.address,
+                  new Date(order.created_date),
+                  order as any,
+                ],
+              });
+            }
+          }
         }
 
         if (insertQueries.length) {
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        await addToRelayOrdersQueue(validOrders, true);
+        if (validV2Orders.length) {
+          await addToRelayOrdersQueue(
+            validV2Orders.map((order) => ({
+              kind: "wyvern-v2",
+              data: order.params,
+            })),
+            true
+          );
+        }
+        if (validV23Orders.length) {
+          await addToRelayOrdersQueue(
+            validV23Orders.map((order) => ({
+              kind: "wyvern-v2.2",
+              data: order.params,
+            })),
+            true
+          );
+        }
 
         numOrders += orders.length;
 
