@@ -83,6 +83,9 @@ export const fetchOrders = async (
               if (info) {
                 orderTarget = info.contract;
               }
+              if ((parsed.order.params as any).nonce) {
+                (order as any).nonce = (parsed.order.params as any).nonce;
+              }
             }
           } else {
             logger.info(
