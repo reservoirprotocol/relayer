@@ -154,7 +154,7 @@ export const fetchOrders = async (
         if (validV23Orders.length) {
           await addToRelayOrdersQueue(
             validV23Orders.map((order) => ({
-              kind: "wyvern-v2.2",
+              kind: "wyvern-v2.3",
               data: order.params,
             })),
             true
