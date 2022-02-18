@@ -207,7 +207,7 @@ export const parseOpenSeaOrder = (
         listingTime: openSeaOrder.listing_time,
         expirationTime: openSeaOrder.expiration_time,
         salt: openSeaOrder.salt,
-        nonce: openSeaOrder.nonce!,
+        nonce: openSeaOrder.nonce || "0",
         v: openSeaOrder.v,
         r: openSeaOrder.r,
         s: openSeaOrder.s,
