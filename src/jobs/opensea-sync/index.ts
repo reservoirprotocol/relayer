@@ -14,8 +14,8 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
     timeout: 60000,
-    removeOnComplete: 100000,
-    removeOnFail: 100000,
+    removeOnComplete: 100,
+    removeOnFail: 100,
   },
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
@@ -60,8 +60,8 @@ export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
       delay: 60 * 60 * 1000,
     },
     timeout: 60000,
-    removeOnComplete: 100000,
-    removeOnFail: 100000,
+    removeOnComplete: 100,
+    removeOnFail: 100,
   },
 });
 new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
