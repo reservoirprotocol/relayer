@@ -43,21 +43,45 @@ const worker = new Worker(
     if (orders.length) {
       logger.info("relay_orders", `Relaying ${orders.length} orders`);
 
+      const requests: Promise<any>[] = [];
+
       // Post orders to Indexer V3
       if (process.env.BASE_INDEXER_V3_API_URL) {
-        const result = await axios
-          .post(
-            `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
-            { orders },
-            { timeout: 3 * 60000 }
-          )
-          .catch((error) => {
-            logger.error(
-              "relay_orders",
-              `Failed to relay orders to Indexer V3: ${error}`
-            );
-          });
+        requests.push(
+          axios
+            .post(
+              `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
+              { orders },
+              { timeout: 3 * 60000 }
+            )
+            .catch((error) => {
+              logger.error(
+                "relay_orders",
+                `Failed to relay orders to Indexer V3: ${error}`
+              );
+            })
+        );
       }
+
+      // Post orders to Indexer Lite
+      if (process.env.BASE_INDEXER_LITE_API_URL) {
+        requests.push(
+          axios
+            .post(
+              `${process.env.BASE_INDEXER_LITE_API_URL}/orders`,
+              { orders },
+              { timeout: 60000 }
+            )
+            .catch((error) => {
+              logger.error(
+                "relay_orders",
+                `Failed to relay orders to Indexer Lite: ${error}`
+              );
+            })
+        );
+      }
+
+      await Promise.all(requests);
     }
   },
   { connection: redis.duplicate(), concurrency: 5 }
