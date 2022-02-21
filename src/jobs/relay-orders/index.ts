@@ -68,7 +68,7 @@ const worker = new Worker(
         requests.push(
           axios
             .post(
-              `${process.env.BASE_INDEXER_LITE_API_URL}/orders`,
+              `${process.env.BASE_INDEXER_LITE_API_URL}/orders/v1`,
               { orders },
               { timeout: 60000 }
             )
