@@ -58,34 +58,24 @@ export const fetchOrders = async (
       )
       .then(async (response: any) => {
         const orders: OpenSeaOrder[] = response.data.orders;
-
-        const validV2Orders: Sdk.WyvernV2.Order[] = [];
-        const validV23Orders: Sdk.WyvernV23.Order[] = [];
+        const parsedOrders: Sdk.WyvernV23.Order[] = [];
 
         const insertQueries: any[] = [];
 
         const handleOrder = async (order: OpenSeaOrder) => {
-          let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
           let orderTarget = order.target;
 
           const parsed = await parseOpenSeaOrder(order);
           if (parsed) {
-            kind = parsed.kind;
+            parsedOrders.push(parsed);
 
-            if (parsed.kind === "wyvern-v2" && parsed.order) {
-              validV2Orders.push(parsed.order);
-            } else if (parsed.kind === "wyvern-v2.3" && parsed.order) {
-              validV23Orders.push(parsed.order);
+            const info = parsed.getInfo();
+            if (info) {
+              orderTarget = info.contract;
             }
 
-            if (parsed.order) {
-              const info = parsed.order.getInfo();
-              if (info) {
-                orderTarget = info.contract;
-              }
-              if ((parsed.order.params as any).nonce) {
-                (order as any).nonce = (parsed.order.params as any).nonce;
-              }
+            if ((parsed.params as any).nonce) {
+              (order as any).nonce = (parsed.params as any).nonce;
             }
           } else {
             logger.info(
@@ -94,53 +84,28 @@ export const fetchOrders = async (
             );
           }
 
-          if (kind) {
-            delete (order as any).asset;
+          delete (order as any).asset;
 
-            if (kind === "wyvern-v2") {
-              insertQueries.push({
-                query: `
-                  insert into "orders"(
-                    "hash",
-                    "target",
-                    "maker",
-                    "created_at",
-                    "data"
-                  )
-                  values ($1, $2, $3, $4, $5)
-                  on conflict do nothing
-                `,
-                values: [
-                  order.prefixed_hash,
-                  orderTarget,
-                  order.maker.address,
-                  Math.floor(new Date(order.created_date).getTime() / 1000),
-                  order as any,
-                ],
-              });
-            } else if (kind === "wyvern-v2.3") {
-              insertQueries.push({
-                query: `
-                  insert into "orders_v23"(
-                    "hash",
-                    "target",
-                    "maker",
-                    "created_at",
-                    "data"
-                  )
-                  values ($1, $2, $3, $4, $5)
-                  on conflict do nothing
-                `,
-                values: [
-                  order.prefixed_hash,
-                  orderTarget,
-                  order.maker.address,
-                  new Date(order.created_date),
-                  order as any,
-                ],
-              });
-            }
-          }
+          insertQueries.push({
+            query: `
+              INSERT INTO "orders_v23"(
+                "hash",
+                "target",
+                "maker",
+                "created_at",
+                "data"
+              )
+              VALUES ($1, $2, $3, $4, $5)
+              ON CONFLICT DO NOTHING
+            `,
+            values: [
+              order.prefixed_hash,
+              orderTarget,
+              order.maker.address,
+              new Date(order.created_date),
+              order as any,
+            ],
+          });
         };
 
         const plimit = pLimit(20);
@@ -152,18 +117,9 @@ export const fetchOrders = async (
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        if (validV2Orders.length) {
+        if (parsedOrders.length) {
           await addToRelayOrdersQueue(
-            validV2Orders.map((order) => ({
-              kind: "wyvern-v2",
-              data: order.params,
-            })),
-            true
-          );
-        }
-        if (validV23Orders.length) {
-          await addToRelayOrdersQueue(
-            validV23Orders.map((order) => ({
+            parsedOrders.map((order) => ({
               kind: "wyvern-v2.3",
               data: order.params,
             })),

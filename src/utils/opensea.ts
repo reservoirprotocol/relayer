@@ -1,4 +1,4 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
@@ -118,23 +118,12 @@ export type OpenSeaOrder = {
   listing_time: number;
   expiration_time: number;
   salt: string;
-  nonce?: string;
   v?: number;
   r?: string;
   s?: string;
 };
 
-type ParsedOpenSeaOrder =
-  | {
-      kind: "wyvern-v2";
-      order: Sdk.WyvernV2.Order | undefined;
-    }
-  | {
-      kind: "wyvern-v2.3";
-      order: Sdk.WyvernV23.Order | undefined;
-    };
-
-const provider = new JsonRpcProvider(
+const provider = new StaticJsonRpcProvider(
   `https://eth-${
     config.chainId === 1 ? "mainnet" : "rinkeby"
   }.alchemyapi.io/v2/5kzu5Nfv8OySwpTKXUygUbIkli1PRiPT`
@@ -143,58 +132,14 @@ const exchange = new Sdk.WyvernV23.Exchange(config.chainId);
 
 export const parseOpenSeaOrder = async (
   openSeaOrder: OpenSeaOrder
-): Promise<ParsedOpenSeaOrder | undefined> => {
-  let kind: "wyvern-v2" | "wyvern-v2.3" | undefined;
-
+): Promise<Sdk.WyvernV23.Order | undefined> => {
   try {
-    let order: Sdk.WyvernV2.Order | Sdk.WyvernV23.Order | undefined;
-    if (
-      openSeaOrder.exchange.toLowerCase() ===
-      Sdk.WyvernV2.Addresses.Exchange[config.chainId]
-    ) {
-      kind = "wyvern-v2";
+    // Try some nonce values before defaulting to on-chain retrieval
+    const maxTries = 2;
 
-      order = new Sdk.WyvernV2.Order(config.chainId, {
-        exchange: openSeaOrder.exchange,
-        maker: openSeaOrder.maker.address,
-        taker: openSeaOrder.taker.address,
-        makerRelayerFee: Number(openSeaOrder.maker_relayer_fee),
-        takerRelayerFee: Number(openSeaOrder.taker_relayer_fee),
-        feeRecipient: openSeaOrder.fee_recipient.address,
-        side: openSeaOrder.side,
-        saleKind: openSeaOrder.sale_kind,
-        target: openSeaOrder.target,
-        howToCall: openSeaOrder.how_to_call,
-        calldata: openSeaOrder.calldata,
-        replacementPattern: openSeaOrder.replacement_pattern,
-        staticTarget: openSeaOrder.static_target,
-        staticExtradata: openSeaOrder.static_extradata,
-        paymentToken: openSeaOrder.payment_token,
-        basePrice: openSeaOrder.base_price,
-        extra: openSeaOrder.extra,
-        listingTime: openSeaOrder.listing_time,
-        expirationTime: openSeaOrder.expiration_time,
-        salt: openSeaOrder.salt,
-        v: openSeaOrder.v,
-        r: openSeaOrder.r,
-        s: openSeaOrder.s,
-      });
-
-      if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
-        throw new Error("Wrong hash");
-      }
-
-      order.checkValidity();
-      order.checkSignature();
-
-      return { kind, order };
-    } else if (
-      openSeaOrder.exchange.toLowerCase() ===
-      Sdk.WyvernV23.Addresses.Exchange[config.chainId]
-    ) {
-      kind = "wyvern-v2.3";
-
-      order = new Sdk.WyvernV23.Order(config.chainId, {
+    let nonce = 0;
+    while (nonce < maxTries + 1) {
+      const order = new Sdk.WyvernV23.Order(config.chainId, {
         exchange: openSeaOrder.exchange,
         maker: openSeaOrder.maker.address,
         taker: openSeaOrder.taker.address,
@@ -216,28 +161,24 @@ export const parseOpenSeaOrder = async (
         expirationTime: openSeaOrder.expiration_time,
         salt: openSeaOrder.salt,
         nonce:
-          openSeaOrder.nonce ||
-          (
-            await exchange.getNonce(provider, openSeaOrder.maker.address)
-          ).toString(),
+          nonce === maxTries
+            ? (
+                await exchange.getNonce(provider, openSeaOrder.maker.address)
+              ).toString()
+            : nonce.toString(),
         v: openSeaOrder.v,
         r: openSeaOrder.r,
         s: openSeaOrder.s,
       });
 
-      if (order.prefixHash() !== openSeaOrder.prefixed_hash) {
-        throw new Error("Wrong hash");
+      if (order.prefixHash() === openSeaOrder.prefixed_hash) {
+        order.checkValidity();
+        order.checkSignature();
+        return order;
       }
-
-      order.checkValidity();
-      order.checkSignature();
-
-      return { kind, order };
     }
   } catch {
-    if (kind) {
-      return { kind, order: undefined };
-    }
+    return undefined;
   }
 
   return undefined;

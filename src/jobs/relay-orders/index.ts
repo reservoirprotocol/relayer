@@ -1,4 +1,3 @@
-import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
