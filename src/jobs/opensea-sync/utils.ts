@@ -77,11 +77,6 @@ export const fetchOrders = async (
             if ((parsed.params as any).nonce) {
               (order as any).nonce = (parsed.params as any).nonce;
             }
-          } else {
-            logger.info(
-              "fetch_orders",
-              `Skipping order ${JSON.stringify(order)}`
-            );
           }
 
           delete (order as any).asset;
