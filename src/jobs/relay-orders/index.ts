@@ -58,6 +58,7 @@ const worker = new Worker(
                 "relay_orders",
                 `Failed to relay orders to Indexer V3: ${error}`
               );
+              throw error;
             })
         );
       }
@@ -76,6 +77,7 @@ const worker = new Worker(
                 "relay_orders",
                 `Failed to relay orders to Indexer Lite: ${error}`
               );
+              throw error;
             })
         );
       }
