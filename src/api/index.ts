@@ -9,9 +9,8 @@ import { config } from "../config";
 import { allQueues } from "../jobs/index";
 import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync";
-// import { fastSyncContract } from "../utils/fast-sync-contract";
-// import { fullSyncCollection } from "../utils/full-sync-collection";
-// import { relayOrdersToV3, relayAllOrdersToV3 } from "../utils/relay-orders";
+import { fastSyncContract } from "../utils/fast-sync-contract";
+import { fullSyncCollection } from "../utils/full-sync-collection";
 
 export const start = async () => {
   const app = express();
@@ -34,23 +33,23 @@ export const start = async () => {
     })
   );
 
-  // app.post(
-  //   "/collections/full-sync",
-  //   asyncHandler(async (req, res) => {
-  //     res.status(202).json({ message: "Request accepted" });
+  app.post(
+    "/collections/full-sync",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
 
-  //     await fullSyncCollection(req.body.collection);
-  //   })
-  // );
+      await fullSyncCollection(req.body.collection);
+    })
+  );
 
-  // app.post(
-  //   "/contracts/fast-sync",
-  //   asyncHandler(async (req, res) => {
-  //     res.status(202).json({ message: "Request accepted" });
+  app.post(
+    "/contracts/fast-sync",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
 
-  //     await fastSyncContract(req.body.contract, req.body.count || 200);
-  //   })
-  // );
+      await fastSyncContract(req.body.contract, req.body.count || 200);
+    })
+  );
 
   // app.post(
   //   "/relay/v3",
