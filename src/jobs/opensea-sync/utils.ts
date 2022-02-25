@@ -36,8 +36,6 @@ export const fetchOrders = async (
       limit,
     });
 
-    console.log(url);
-
     await axios
       .get(
         url,
