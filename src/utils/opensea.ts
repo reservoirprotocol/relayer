@@ -176,6 +176,8 @@ export const parseOpenSeaOrder = async (
         order.checkSignature();
         return order;
       }
+
+      nonce++;
     }
   } catch {
     return undefined;
