@@ -153,7 +153,13 @@ export const fastSyncContract = async (contract: string, count: number) => {
       await db.none(pgp.helpers.concat(insertQueries));
     }
 
-    await addToRelayOrdersQueue(validOrders);
+    await addToRelayOrdersQueue(
+      validOrders.map((order) => ({
+        kind: "wyvern-v2.3",
+        data: order.params,
+      })),
+      true
+    );
 
     logger.info(
       "fast_sync_contract",

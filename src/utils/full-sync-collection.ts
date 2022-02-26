@@ -87,7 +87,13 @@ export const fullSyncCollection = async (collection: string) => {
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        await addToRelayOrdersQueue(validOrders);
+        await addToRelayOrdersQueue(
+          validOrders.map((order) => ({
+            kind: "wyvern-v2.3",
+            data: order.params,
+          })),
+          true
+        );
 
         numOrders += validOrders.length;
 
