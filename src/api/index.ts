@@ -11,6 +11,7 @@ import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { fullSyncCollection } from "../utils/full-sync-collection";
+import { relayOrdersByTimestamp } from "../utils/relay-orders";
 
 export const start = async () => {
   const app = express();
@@ -34,7 +35,7 @@ export const start = async () => {
   );
 
   app.post(
-    "/collections/full-sync",
+    "/full-collection-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
@@ -43,7 +44,7 @@ export const start = async () => {
   );
 
   app.post(
-    "/contracts/fast-sync",
+    "/fast-contract-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
@@ -51,23 +52,17 @@ export const start = async () => {
     })
   );
 
-  // app.post(
-  //   "/relay/v3",
-  //   asyncHandler(async (req, res) => {
-  //     res.status(202).json({ message: "Request accepted" });
+  app.post(
+    "/relay-by-timestamp",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
 
-  //     await relayOrdersToV3(req.body.contract);
-  //   })
-  // );
-
-  // app.post(
-  //   "/relay-all/v3",
-  //   asyncHandler(async (req, res) => {
-  //     res.status(202).json({ message: "Request accepted" });
-
-  //     await relayAllOrdersToV3(req.body.fromTimestamp, req.body.toTimestamp);
-  //   })
-  // );
+      await relayOrdersByTimestamp(
+        req.body.fromTimestamp,
+        req.body.toTimestamp
+      );
+    })
+  );
 
   app.post(
     "/sync/opensea-rarible",
