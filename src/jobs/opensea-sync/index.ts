@@ -20,26 +20,28 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
-const realtimeWorker = new Worker(
-  REALTIME_QUEUE_NAME,
-  async (job: Job) => {
-    const { minute } = job.data;
+if (config.doBackgroundWork) {
+  const realtimeWorker = new Worker(
+    REALTIME_QUEUE_NAME,
+    async (job: Job) => {
+      const { minute } = job.data;
 
-    try {
-      const listedAfter = minute * 60 - 1;
-      const listedBefore = (minute + 1) * 60 + 1;
-      await fetchOrders(listedAfter, listedBefore);
-    } catch (error) {
-      // In case of any errors, retry the job via the backfill queue
-      await addToBackfillQueue(minute, minute, true);
-      throw error;
-    }
-  },
-  { connection: redis.duplicate() }
-);
-realtimeWorker.on("error", (error) => {
-  logger.error(REALTIME_QUEUE_NAME, `Worker errored: ${error}`);
-});
+      try {
+        const listedAfter = minute * 60 - 1;
+        const listedBefore = (minute + 1) * 60 + 1;
+        await fetchOrders(listedAfter, listedBefore);
+      } catch (error) {
+        // In case of any errors, retry the job via the backfill queue
+        await addToBackfillQueue(minute, minute, true);
+        throw error;
+      }
+    },
+    { connection: redis.duplicate() }
+  );
+  realtimeWorker.on("error", (error) => {
+    logger.error(REALTIME_QUEUE_NAME, `Worker errored: ${error}`);
+  });
+}
 
 const addToRealtimeQueue = async (minute: number) => {
   await realtimeQueue.add(minute.toString(), { minute });
@@ -66,20 +68,22 @@ export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
 });
 new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
 
-const backfillWorker = new Worker(
-  BACKFILL_QUEUE_NAME,
-  async (job: Job) => {
-    const { minute } = job.data;
+if (config.doBackgroundWork) {
+  const backfillWorker = new Worker(
+    BACKFILL_QUEUE_NAME,
+    async (job: Job) => {
+      const { minute } = job.data;
 
-    const listedAfter = minute * 60 - 1;
-    const listedBefore = (minute + 1) * 60 + 1;
-    await fetchOrders(listedAfter, listedBefore, true);
-  },
-  { connection: redis.duplicate() }
-);
-backfillWorker.on("error", (error) => {
-  logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
-});
+      const listedAfter = minute * 60 - 1;
+      const listedBefore = (minute + 1) * 60 + 1;
+      await fetchOrders(listedAfter, listedBefore, true);
+    },
+    { connection: redis.duplicate() }
+  );
+  backfillWorker.on("error", (error) => {
+    logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
+  });
+}
 
 export const addToBackfillQueue = async (
   fromMinute: number,
@@ -102,7 +106,7 @@ export const addToBackfillQueue = async (
   );
 };
 
-if (!config.skipWatching) {
+if (config.doBackgroundWork) {
   // Fetch new orders every 1 minute
   cron.schedule("*/1 * * * *", async () => {
     const lockAcquired = await acquireLock("opensea-sync-lock", 55);

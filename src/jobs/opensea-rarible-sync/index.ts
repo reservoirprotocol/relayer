@@ -38,60 +38,65 @@ export const addToOpenSeaRaribleQueue = async (
   await queue.add(String(stop), { continuation, stop });
 };
 
-const worker = new Worker(
-  QUEUE_NAME,
-  async (job: Job) => {
-    const { continuation, stop } = job.data;
+if (config.doBackgroundWork) {
+  const worker = new Worker(
+    QUEUE_NAME,
+    async (job: Job) => {
+      const { continuation, stop } = job.data;
 
-    try {
-      const baseRaribleUrl =
-        config.chainId === 1
-          ? "https://ethereum-api.rarible.org"
-          : "https://ethereum-api-staging.rarible.org";
-      let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus`;
-      url += "?platform=OPEN_SEA";
-      url += "&status=ACTIVE";
-      url += "&limit=50";
-      url += "&sort=LAST_UPDATE_DESC";
-      if (continuation) {
-        url += `&continuation=${continuation}`;
-      }
-
-      await axios.get(url, { timeout: 10000 }).then(async (response: any) => {
-        const orders: OpenSeaRaribleOrder[] = response.data.orders;
-        if (orders.length) {
-          const validOrders = await Promise.all(
-            orders.map(parseOpenSeaRaribleOrder)
-          ).then((o) => o.filter(Boolean).map((x) => x!));
-
-          await saveOrders(validOrders);
-
-          if (response.data.continuation) {
-            const timestamp = Math.floor(
-              Number(response.data.continuation.split("_")[0]) / 1000
-            );
-            if (timestamp >= stop) {
-              await addToOpenSeaRaribleQueue(response.data.continuation, stop);
-            }
-          }
-
-          // Wait for 1 seconds to avoid rate-limiting
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+      try {
+        const baseRaribleUrl =
+          config.chainId === 1
+            ? "https://ethereum-api.rarible.org"
+            : "https://ethereum-api-staging.rarible.org";
+        let url = `${baseRaribleUrl}/v0.1/order/orders/sellByStatus`;
+        url += "?platform=OPEN_SEA";
+        url += "&status=ACTIVE";
+        url += "&limit=50";
+        url += "&sort=LAST_UPDATE_DESC";
+        if (continuation) {
+          url += `&continuation=${continuation}`;
         }
-      });
-    } catch (error) {
-      logger.error(
-        QUEUE_NAME,
-        `Failed to fetch OpenSea orders from Rarible: ${error}`
-      );
-      throw error;
-    }
-  },
-  { connection: redis.duplicate() }
-);
-worker.on("error", (error) => {
-  logger.error(QUEUE_NAME, `Worker errored: ${error}`);
-});
+
+        await axios.get(url, { timeout: 10000 }).then(async (response: any) => {
+          const orders: OpenSeaRaribleOrder[] = response.data.orders;
+          if (orders.length) {
+            const validOrders = await Promise.all(
+              orders.map(parseOpenSeaRaribleOrder)
+            ).then((o) => o.filter(Boolean).map((x) => x!));
+
+            await saveOrders(validOrders);
+
+            if (response.data.continuation) {
+              const timestamp = Math.floor(
+                Number(response.data.continuation.split("_")[0]) / 1000
+              );
+              if (timestamp >= stop) {
+                await addToOpenSeaRaribleQueue(
+                  response.data.continuation,
+                  stop
+                );
+              }
+            }
+
+            // Wait for 1 seconds to avoid rate-limiting
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+          }
+        });
+      } catch (error) {
+        logger.error(
+          QUEUE_NAME,
+          `Failed to fetch OpenSea orders from Rarible: ${error}`
+        );
+        throw error;
+      }
+    },
+    { connection: redis.duplicate() }
+  );
+  worker.on("error", (error) => {
+    logger.error(QUEUE_NAME, `Worker errored: ${error}`);
+  });
+}
 
 // Disable for now
 // if (!config.skipWatching) {

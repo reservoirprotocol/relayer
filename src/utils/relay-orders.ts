@@ -77,7 +77,7 @@ export const relayOrdersByTimestamp = async (
       const orders: { created_at: number; data: any }[] = await db.manyOrNone(
         `
           SELECT
-            date_part('epoch', "o"."created_at"),
+            date_part('epoch', "o"."created_at") AS "created_at",
             "o"."data"
           FROM "orders_v23" "o"
           WHERE "o"."created_at" <= to_timestamp($/belowTimestamp/)
