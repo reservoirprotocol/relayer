@@ -101,7 +101,13 @@ export const relayOrdersByTimestamp = async (
         }
       }
 
-      await addToRelayOrdersQueue(validOrders);
+      await addToRelayOrdersQueue(
+        validOrders.map((order) => ({
+          kind: "wyvern-v2.3",
+          data: order.params,
+        })),
+        true
+      );
     }
 
     logger.info("relay_orders_by_timestamp", `Done relaying orders`);
