@@ -90,7 +90,7 @@ export const relayOrdersByTimestamp = async (
       if (orders.length < limit) {
         belowTimestamp = fromTimestamp;
       } else {
-        belowTimestamp = orders[orders.length - 1].created_at;
+        belowTimestamp = Number(orders[orders.length - 1].created_at);
       }
 
       const validOrders: Sdk.WyvernV23.Order[] = [];
