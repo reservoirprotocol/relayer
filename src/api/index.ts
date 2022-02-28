@@ -53,7 +53,7 @@ export const start = async () => {
   );
 
   app.post(
-    "/relay-by-timestamp",
+    "/relay-orders-by-timestamp",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 

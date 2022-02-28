@@ -64,44 +64,51 @@ export const relayOrdersByTimestamp = async (
   fromTimestamp: number,
   toTimestamp: number
 ) => {
-  let belowTimestamp = toTimestamp;
+  try {
+    let belowTimestamp = toTimestamp;
 
-  const limit = 300;
-  while (belowTimestamp > fromTimestamp) {
-    logger.info(
-      "relay_orders_by_timestamp",
-      `Relaying orders created before ${belowTimestamp}`
-    );
+    const limit = 300;
+    while (belowTimestamp > fromTimestamp) {
+      logger.info(
+        "relay_orders_by_timestamp",
+        `Relaying orders created before ${belowTimestamp}`
+      );
 
-    const orders: { created_at: number; data: any }[] = await db.manyOrNone(
-      `
-        SELECT
-          date_part('epoch', "o"."created_at"),
-          "o"."data"
-        FROM "orders_v23" "o"
-        WHERE "o"."created_at" <= $/belowTimestamp/
-        ORDER BY "o"."created_at" DESC
-        LIMIT ${limit}
-      `,
-      { belowTimestamp }
-    );
+      const orders: { created_at: number; data: any }[] = await db.manyOrNone(
+        `
+          SELECT
+            date_part('epoch', "o"."created_at"),
+            "o"."data"
+          FROM "orders_v23" "o"
+          WHERE "o"."created_at" <= to_timestamp($/belowTimestamp/)
+          ORDER BY "o"."created_at" DESC
+          LIMIT ${limit}
+        `,
+        { belowTimestamp }
+      );
 
-    if (orders.length < limit) {
-      belowTimestamp = fromTimestamp;
-    } else {
-      belowTimestamp = orders[orders.length - 1].created_at;
-    }
-
-    const validOrders: Sdk.WyvernV23.Order[] = [];
-    for (const { data } of orders) {
-      const parsed = await parseOpenSeaOrder(data);
-      if (parsed) {
-        validOrders.push(parsed);
+      if (orders.length < limit) {
+        belowTimestamp = fromTimestamp;
+      } else {
+        belowTimestamp = orders[orders.length - 1].created_at;
       }
+
+      const validOrders: Sdk.WyvernV23.Order[] = [];
+      for (const { data } of orders) {
+        const parsed = await parseOpenSeaOrder(data);
+        if (parsed) {
+          validOrders.push(parsed);
+        }
+      }
+
+      await addToRelayOrdersQueue(validOrders);
     }
 
-    await addToRelayOrdersQueue(validOrders);
+    logger.info("relay_orders_by_timestamp", `Done relaying orders`);
+  } catch (error) {
+    logger.error(
+      "relay_orders_by_timestamp",
+      `Failed to relay orders: ${error}`
+    );
   }
-
-  logger.info("relay_orders_by_timestamp", `Done relaying orders`);
 };
