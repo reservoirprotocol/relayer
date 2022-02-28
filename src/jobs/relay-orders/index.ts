@@ -53,9 +53,6 @@ const worker = new Worker(
               { orders },
               { timeout: 3 * 60000 }
             )
-            .then((response) =>
-              logger.info("relay-orders", JSON.stringify(response.data))
-            )
             .catch((error) => {
               logger.error(
                 "relay_orders",
