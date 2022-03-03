@@ -10,7 +10,7 @@ export const relayOrdersByContract = async (contract: string) => {
     `
       SELECT
         coalesce(date_part('epoch', MAX("o"."created_at")), 0) AS "max_created_at"
-      FROM "orders" "o"
+      FROM "orders_v23" "o"
       WHERE "o"."target" = $/contract/
     `,
     { contract }
@@ -28,7 +28,7 @@ export const relayOrdersByContract = async (contract: string) => {
         SELECT
           "o"."created_at",
           "o"."data"
-        FROM "orders" "o"
+        FROM "orders_v23" "o"
         WHERE "o"."target" = $/contract/
           AND "o"."created_at" <= to_timestamp($/maxCreatedAt/)
         ORDER BY "o"."created_at" DESC
