@@ -43,7 +43,7 @@ export const relayOrdersByContract = async (contract: string) => {
     if (orders.length < limit) {
       data.max_created_at = 0;
     } else {
-      data.max_created_at = orders[orders.length - 1].created_at - 1;
+      data.max_created_at = Number(orders[orders.length - 1].created_at) - 1;
     }
 
     const validOrders: Sdk.WyvernV23.Order[] = [];
