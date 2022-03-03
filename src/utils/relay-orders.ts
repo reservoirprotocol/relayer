@@ -54,7 +54,12 @@ export const relayOrdersByContract = async (contract: string) => {
       }
     }
 
-    await addToRelayOrdersQueue(validOrders);
+    await addToRelayOrdersQueue(
+      validOrders.map((order) => ({
+        kind: "wyvern-v2.3",
+        data: order.params,
+      }))
+    );
   }
 
   logger.info("relay_orders_by_contract", `(${contract}) Done relaying orders`);
