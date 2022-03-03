@@ -5,60 +5,60 @@ import { logger } from "../common/logger";
 import { addToRelayOrdersQueue } from "../jobs/relay-orders";
 import { parseOpenSeaOrder } from "./opensea";
 
-// export const relayOrdersToV3 = async (contract: string) => {
-//   const data: { max_created_at: number } = await db.one(
-//     `
-//       select
-//         coalesce(max("o"."created_at"), 0) as "max_created_at"
-//       from "orders" "o"
-//       where "o"."target" = $/contract/
-//     `,
-//     { contract }
-//   );
+export const relayOrdersByContract = async (contract: string) => {
+  const data: { max_created_at: number } = await db.one(
+    `
+      SELECT
+        coalesce(date_part('epoch', MAX("o"."created_at")), 0) AS "max_created_at"
+      FROM "orders" "o"
+      WHERE "o"."target" = $/contract/
+    `,
+    { contract }
+  );
 
-//   const limit = 300;
-//   while (data.max_created_at > 0) {
-//     logger.info(
-//       "relay_orders_to_v3",
-//       `(${contract}) Relaying orders created before ${data.max_created_at}`
-//     );
+  const limit = 300;
+  while (data.max_created_at > 0) {
+    logger.info(
+      "relay_orders_by_contract",
+      `(${contract}) Relaying orders created before ${data.max_created_at}`
+    );
 
-//     const orders: { created_at: number; data: any }[] = await db.manyOrNone(
-//       `
-//         select
-//           "o"."created_at",
-//           "o"."data"
-//         from "orders" "o"
-//         where "o"."target" = $/contract/
-//           and "o"."created_at" <= $/maxCreatedAt/
-//         order by "o"."created_at" desc
-//         limit ${limit}
-//       `,
-//       {
-//         contract,
-//         maxCreatedAt: data.max_created_at,
-//       }
-//     );
+    const orders: { created_at: number; data: any }[] = await db.manyOrNone(
+      `
+        SELECT
+          "o"."created_at",
+          "o"."data"
+        FROM "orders" "o"
+        WHERE "o"."target" = $/contract/
+          AND "o"."created_at" <= to_timestamp($/maxCreatedAt/)
+        ORDER BY "o"."created_at" DESC
+        LIMIT ${limit}
+      `,
+      {
+        contract,
+        maxCreatedAt: data.max_created_at,
+      }
+    );
 
-//     if (orders.length < limit) {
-//       data.max_created_at = 0;
-//     } else {
-//       data.max_created_at = orders[orders.length - 1].created_at - 1;
-//     }
+    if (orders.length < limit) {
+      data.max_created_at = 0;
+    } else {
+      data.max_created_at = orders[orders.length - 1].created_at - 1;
+    }
 
-//     const validOrders: Sdk.WyvernV2.Order[] = [];
-//     for (const { data } of orders) {
-//       const parsed = parseOpenSeaOrder(data);
-//       if (parsed) {
-//         validOrders.push(parsed);
-//       }
-//     }
+    const validOrders: Sdk.WyvernV23.Order[] = [];
+    for (const { data } of orders) {
+      const parsed = await parseOpenSeaOrder(data);
+      if (parsed) {
+        validOrders.push(parsed);
+      }
+    }
 
-//     await addToRelayOrdersQueue(validOrders);
-//   }
+    await addToRelayOrdersQueue(validOrders);
+  }
 
-//   logger.info("relay_orders_to_v3", `(${contract}) Done relaying orders`);
-// };
+  logger.info("relay_orders_by_contract", `(${contract}) Done relaying orders`);
+};
 
 export const relayOrdersByTimestamp = async (
   fromTimestamp: number,
