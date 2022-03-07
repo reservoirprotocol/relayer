@@ -16,6 +16,10 @@ export const relayOrdersByContract = async (contract: string) => {
     { contract }
   );
 
+  if (!data || !data.max_created_at) {
+    return;
+  }
+
   const limit = 300;
   while (data.max_created_at > 0) {
     logger.info(
@@ -26,7 +30,7 @@ export const relayOrdersByContract = async (contract: string) => {
     const orders: { created_at: number; data: any }[] = await db.manyOrNone(
       `
         SELECT
-          "o"."created_at",
+          date_part('epoch', "o"."created_at") AS "created_at",
           "o"."data"
         FROM "orders_v23" "o"
         WHERE "o"."target" = $/contract/
@@ -36,7 +40,7 @@ export const relayOrdersByContract = async (contract: string) => {
       `,
       {
         contract,
-        maxCreatedAt: data.max_created_at,
+        maxCreatedAt: Number(data.max_created_at),
       }
     );
 
