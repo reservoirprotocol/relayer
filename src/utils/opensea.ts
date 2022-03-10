@@ -65,6 +65,7 @@ export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
       searchParams.append("token_ids", tokenId);
     }
   }
+  searchParams!.append("include_orders", "true");
 
   return `${baseOpenSeaApiUrl}/assets?${searchParams!.toString()}`;
 };
