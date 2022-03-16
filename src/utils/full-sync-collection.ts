@@ -13,7 +13,7 @@ export const fullSyncCollection = async (collection: string) => {
     `Full syncing collection ${collection} from OpenSea`
   );
 
-  let offset = 3000;
+  let offset = 0;
   let limit = 20;
 
   let numOrders = 0;
