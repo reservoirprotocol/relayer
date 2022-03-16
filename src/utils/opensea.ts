@@ -72,7 +72,7 @@ export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
 
 type FetchEventsParams = {
   contract: string;
-  offset: number;
+  cursor: string;
   limit: number;
 };
 
@@ -89,7 +89,7 @@ export const buildFetchEventsURL = (params: FetchEventsParams) => {
     asset_contract_address: params.contract,
     only_opensea: "false",
     event_type: "created",
-    offset: String(params.offset),
+    cursor: String(params.cursor),
     limit: String(params.limit),
   });
   return `${baseOpenSeaApiUrl}/events?${searchParams.toString()}`;

@@ -28,12 +28,15 @@ new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
 export const addToSyncTokenQueue = async (
   token: string,
-  limit: number,
+  limit?: number,
   prioritized?: boolean
 ) => {
   await queue.add(
     "sync-token",
-    { token, limit },
+    {
+      token,
+      limit: limit ? limit : 20,
+    },
     {
       priority: prioritized ? 1 : undefined,
     }
@@ -121,17 +124,17 @@ if (config.doBackgroundWork) {
             console.log(e.message);
           });
 
-        // if (insertQueries.length) {
-        //   await db.none(pgp.helpers.concat(insertQueries));
-        // }
-        //
-        // await addToRelayOrdersQueue(
-        //   validOrders.map((order) => ({
-        //     kind: "wyvern-v2.3",
-        //     data: order.params,
-        //   })),
-        //   true
-        // );
+        if (insertQueries.length) {
+          await db.none(pgp.helpers.concat(insertQueries));
+        }
+
+        await addToRelayOrdersQueue(
+          validOrders.map((order) => ({
+            kind: "wyvern-v2.3",
+            data: order.params,
+          })),
+          true
+        );
 
         logger.info(
           "fast_sync_token",
