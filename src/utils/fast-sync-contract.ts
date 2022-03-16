@@ -7,7 +7,7 @@ import { config } from "../config";
 import { addToRelayOrdersQueue } from "../jobs/relay-orders";
 import {
   buildFetchAssetsURL,
-  buildFetchListingsURL,
+  buildFetchEventsURL,
   parseOpenSeaOrder,
 } from "./opensea";
 
@@ -27,7 +27,7 @@ export const fastSyncContract = async (contract: string, count: number) => {
 
     let done = false;
     while (!done) {
-      const url = buildFetchListingsURL({
+      const url = buildFetchEventsURL({
         contract,
         offset,
         limit,

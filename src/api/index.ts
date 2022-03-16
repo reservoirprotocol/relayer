@@ -11,6 +11,7 @@ import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { fullSyncCollection } from "../utils/full-sync-collection";
+import { addToSyncTokenQueue } from "../jobs/sync-token";
 import {
   relayOrdersByContract,
   relayOrdersByTimestamp,
@@ -52,6 +53,15 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await fastSyncContract(req.body.contract, req.body.count || 200);
+    })
+  );
+
+  app.post(
+    "/fast-token-sync",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      await addToSyncTokenQueue(req.body.token, req.body.limit || 20);
     })
   );
 
