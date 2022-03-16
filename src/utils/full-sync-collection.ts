@@ -42,10 +42,10 @@ export const fullSyncCollection = async (collection: string) => {
                 "user-agent":
                   "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
               },
-              timeout: 5000,
+              timeout: 15000,
             }
           : // Skip including the API key on Rinkeby or else the request will fail
-            { timeout: 5000 }
+            { timeout: 15000 }
       )
       .then(async (response: any) => {
         const validOrders: Sdk.WyvernV23.Order[] = [];
