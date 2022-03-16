@@ -25,6 +25,11 @@ export const fullSyncCollection = async (collection: string) => {
       offset,
       limit,
     });
+    
+    logger.info(
+      "full_sync_collection",
+      `${url}`
+    );
 
     await axios
       .get(
