@@ -10,3 +10,8 @@ tsconfig.tsbuildinfo
 
 # Misc
 yarn-error.log
+
+# IDE
+*.iml
+.idea
+.yarnclean
