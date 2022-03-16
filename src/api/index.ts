@@ -10,7 +10,6 @@ import { allQueues } from "../jobs/index";
 import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
-import { fullSyncCollection } from "../utils/full-sync-collection";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import {
   relayOrdersByContract,
@@ -35,15 +34,6 @@ export const start = async () => {
     "/",
     asyncHandler(async (_req, res) => {
       res.json({ message: "Success" });
-    })
-  );
-
-  app.post(
-    "/full-collection-sync",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      await fullSyncCollection(req.body.collection);
     })
   );
 
