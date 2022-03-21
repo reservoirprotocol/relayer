@@ -6,6 +6,7 @@ export const config = {
   realtimeOpenseaApiKey: String(process.env.REALTIME_OPENSEA_API_KEY),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
+  doRealtimeWork: Boolean(Number(process.env.DO_REALTIME_WORK)),
 
   databaseUrl: String(process.env.DATABASE_URL),
   redisUrl: String(process.env.REDIS_URL),
