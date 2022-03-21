@@ -1,4 +1,4 @@
-FROM node:15.14-slim
+FROM node:16.13-slim
 
 ARG DATABASE_URL
 
