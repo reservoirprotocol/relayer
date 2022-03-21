@@ -6,11 +6,12 @@ import { addToSyncTokenQueue } from "../jobs/sync-token";
 
 import { buildFetchEventsURL } from "./opensea";
 
-export const fastSyncContract = async (contract: string, limit: number) => {
+export const fastSyncContract = async (contract: string, totalRecords: number) => {
   logger.info("fast_sync_contract", `Fast syncing contract ${contract} from OpenSea`);
 
   // Fetch recent listings
   {
+    const limit = 50;
     let count = 0;
     let cursor = "";
     let done = false;
@@ -42,10 +43,15 @@ export const fastSyncContract = async (contract: string, limit: number) => {
             if (!event.asset_bundle) {
               ++count;
               await addToSyncTokenQueue(`${contract}:${event.asset.token_id}`);
+
+              // If we reached the total required records break the loop
+              if (count == totalRecords) {
+                break;
+              }
             }
           }
 
-          if (response.data.next) {
+          if (response.data.next && count < limit) {
             cursor = response.data.next;
           } else {
             done = true;
@@ -53,6 +59,10 @@ export const fastSyncContract = async (contract: string, limit: number) => {
 
           // Wait for one second to avoid rate-limiting
           await new Promise((resolve) => setTimeout(resolve, 1000));
+        })
+        .catch((error) => {
+          logger.error("fast_sync_contract", `Failed to get contract orders: ${error}`);
+          throw error;
         });
     }
 
