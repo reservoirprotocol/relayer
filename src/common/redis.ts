@@ -16,10 +16,7 @@ export const redis = new Redis(config.redisUrl, {
 
 const lockIds = new Map<string, string>();
 
-export const acquireLock = async (
-  name: string,
-  expirationInSeconds: number
-) => {
+export const acquireLock = async (name: string, expirationInSeconds: number) => {
   const id = uuidv4();
   lockIds.set(name, id);
 

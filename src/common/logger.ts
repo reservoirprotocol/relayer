@@ -26,8 +26,7 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     ],
   });
 
-  return (component: string, message: string) =>
-    logger.log(level, message, { component });
+  return (component: string, message: string) => logger.log(level, message, { component });
 };
 
 export const logger = {

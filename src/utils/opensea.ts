@@ -114,7 +114,9 @@ export const buildFetchListingsURL = (params: FetchListingsParams) => {
     limit: String(params.limit),
   });
 
-  return `${baseOpenSeaApiUrl}/asset/${params.contract}/${params.tokenId}/listings?${searchParams.toString()}`;
+  return `${baseOpenSeaApiUrl}/asset/${params.contract}/${
+    params.tokenId
+  }/listings?${searchParams.toString()}`;
 };
 
 export type OpenSeaOrder = {
@@ -185,9 +187,7 @@ export const parseOpenSeaOrder = async (
         salt: openSeaOrder.salt,
         nonce:
           nonce === maxTries
-            ? (
-                await exchange.getNonce(provider, openSeaOrder.maker.address)
-              ).toString()
+            ? (await exchange.getNonce(provider, openSeaOrder.maker.address)).toString()
             : nonce.toString(),
         v: openSeaOrder.v,
         r: openSeaOrder.r,

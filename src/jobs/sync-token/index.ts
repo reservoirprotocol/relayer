@@ -5,8 +5,8 @@ import { logger } from "../../common/logger";
 import { redis } from "../../common/redis";
 import { config } from "../../config";
 import * as Sdk from "@reservoir0x/sdk";
-import {buildFetchListingsURL, parseOpenSeaOrder} from "../../utils/opensea";
-import {db, pgp} from "../../common/db";
+import { buildFetchListingsURL, parseOpenSeaOrder } from "../../utils/opensea";
+import { db, pgp } from "../../common/db";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
 const QUEUE_NAME = "sync-token";
@@ -26,11 +26,7 @@ export const queue = new Queue(QUEUE_NAME, {
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-export const addToSyncTokenQueue = async (
-  token: string,
-  limit?: number,
-  prioritized?: boolean
-) => {
+export const addToSyncTokenQueue = async (token: string, limit?: number, prioritized?: boolean) => {
   await queue.add(
     "sync-token",
     {
@@ -50,14 +46,11 @@ if (config.doBackgroundWork) {
       const { token, limit } = job.data;
 
       if (token) {
-        logger.info(
-          "fast_sync_token",
-          `Fast syncing token ${token} from OpenSea`
-        );
+        logger.info("fast_sync_token", `Fast syncing token ${token} from OpenSea`);
 
         const validOrders: Sdk.WyvernV23.Order[] = [];
         const insertQueries: any[] = [];
-        const [contract, tokenId] = token.split(':');
+        const [contract, tokenId] = token.split(":");
 
         // Fetch recent listings
         const url = buildFetchListingsURL({
@@ -73,15 +66,15 @@ if (config.doBackgroundWork) {
             url,
             config.chainId === 1
               ? {
-                headers: {
-                  "x-api-key": config.backfillOpenseaApiKey,
-                  "user-agent":
-                    "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-                },
-                timeout: 5000,
-              }
+                  headers: {
+                    "x-api-key": config.backfillOpenseaApiKey,
+                    "user-agent":
+                      "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+                  },
+                  timeout: 5000,
+                }
               : // Skip including the API key on Rinkeby or else the request will fail
-              { timeout: 5000 }
+                { timeout: 5000 }
           )
           .then(async (response: any) => {
             for (const order of response.data.listings) {
@@ -136,10 +129,7 @@ if (config.doBackgroundWork) {
           true
         );
 
-        logger.info(
-          "fast_sync_token",
-          `Got ${validOrders.length} orders for token ${tokenId}`
-        );
+        logger.info("fast_sync_token", `Got ${validOrders.length} orders for token ${tokenId}`);
       }
     },
     { connection: redis.duplicate(), concurrency: 5 }

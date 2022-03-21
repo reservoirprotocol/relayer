@@ -4,20 +4,15 @@ import { logger } from "../common/logger";
 import { config } from "../config";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 
-import {
-  buildFetchEventsURL,
-} from "./opensea";
+import { buildFetchEventsURL } from "./opensea";
 
 export const fastSyncContract = async (contract: string, limit: number) => {
-  logger.info(
-    "fast_sync_contract",
-    `Fast syncing contract ${contract} from OpenSea`
-  );
+  logger.info("fast_sync_contract", `Fast syncing contract ${contract} from OpenSea`);
 
   // Fetch recent listings
   {
     let count = 0;
-    let cursor = '';
+    let cursor = "";
     let done = false;
 
     while (!done) {
@@ -61,9 +56,6 @@ export const fastSyncContract = async (contract: string, limit: number) => {
         });
     }
 
-    logger.info(
-      "fast_sync_contract",
-      `Got ${count} orders for contract ${contract}`
-    );
+    logger.info("fast_sync_contract", `Got ${count} orders for contract ${contract}`);
   }
 };

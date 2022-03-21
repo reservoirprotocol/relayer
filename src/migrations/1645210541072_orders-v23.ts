@@ -28,9 +28,6 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     primaryKey: "hash",
   });
   pgm.createIndex("orders_v23", [{ name: "created_at", sort: "DESC" }]);
-  pgm.createIndex("orders_v23", [
-    "target",
-    { name: "created_at", sort: "DESC" },
-  ]);
+  pgm.createIndex("orders_v23", ["target", { name: "created_at", sort: "DESC" }]);
   pgm.createIndex("orders_v23", ["target", "maker", "created_at"]);
 }

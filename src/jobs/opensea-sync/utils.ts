@@ -5,22 +5,11 @@ import pLimit from "p-limit";
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
-import {
-  OpenSeaOrder,
-  buildFetchOrdersURL,
-  parseOpenSeaOrder,
-} from "../../utils/opensea";
+import { OpenSeaOrder, buildFetchOrdersURL, parseOpenSeaOrder } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
-export const fetchOrders = async (
-  listedAfter: number,
-  listedBefore: number,
-  backfill = false
-) => {
-  logger.info(
-    "fetch_orders",
-    `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`
-  );
+export const fetchOrders = async (listedAfter: number, listedBefore: number, backfill = false) => {
+  logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
   let offset = 0;
   let limit = 50;
@@ -42,9 +31,7 @@ export const fetchOrders = async (
         config.chainId === 1
           ? {
               headers: {
-                "x-api-key": backfill
-                  ? config.backfillOpenseaApiKey
-                  : config.realtimeOpenseaApiKey,
+                "x-api-key": backfill ? config.backfillOpenseaApiKey : config.realtimeOpenseaApiKey,
                 // https://twitter.com/lefterisjp/status/1483222328595165187?s=21
                 "user-agent":
                   "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
@@ -102,9 +89,7 @@ export const fetchOrders = async (
         };
 
         const plimit = pLimit(20);
-        await Promise.all(
-          orders.map((order) => plimit(() => handleOrder(order)))
-        );
+        await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
 
         if (insertQueries.length) {
           await db.none(pgp.helpers.concat(insertQueries));
@@ -133,8 +118,5 @@ export const fetchOrders = async (
       });
   }
 
-  logger.info(
-    "fetch_orders",
-    `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`
-  );
+  logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
 };

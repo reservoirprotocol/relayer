@@ -22,10 +22,7 @@ export const queue = new Queue(QUEUE_NAME, {
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-export const addToRelayOrdersQueue = async (
-  orders: any[],
-  prioritized?: boolean
-) => {
+export const addToRelayOrdersQueue = async (orders: any[], prioritized?: boolean) => {
   await queue.add(
     "relay-orders",
     { orders },
@@ -56,10 +53,7 @@ if (config.doBackgroundWork) {
                 { timeout: 3 * 60000 }
               )
               .catch((error) => {
-                logger.error(
-                  "relay_orders",
-                  `Failed to relay orders to Indexer V3: ${error}`
-                );
+                logger.error("relay_orders", `Failed to relay orders to Indexer V3: ${error}`);
                 throw error;
               })
           );
@@ -75,10 +69,7 @@ if (config.doBackgroundWork) {
                 { timeout: 60000 }
               )
               .catch((error) => {
-                logger.error(
-                  "relay_orders",
-                  `Failed to relay orders to Indexer Lite: ${error}`
-                );
+                logger.error("relay_orders", `Failed to relay orders to Indexer Lite: ${error}`);
                 throw error;
               })
           );
