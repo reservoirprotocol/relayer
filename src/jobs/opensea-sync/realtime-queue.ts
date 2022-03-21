@@ -52,7 +52,7 @@ if (config.doRealtimeWork) {
 
       logger.info(
         REALTIME_QUEUE_NAME,
-        `Realtime sync success timeframe=(${listedAfter}, ${second})`
+        `Realtime sync recover timeframe=(${listedAfter}, ${second}) attempts=${job.attemptsMade}`
       );
     }
   });
