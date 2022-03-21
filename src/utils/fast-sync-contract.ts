@@ -51,6 +51,8 @@ export const fastSyncContract = async (contract: string, totalRecords: number) =
             }
           }
 
+          logger.info("fast_sync_contract", `Syncing ${count} events OpenSea`);
+
           if (response.data.next && count < totalRecords) {
             cursor = response.data.next;
           } else {
@@ -61,7 +63,7 @@ export const fastSyncContract = async (contract: string, totalRecords: number) =
           await new Promise((resolve) => setTimeout(resolve, 1000));
         })
         .catch((error) => {
-          logger.error("fast_sync_contract", `Failed to get contract orders: ${error}`);
+          logger.error("fast_sync_contract", `Failed to get contract events: ${error}`);
           throw error;
         });
     }
