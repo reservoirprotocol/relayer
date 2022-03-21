@@ -51,7 +51,7 @@ export const fastSyncContract = async (contract: string, totalRecords: number) =
             }
           }
 
-          if (response.data.next && count < limit) {
+          if (response.data.next && count < totalRecords) {
             cursor = response.data.next;
           } else {
             done = true;
