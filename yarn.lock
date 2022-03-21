@@ -79,7 +79,7 @@
   dependencies:
     "protobufjs" "^6.10.2"
 
-"@eslint/eslintrc@^1.2.1":
+"@eslint/eslintrc@^1.2.0":
   "integrity" "sha512-bxvbYnBPN1Gibwyp6NrpnFzA3YtRL3BBAyEAFVIpNTm2Rn4Vy87GA5M4aSn3InRrlsbX5N0GW7XIx+U4SAEKdQ=="
   "resolved" "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-1.2.1.tgz"
   "version" "1.2.1"
@@ -1389,12 +1389,12 @@
   "resolved" "https://registry.npmjs.org/eslint-visitor-keys/-/eslint-visitor-keys-3.3.0.tgz"
   "version" "3.3.0"
 
-"eslint@^8.11.0", "eslint@>=5", "eslint@>=7.0.0":
-  "integrity" "sha512-/KRpd9mIRg2raGxHRGwW9ZywYNAClZrHjdueHcrVDuO3a6bj83eoTirCCk0M0yPwOjWYKHwRVRid+xK4F/GHgA=="
-  "resolved" "https://registry.npmjs.org/eslint/-/eslint-8.11.0.tgz"
-  "version" "8.11.0"
+"eslint@^8.10.0", "eslint@>=5", "eslint@>=7.0.0":
+  "integrity" "sha512-tcI1D9lfVec+R4LE1mNDnzoJ/f71Kl/9Cv4nG47jOueCMBrCCKYXr4AUVS7go6mWYGFD4+EoN6+eXSrEbRzXVw=="
+  "resolved" "https://registry.npmjs.org/eslint/-/eslint-8.10.0.tgz"
+  "version" "8.10.0"
   dependencies:
-    "@eslint/eslintrc" "^1.2.1"
+    "@eslint/eslintrc" "^1.2.0"
     "@humanwhocodes/config-array" "^0.9.2"
     "ajv" "^6.10.0"
     "chalk" "^4.0.0"

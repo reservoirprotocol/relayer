@@ -32,7 +32,7 @@
     "bullmq": "^1.64.0",
     "dd-trace": "^1.6.0",
     "dotenv": "^10.0.0",
-    "eslint": "^8.11.0",
+    "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.5.0",
     "ethers": "^5.5.3",
     "express": "^4.17.1",
