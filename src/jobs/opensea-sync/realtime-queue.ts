@@ -30,12 +30,13 @@ if (config.doBackgroundWork) {
       const second = job.data.second;
       const interval = job.data.interval;
 
+      // OpenSea listed_after / listed_before are exclusive
+      const listedAfter = second - interval - 1;
+
       try {
-        // OpenSea listed_after / listed_before are exclusive
-        const listedAfter = second - interval - 1;
         await fetchOrders(listedAfter, second);
       } catch (error) {
-        logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed=${error}`);
+        logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe(${listedAfter}, ${second}) error=${error}`);
       }
     },
     { connection: redis.duplicate() }
@@ -51,7 +52,7 @@ if (config.doBackgroundWork) {
 
       logger.error(
         REALTIME_QUEUE_NAME,
-        `Max retries reached, attemptsMade= ${job.attemptsMade}, data=${JSON.stringify(job.data)}`
+        `Max retries reached, attemptsMade=${job.attemptsMade}, data=${JSON.stringify(job.data)}`
       );
     }
   });
