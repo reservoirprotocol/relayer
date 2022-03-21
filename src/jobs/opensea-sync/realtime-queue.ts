@@ -36,7 +36,8 @@ if (config.doBackgroundWork) {
       try {
         await fetchOrders(listedAfter, second);
       } catch (error) {
-        logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe(${listedAfter}, ${second}) error=${error}`);
+        logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe=(${listedAfter}, ${second}) error=${error}`);
+        throw error;
       }
     },
     { connection: redis.duplicate() }
