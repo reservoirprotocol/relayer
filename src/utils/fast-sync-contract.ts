@@ -5,6 +5,7 @@ import { config } from "../config";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 
 import { buildFetchEventsURL } from "./opensea";
+import _ from "lodash";
 
 export const fastSyncContract = async (contract: string, totalRecords: number) => {
   logger.info("fast_sync_contract", `Fast syncing contract ${contract} from OpenSea`);
@@ -51,7 +52,7 @@ export const fastSyncContract = async (contract: string, totalRecords: number) =
             }
           }
 
-          logger.info("fast_sync_contract", `Syncing ${count} events OpenSea`);
+          logger.info("fast_sync_contract", `Syncing ${_.size(response.data.asset_events)} events OpenSea`);
 
           if (response.data.next && count < totalRecords) {
             cursor = response.data.next;
@@ -60,7 +61,7 @@ export const fastSyncContract = async (contract: string, totalRecords: number) =
           }
 
           // Wait for one second to avoid rate-limiting
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         })
         .catch((error) => {
           logger.error("fast_sync_contract", `Failed to get contract events: ${error}`);

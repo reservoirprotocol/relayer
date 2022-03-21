@@ -132,7 +132,7 @@ if (config.doBackgroundWork) {
         logger.info("fast_sync_token", `Got ${validOrders.length} orders for token ${tokenId}`);
       }
     },
-    { connection: redis.duplicate(), concurrency: 5 }
+    { connection: redis.duplicate(), concurrency: 2 }
   );
   worker.on("error", (error) => {
     logger.error(QUEUE_NAME, `Worker errored: ${error}`);
