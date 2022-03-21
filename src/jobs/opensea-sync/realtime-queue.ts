@@ -43,6 +43,20 @@ if (config.doRealtimeWork) {
     { connection: redis.duplicate() }
   );
 
+  realtimeWorker.on("completed", (job) => {
+    if (job.attemptsMade > 0) {
+      const second = job.data.second;
+      const interval = job.data.interval;
+
+      const listedAfter = second - interval - 1;
+
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Realtime sync success timeframe=(${listedAfter}, ${second})`
+      );
+    }
+  });
+
   realtimeWorker.on("failed", async (job, err) => {
     // If we reached the max attempts log it
     if (job.attemptsMade == backfillQueue.defaultJobOptions.attempts) {
