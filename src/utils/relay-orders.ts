@@ -69,19 +69,13 @@ export const relayOrdersByContract = async (contract: string) => {
   logger.info("relay_orders_by_contract", `(${contract}) Done relaying orders`);
 };
 
-export const relayOrdersByTimestamp = async (
-  fromTimestamp: number,
-  toTimestamp: number
-) => {
+export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp: number) => {
   try {
     let belowTimestamp = toTimestamp;
 
     const limit = 300;
     while (belowTimestamp > fromTimestamp) {
-      logger.info(
-        "relay_orders_by_timestamp",
-        `Relaying orders created before ${belowTimestamp}`
-      );
+      logger.info("relay_orders_by_timestamp", `Relaying orders created before ${belowTimestamp}`);
 
       const orders: { created_at: number; data: any }[] = await db.manyOrNone(
         `
@@ -120,9 +114,6 @@ export const relayOrdersByTimestamp = async (
 
     logger.info("relay_orders_by_timestamp", `Done relaying orders`);
   } catch (error) {
-    logger.error(
-      "relay_orders_by_timestamp",
-      `Failed to relay orders: ${error}`
-    );
+    logger.error("relay_orders_by_timestamp", `Failed to relay orders: ${error}`);
   }
 };

@@ -6,15 +6,12 @@ import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
-import { allQueues } from "../jobs/index";
+import { allQueues } from "../jobs";
 import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
-import { addToBackfillQueue } from "../jobs/opensea-sync";
+import { addToBackfillQueue } from "../jobs/opensea-sync/backfill-queue";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
-import {
-  relayOrdersByContract,
-  relayOrdersByTimestamp,
-} from "../utils/relay-orders";
+import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
 
 export const start = async () => {
   const app = express();
@@ -69,10 +66,7 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await relayOrdersByTimestamp(
-        req.body.fromTimestamp,
-        req.body.toTimestamp
-      );
+      await relayOrdersByTimestamp(req.body.fromTimestamp, req.body.toTimestamp);
     })
   );
 
