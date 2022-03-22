@@ -60,12 +60,12 @@ if (config.doRealtimeWork) {
     const second = job.data.second;
     const interval = job.data.interval;
     const listedAfter = second - interval - 1;
-    const maxAttempts = backfillQueue.defaultJobOptions.attempts;
+    const maxAttempts = realtimeQueue.defaultJobOptions.attempts;
 
     logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`);
 
     // If we reached the max attempts log it
-    if (job.attemptsMade == backfillQueue.defaultJobOptions.attempts) {
+    if (job.attemptsMade == realtimeQueue.defaultJobOptions.attempts) {
       // In case we maxed the retries attempted, retry the job via the backfill queue
       await openseaSyncBackfill.addToBackfillQueue(minute, minute, true, minute);
 
