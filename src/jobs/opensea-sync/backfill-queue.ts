@@ -3,7 +3,6 @@ import { redis } from "../../common/redis";
 import { config } from "../../config";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
-import {isNumber} from "util";
 
 const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 
@@ -56,7 +55,7 @@ export const addToBackfillQueue = async (
   fromMinute: number,
   toMinute: number,
   prioritized = false,
-  jobId: string = ''
+  jobId: string = ""
 ) => {
   const minutes = [];
   for (let minute = toMinute; minute >= fromMinute; minute--) {
@@ -69,7 +68,7 @@ export const addToBackfillQueue = async (
       data: { minute },
       opts: {
         priority: prioritized ? 1 : undefined,
-        jobId
+        jobId,
       },
     }))
   );

@@ -63,7 +63,10 @@ if (config.doRealtimeWork) {
     const listedAfter = second - interval - 1;
     const maxAttempts = realtimeQueue.defaultJobOptions.attempts;
 
-    logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`);
+    logger.error(
+      REALTIME_QUEUE_NAME,
+      `Realtime sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+    );
 
     // If we reached the max attempts log it
     if (job.attemptsMade == realtimeQueue.defaultJobOptions.attempts) {
@@ -72,7 +75,9 @@ if (config.doRealtimeWork) {
 
       logger.error(
         REALTIME_QUEUE_NAME,
-        `Max retries reached, attemptsMade=${job.attemptsMade}, minute=${minute}, data=${JSON.stringify(job.data)}`
+        `Max retries reached, attemptsMade=${
+          job.attemptsMade
+        }, minute=${minute}, data=${JSON.stringify(job.data)}`
       );
     }
   });
@@ -83,5 +88,5 @@ if (config.doRealtimeWork) {
 }
 
 export const addToRealtimeQueue = async (second: number, interval: number, delayMs: number = 0) => {
-  await realtimeQueue.add(second.toString(), { second, interval}, { delay: delayMs });
+  await realtimeQueue.add(second.toString(), { second, interval }, { delay: delayMs });
 };

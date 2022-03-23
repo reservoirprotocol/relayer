@@ -38,8 +38,11 @@ export const start = async () => {
     "/fast-contract-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
+      const totalRecords = req.body.totalRecords || 300;
+      const limit = req.body.limit || 50;
+      const cursor = req.body.cursor || "";
 
-      await fastSyncContract(req.body.contract, req.body.totalRecords || 300);
+      await fastSyncContract(req.body.contract, totalRecords, limit, cursor);
     })
   );
 
