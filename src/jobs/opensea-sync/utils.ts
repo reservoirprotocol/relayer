@@ -45,7 +45,7 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
         const orders: OpenSeaOrder[] = response.data.orders;
         const parsedOrders: Sdk.WyvernV23.Order[] = [];
 
-        const insertQueries: any[] = [];
+        const values: any[] = [];
 
         const handleOrder = async (order: OpenSeaOrder) => {
           let orderTarget = order.target;
@@ -66,33 +66,34 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
 
           delete (order as any).asset;
 
-          insertQueries.push({
-            query: `
-              INSERT INTO "orders_v23"(
-                "hash",
-                "target",
-                "maker",
-                "created_at",
-                "data"
-              )
-              VALUES ($1, $2, $3, $4, $5)
-              ON CONFLICT DO NOTHING
-            `,
-            values: [
-              order.prefixed_hash,
-              orderTarget,
-              order.maker.address,
-              new Date(order.created_date),
-              order as any,
-            ],
+          values.push({
+            hash: order.prefixed_hash,
+            target: orderTarget,
+            maker: order.maker.address,
+            created_at: new Date(order.created_date),
+            data: order as any,
           });
         };
 
         const plimit = pLimit(20);
         await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
 
-        if (insertQueries.length) {
-          await db.none(pgp.helpers.concat(insertQueries));
+        if (values.length) {
+          const columns = new pgp.helpers.ColumnSet(
+            ["hash", "target", "maker", "created_at", "data"],
+            { table: "orders_v23" }
+          );
+
+          const result = await db.manyOrNone(
+            pgp.helpers.insert(values, columns) +
+              " ON CONFLICT DO NOTHING RETURNING 1"
+          );
+          if (backfill && result.length) {
+            logger.info(
+              "fetch_orders",
+              `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
+            );
+          }
         }
 
         if (parsedOrders.length) {

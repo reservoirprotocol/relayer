@@ -29,10 +29,10 @@ if (config.doBackgroundWork) {
       } else if (lastSyncedMinute < previousMinute) {
         // Create a 5s interval job to sync orders
         for (let i = 0; i < numberOfJobs; i++) {
-          const second = (currentMinute * 60) + (interval * i);
+          const second = currentMinute * 60 + interval * i;
           const delayMs = interval * (i + 1) * 1000;
 
-          await openseaSyncRealtime.addToRealtimeQueue(previousMinute, second, interval, delayMs);
+          await openseaSyncRealtime.addToRealtimeQueue(second, interval, delayMs);
         }
 
         // If we need to do any backfill e.g. last sync is older than 1 minuted ago
