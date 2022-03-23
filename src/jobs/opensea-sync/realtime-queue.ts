@@ -36,7 +36,6 @@ if (config.doRealtimeWork) {
       try {
         await fetchOrders(listedAfter, second);
       } catch (error) {
-        logger.error(REALTIME_QUEUE_NAME, `Realtime sync failed timeframe=(${listedAfter}, ${second}) error=${error}`);
         throw error;
       }
     },
@@ -47,7 +46,6 @@ if (config.doRealtimeWork) {
     if (job.attemptsMade > 0) {
       const second = job.data.second;
       const interval = job.data.interval;
-
       const listedAfter = second - interval - 1;
 
       logger.info(
@@ -57,17 +55,29 @@ if (config.doRealtimeWork) {
     }
   });
 
-  realtimeWorker.on("failed", async (job, err) => {
-    // If we reached the max attempts log it
-    if (job.attemptsMade == backfillQueue.defaultJobOptions.attempts) {
-      const minute = job.data.minute;
+  realtimeWorker.on("failed", async (job, error) => {
+    const second = job.data.second;
+    const interval = job.data.interval;
 
+    const minute = Math.floor(second / 60);
+    const listedAfter = second - interval - 1;
+    const maxAttempts = realtimeQueue.defaultJobOptions.attempts;
+
+    logger.error(
+      REALTIME_QUEUE_NAME,
+      `Realtime sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+    );
+
+    // If we reached the max attempts log it
+    if (job.attemptsMade == realtimeQueue.defaultJobOptions.attempts) {
       // In case we maxed the retries attempted, retry the job via the backfill queue
-      await openseaSyncBackfill.addToBackfillQueue(minute, minute, true, minute);
+      await openseaSyncBackfill.addToBackfillQueue(minute, minute, true, `${minute}`);
 
       logger.error(
         REALTIME_QUEUE_NAME,
-        `Max retries reached, attemptsMade=${job.attemptsMade}, data=${JSON.stringify(job.data)}`
+        `Max retries reached, attemptsMade=${
+          job.attemptsMade
+        }, minute=${minute}, data=${JSON.stringify(job.data)}`
       );
     }
   });
@@ -77,6 +87,6 @@ if (config.doRealtimeWork) {
   });
 }
 
-export const addToRealtimeQueue = async (minute: number, second: number, interval: number, delayMs: number = 0) => {
-  await realtimeQueue.add(second.toString(), { minute, second, interval}, { delay: delayMs });
+export const addToRealtimeQueue = async (second: number, interval: number, delayMs: number = 0) => {
+  await realtimeQueue.add(second.toString(), { second, interval }, { delay: delayMs });
 };
