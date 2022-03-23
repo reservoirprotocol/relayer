@@ -85,11 +85,10 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
           );
 
           const result = await db.manyOrNone(
-            pgp.helpers.insert(values, columns) +
-              " ON CONFLICT DO NOTHING RETURNING 1"
+            pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
           );
           if (backfill && result.length) {
-            logger.info(
+            logger.warn(
               "fetch_orders",
               `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
             );
