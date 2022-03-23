@@ -32,6 +32,8 @@ if (config.doBackgroundWork) {
 
       const listedAfter = minute * 60 - 1;
       const listedBefore = (minute + 1) * 60 + 1;
+      // Wait a random amount of time
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000));
       await fetchOrders(listedAfter, listedBefore, true);
     },
     { connection: redis.duplicate() }
