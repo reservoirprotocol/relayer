@@ -118,5 +118,10 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
       });
   }
 
+  // If no orders found
+  if (numOrders == 0) {
+    throw new Error(`${numOrders} orders found`);
+  }
+
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
 };
