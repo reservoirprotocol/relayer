@@ -28,24 +28,46 @@ if (config.doBackfillWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
-      const { minute } = job.data;
+      const { minute, second } = job.data;
       const currentMinute = Math.floor(getUnixTime(new Date()) / 60);
+      const secondsTimeWindow = 5;
 
       // If we are still in the current minute delay the job
       if (currentMinute == minute) {
         logger.error(BACKFILL_QUEUE_NAME, `Delay minute ${minute}`);
-        await addToBackfillQueue(minute, minute, false, "", 60000);
+        await addToBackfillQueue(minute, minute, 0,false, "", 60000);
         return;
       }
 
-      const listedAfter = minute * 60 - 1;
-      const listedBefore = (minute + 1) * 60 + 1;
+      if (second == 0) {
+        let secondTimeWindow = (minute * 60) + secondsTimeWindow;
+        while (secondTimeWindow <= (minute + 1) * 60) {
+          await addToBackfillQueue(minute, minute, secondTimeWindow);
+          secondTimeWindow += secondsTimeWindow;
+        }
+
+        return;
+      }
+
+      const listedAfter = second - secondsTimeWindow;
+      const listedBefore = second;
+
       // Wait a random amount of time
       await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
       await fetchOrders(listedAfter, listedBefore, true);
     },
     { connection: redis.duplicate() }
   );
+
+  backfillWorker.on("completed", (job) => {
+    const { minute, second } = job.data;
+    const maxAttempts = backfillQueue.defaultJobOptions.attempts;
+
+    logger.info(
+      BACKFILL_QUEUE_NAME,
+      `Sync completed minute=${minute}, second=${second}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}`
+    );
+  });
 
   backfillWorker.on("failed", (job, error) => {
     const { minute } = job.data;
@@ -73,6 +95,7 @@ if (config.doBackfillWork) {
 export const addToBackfillQueue = async (
   fromMinute: number,
   toMinute: number,
+  second: number = 0,
   prioritized = false,
   jobId: string = "",
   delayMs: number = 0
@@ -94,7 +117,7 @@ export const addToBackfillQueue = async (
   await backfillQueue.addBulk(
     minutes.map((minute) => ({
       name: minute.toString(),
-      data: { minute },
+      data: { minute, second },
       opts,
     }))
   );
