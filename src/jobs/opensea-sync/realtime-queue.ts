@@ -11,10 +11,10 @@ const REALTIME_QUEUE_NAME = "realtime-opensea-sync";
 export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
-    attempts: 6,
+    attempts: 5,
     backoff: {
       type: "fixed",
-      delay: 3,
+      delay: 5,
     },
     timeout: 60000,
     removeOnComplete: 10000,
