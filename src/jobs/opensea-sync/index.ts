@@ -10,7 +10,7 @@ import { realtimeQueue } from "./realtime-queue";
 
 import * as openseaSyncRealtime from "./realtime-queue";
 
-if (true) {
+if (config.doBackgroundWork) {
   // Fetch new orders every 1 minute
   cron.schedule("*/1 * * * *", async () => {
     const currentTimestamp = Math.floor(Date.now() / 1000 / 60);
