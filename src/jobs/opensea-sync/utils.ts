@@ -32,7 +32,7 @@ export const fetchOrders = async (
     });
 
     if (backfill) {
-      logger.info("fetch_orders", `url=${url}`);
+      logger.info("fetch_orders", `backfill url=${url}`);
     }
 
     try {
