@@ -70,12 +70,12 @@ if (config.doBackfillWork) {
   });
 
   backfillWorker.on("failed", (job, error) => {
-    const { minute } = job.data;
+    const { minute, second } = job.data;
     const maxAttempts = backfillQueue.defaultJobOptions.attempts;
 
     logger.error(
       BACKFILL_QUEUE_NAME,
-      `Sync failed minute=${minute}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+      `Sync failed minute=${minute}, second=${second}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
     );
 
     // If we reached the max attempts log it
