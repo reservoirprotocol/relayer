@@ -47,9 +47,17 @@ if (config.doBackgroundWork) {
     { connection: redis.duplicate() }
   );
 
-  backfillWorker.on("failed", (job, err) => {
+  backfillWorker.on("failed", (job, error) => {
+    const { minute } = job.data;
+    const maxAttempts = backfillQueue.defaultJobOptions.attempts;
+
+    logger.error(
+      BACKFILL_QUEUE_NAME,
+      `Sync failed minute=${minute}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+    );
+
     // If we reached the max attempts log it
-    if (job.attemptsMade == backfillQueue.defaultJobOptions.attempts) {
+    if (job.attemptsMade == maxAttempts) {
       logger.error(
         BACKFILL_QUEUE_NAME,
         `Max retries reached, attemptsMade= ${job.attemptsMade}, data=${JSON.stringify(job.data)}`
