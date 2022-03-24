@@ -119,7 +119,7 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
   }
 
   // If no orders found
-  if (numOrders == 0) {
+  if (!backfill && numOrders == 0) {
     throw new Error(`${numOrders} orders found`);
   }
 

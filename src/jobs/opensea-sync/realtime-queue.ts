@@ -64,7 +64,7 @@ if (config.doRealtimeWork) {
 
     logger.error(
       REALTIME_QUEUE_NAME,
-      `Realtime sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+      `Sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
     );
 
     // If we reached the max attempts log it

@@ -53,7 +53,7 @@ if (config.doBackgroundWork) {
 
     logger.error(
       BACKFILL_QUEUE_NAME,
-      `Realtime sync failed minute=${minute}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
+      `Sync failed minute=${minute}, attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
     );
 
     // If we reached the max attempts log it
