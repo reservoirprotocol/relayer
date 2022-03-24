@@ -1,9 +1,9 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis } from "../../common/redis";
+import { redis, extendLock } from "../../common/redis";
 import { config } from "../../config";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
-import * as openseaSyncBackfill from "./backfill-queue";
+import { getUnixTime } from "date-fns";
 
 const REALTIME_QUEUE_NAME = "realtime-opensea-sync";
 
@@ -26,57 +26,40 @@ if (config.doRealtimeWork) {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
-      const second = job.data.second;
-      const interval = job.data.interval;
-
-      // OpenSea listed_after / listed_before are exclusive
-      const listedAfter = second - interval - 1;
-
       try {
-        await fetchOrders(listedAfter, second);
+        const cacheKey = "opensea-sync-last-second";
+        const lastSyncedSecond = Number(await redis.get(cacheKey));
+        job.data.lastSyncedSecond = lastSyncedSecond; // Set the last synced seconds to the job data
+
+        const lastCreatedDate = await fetchOrders(lastSyncedSecond);
+        const lastCreatedDateUnix = getUnixTime(new Date(lastCreatedDate));
+
+        // If we have new last date created update the cache
+        if (lastCreatedDateUnix > lastSyncedSecond) {
+          await redis.set(cacheKey, lastCreatedDateUnix);
+        }
       } catch (error) {
-        throw error;
+        logger.error(
+          REALTIME_QUEUE_NAME,
+          `Sync failed lastSyncedSecond=(${job.data.lastSyncedSecond}), attempts=${job.attemptsMade}, error=${error}`
+        );
       }
     },
     { connection: redis.duplicate() }
   );
 
-  realtimeWorker.on("completed", (job) => {
-    if (job.attemptsMade > 0) {
-      const second = job.data.second;
-      const interval = job.data.interval;
-      const listedAfter = second - interval - 1;
+  realtimeWorker.on("completed", async (job) => {
+    // Set the next sync attempt
+    const lockExtended = await extendLock("opensea-sync-lock", 60);
 
+    if (lockExtended) {
+      await addToRealtimeQueue(5000);
+    }
+
+    if (job.attemptsMade > 0) {
       logger.info(
         REALTIME_QUEUE_NAME,
-        `Realtime sync recover timeframe=(${listedAfter}, ${second}) attempts=${job.attemptsMade}`
-      );
-    }
-  });
-
-  realtimeWorker.on("failed", async (job, error) => {
-    const second = job.data.second;
-    const interval = job.data.interval;
-
-    const minute = Math.floor(second / 60);
-    const listedAfter = second - interval - 1;
-    const maxAttempts = realtimeQueue.defaultJobOptions.attempts;
-
-    logger.error(
-      REALTIME_QUEUE_NAME,
-      `Sync failed timeframe=(${listedAfter}, ${second}), attempts=${job.attemptsMade} maxAttempts=${maxAttempts}, error=${error}`
-    );
-
-    // If we reached the max attempts log it
-    if (job.attemptsMade == realtimeQueue.defaultJobOptions.attempts) {
-      // In case we maxed the retries attempted, retry the job via the backfill queue
-      await openseaSyncBackfill.addToBackfillQueue(minute, minute, true, `${minute}`);
-
-      logger.error(
-        REALTIME_QUEUE_NAME,
-        `Max retries reached, attemptsMade=${
-          job.attemptsMade
-        }, minute=${minute}, data=${JSON.stringify(job.data)}`
+        `Sync recover lastSyncedSecond=(${job.data.lastSyncedSecond}) attempts=${job.attemptsMade}`
       );
     }
   });
@@ -86,6 +69,6 @@ if (config.doRealtimeWork) {
   });
 }
 
-export const addToRealtimeQueue = async (second: number, interval: number, delayMs: number = 0) => {
-  await realtimeQueue.add(second.toString(), { second, interval }, { delay: delayMs });
+export const addToRealtimeQueue = async (delayMs: number = 0) => {
+  await realtimeQueue.add(REALTIME_QUEUE_NAME, {}, { delay: delayMs });
 };

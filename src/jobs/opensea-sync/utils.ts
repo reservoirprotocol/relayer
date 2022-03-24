@@ -8,11 +8,17 @@ import { config } from "../../config";
 import { OpenSeaOrder, buildFetchOrdersURL, parseOpenSeaOrder } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
-export const fetchOrders = async (listedAfter: number, listedBefore: number, backfill = false) => {
+export const fetchOrders = async (
+  listedAfter: number,
+  listedBefore: number = 0,
+  backfill = false
+) => {
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
   let offset = 0;
   let limit = 50;
+  let maxOrdersToFetch = 1000;
+  let lastCreatedDate: string = "";
 
   let numOrders = 0;
 
@@ -87,6 +93,7 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
           const result = await db.manyOrNone(
             pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
           );
+
           if (backfill && result.length) {
             logger.warn(
               "fetch_orders",
@@ -113,15 +120,20 @@ export const fetchOrders = async (listedAfter: number, listedBefore: number, bac
           offset += limit;
         }
 
+        // If this is real time sync, and we reached the max orders to fetch -> end the loop and new job will trigger
+        if (!backfill && numOrders >= maxOrdersToFetch) {
+          done = true;
+        }
+
+        if (orders.length) {
+          lastCreatedDate = orders[orders.length - 1].created_date;
+        }
+
         // Wait for one second to avoid rate-limiting
         await new Promise((resolve) => setTimeout(resolve, 1000));
       });
   }
 
-  // If no orders found
-  if (!backfill && numOrders == 0) {
-    throw new Error(`${numOrders} orders found`);
-  }
-
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
+  return lastCreatedDate;
 };

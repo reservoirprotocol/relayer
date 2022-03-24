@@ -21,7 +21,6 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
 
   const searchParams = new URLSearchParams({
     listed_after: String(params.listedAfter),
-    listed_before: String(params.listedBefore),
     offset: String(params.offset),
     limit: String(params.limit),
     side: "1",
@@ -29,7 +28,14 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     bundled: "false",
     include_bundled: "false",
     include_invalid: "false",
+    order_by: "created_date",
+    order_direction: "asc",
   });
+
+  if (params.listedBefore) {
+    (searchParams as any).listed_before = String(params.listedBefore);
+  }
+
   return `${baseOpenSeaApiUrl}/orders?${searchParams.toString()}`;
 };
 
