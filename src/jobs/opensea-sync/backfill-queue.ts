@@ -39,7 +39,7 @@ if (config.doBackfillWork) {
         return;
       }
 
-      if (second == 0) {
+      if (!second) {
         let secondTimeWindow = (minute * 60) + secondsTimeWindow;
         while (secondTimeWindow <= (minute + 1) * 60) {
           await addToBackfillQueue(minute, minute, secondTimeWindow);
