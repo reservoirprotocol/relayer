@@ -19,7 +19,7 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     baseOpenSeaApiUrl = "https://rinkeby-api.opensea.io/wyvern/v1";
   }
 
-  const searchParams = new URLSearchParams({
+  let searchParams = new URLSearchParams({
     listed_after: String(params.listedAfter),
     offset: String(params.offset),
     limit: String(params.limit),
