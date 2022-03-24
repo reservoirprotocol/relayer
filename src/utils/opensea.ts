@@ -2,6 +2,7 @@ import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
+import {logger} from "../common/logger";
 
 type FetchOrdersParams = {
   listedAfter: number;
@@ -33,9 +34,8 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
   });
 
   if (params.listedBefore) {
-    (searchParams as any).listed_before = String(params.listedBefore);
+    searchParams.append("listed_before", String(params.listedBefore));
   }
-
   return `${baseOpenSeaApiUrl}/orders?${searchParams.toString()}`;
 };
 
