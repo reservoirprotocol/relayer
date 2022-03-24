@@ -13,7 +13,7 @@ import * as openseaSyncRealtime from "./realtime-queue";
 if (config.doBackgroundWork) {
   // Fetch new orders every 1 minute
   cron.schedule("*/1 * * * *", async () => {
-    const currentTimestamp = Math.floor(Date.now() / 1000 / 60);
+    const currentTimestamp = Math.floor(Date.now() / 1000);
 
     const lockAcquired = await acquireLock("opensea-sync-lock", 60);
 

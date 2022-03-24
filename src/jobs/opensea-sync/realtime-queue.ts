@@ -50,8 +50,11 @@ if (config.doRealtimeWork) {
 
   realtimeWorker.on("completed", async (job) => {
     // Set the next sync attempt
-    await addToRealtimeQueue(5000);
-    await extendLock("opensea-sync-lock", 60);
+    const lockExtended = await extendLock("opensea-sync-lock", 60);
+
+    if (lockExtended) {
+      await addToRealtimeQueue(5000);
+    }
 
     if (job.attemptsMade > 0) {
       logger.info(
