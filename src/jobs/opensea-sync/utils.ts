@@ -31,8 +31,8 @@ export const fetchOrders = async (
       limit,
     });
 
-    await axios
-      .get(
+    try {
+      const response = await axios.get(
         url,
         config.chainId === 1
           ? {
@@ -46,101 +46,100 @@ export const fetchOrders = async (
             }
           : // Skip including the API key on Rinkeby or else the request will fail
             { timeout: 10000 }
-      )
-      .then(async (response: any) => {
-        const orders: OpenSeaOrder[] = response.data.orders;
-        const parsedOrders: Sdk.WyvernV23.Order[] = [];
+      );
 
-        const values: any[] = [];
+      const orders: OpenSeaOrder[] = response.data.orders;
+      const parsedOrders: Sdk.WyvernV23.Order[] = [];
 
-        const handleOrder = async (order: OpenSeaOrder) => {
-          let orderTarget = order.target;
+      const values: any[] = [];
 
-          const parsed = await parseOpenSeaOrder(order);
-          if (parsed) {
-            parsedOrders.push(parsed);
+      const handleOrder = async (order: OpenSeaOrder) => {
+        let orderTarget = order.target;
 
-            const info = parsed.getInfo();
-            if (info) {
-              orderTarget = info.contract;
-            }
+        const parsed = await parseOpenSeaOrder(order);
+        if (parsed) {
+          parsedOrders.push(parsed);
 
-            if ((parsed.params as any).nonce) {
-              (order as any).nonce = (parsed.params as any).nonce;
-            }
+          const info = parsed.getInfo();
+          if (info) {
+            orderTarget = info.contract;
           }
 
-          delete (order as any).asset;
-
-          values.push({
-            hash: order.prefixed_hash,
-            target: orderTarget,
-            maker: order.maker.address,
-            created_at: new Date(order.created_date),
-            data: order as any,
-          });
-        };
-
-        const plimit = pLimit(20);
-        await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
-
-        if (values.length) {
-          const columns = new pgp.helpers.ColumnSet(
-            ["hash", "target", "maker", "created_at", "data"],
-            { table: "orders_v23" }
-          );
-
-          const result = await db.manyOrNone(
-            pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
-          );
-
-          if (backfill && result.length) {
-            logger.warn(
-              "fetch_orders",
-              `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
-            );
+          if ((parsed.params as any).nonce) {
+            (order as any).nonce = (parsed.params as any).nonce;
           }
         }
 
-        if (parsedOrders.length) {
-          await addToRelayOrdersQueue(
-            parsedOrders.map((order) => ({
-              kind: "wyvern-v2.3",
-              data: order.params,
-            })),
-            true
+        delete (order as any).asset;
+
+        values.push({
+          hash: order.prefixed_hash,
+          target: orderTarget,
+          maker: order.maker.address,
+          created_at: new Date(order.created_date),
+          data: order as any,
+        });
+      };
+
+      const plimit = pLimit(20);
+      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+
+      if (values.length) {
+        const columns = new pgp.helpers.ColumnSet(
+          ["hash", "target", "maker", "created_at", "data"],
+          { table: "orders_v23" }
+        );
+
+        const result = await db.manyOrNone(
+          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        );
+
+        if (backfill && result.length) {
+          logger.warn(
+            "fetch_orders",
+            `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
           );
         }
+      }
 
-        numOrders += orders.length;
+      if (parsedOrders.length) {
+        await addToRelayOrdersQueue(
+          parsedOrders.map((order) => ({
+            kind: "wyvern-v2.3",
+            data: order.params,
+          })),
+          true
+        );
+      }
 
-        if (orders.length < limit) {
-          done = true;
-        } else {
-          offset += limit;
-        }
+      numOrders += orders.length;
 
-        // If this is real time sync, and we reached the max orders to fetch -> end the loop and new job will trigger
-        if (!backfill && numOrders >= maxOrdersToFetch) {
-          done = true;
-        }
+      if (orders.length < limit) {
+        done = true;
+      } else {
+        offset += limit;
+      }
 
-        if (orders.length) {
-          lastCreatedDate = orders[orders.length - 1].created_date;
-        }
+      // If this is real time sync, and we reached the max orders to fetch -> end the loop and new job will trigger
+      if (!backfill && numOrders >= maxOrdersToFetch) {
+        done = true;
+      }
 
-        // Wait for one second to avoid rate-limiting
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      })
-      .catch((error) => {
-        // If realtime sync return the lastCreatedDate
-        if (!backfill) {
-          logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
-          return lastCreatedDate;
-        }
+      if (orders.length) {
+        lastCreatedDate = orders[orders.length - 1].created_date;
+      }
 
-        throw error;
-      });
+      // Wait for one second to avoid rate-limiting
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (error) {
+      // If realtime sync return the lastCreatedDate
+      if (!backfill) {
+        logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
+        return lastCreatedDate;
+      }
+
+      throw error;
+    }
   }
 
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
