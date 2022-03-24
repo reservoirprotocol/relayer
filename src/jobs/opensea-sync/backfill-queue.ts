@@ -3,7 +3,7 @@ import { redis } from "../../common/redis";
 import { config } from "../../config";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
-import { getUnixTime } from 'date-fns'
+import { getUnixTime } from "date-fns";
 
 const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 
@@ -34,14 +34,14 @@ if (config.doBackgroundWork) {
       // If we are still in the current minute delay the job
       if (currentMinute == minute) {
         logger.error(BACKFILL_QUEUE_NAME, `Delay minute ${minute}`);
-        await addToBackfillQueue(minute, minute, false, '', 60000);
+        await addToBackfillQueue(minute, minute, false, "", 60000);
         return;
       }
 
       const listedAfter = minute * 60 - 1;
       const listedBefore = (minute + 1) * 60 + 1;
       // Wait a random amount of time
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000));
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
       await fetchOrders(listedAfter, listedBefore, true);
     },
     { connection: redis.duplicate() }
@@ -79,7 +79,7 @@ export const addToBackfillQueue = async (
     priority: prioritized ? 1 : undefined,
   };
 
-  if (jobId != '') {
+  if (jobId != "") {
     (opts as any).jobId = jobId;
   }
 
