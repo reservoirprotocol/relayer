@@ -142,6 +142,6 @@ export const fetchOrders = async (
     }
   }
 
-  logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
+  logger.info("fetch_orders", `FINAL - (${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
   return lastCreatedDate;
 };
