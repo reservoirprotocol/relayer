@@ -24,6 +24,14 @@ export const acquireLock = async (name: string, expirationInSeconds: number) => 
   return acquired === "OK";
 };
 
+export const extendLock = async (name: string, expirationInSeconds: number) => {
+  const id = uuidv4();
+  lockIds.set(name, id);
+
+  const extended = await redis.set(name, id, "EX", expirationInSeconds, "XX");
+  return extended === "OK";
+};
+
 export const releaseLock = async (name: string) => {
   const currentId = await redis.get(name);
   if (currentId === lockIds.get(name)) {
