@@ -4,7 +4,6 @@ import { config } from "../../config";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { getUnixTime } from 'date-fns'
-import {min} from "lodash";
 
 const BACKFILL_QUEUE_NAME = "backfill-opensea-sync";
 
