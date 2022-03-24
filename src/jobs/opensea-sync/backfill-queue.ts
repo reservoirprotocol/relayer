@@ -75,15 +75,20 @@ export const addToBackfillQueue = async (
     minutes.push(minute);
   }
 
+  const opts = {
+    delay: delayMs,
+    priority: prioritized ? 1 : undefined,
+  };
+
+  if (jobId != '') {
+    (opts as any).jobId = jobId;
+  }
+
   await backfillQueue.addBulk(
     minutes.map((minute) => ({
       name: minute.toString(),
       data: { minute },
-      opts: {
-        delay: delayMs,
-        priority: prioritized ? 1 : undefined,
-        jobId,
-      },
+      opts,
     }))
   );
 };
