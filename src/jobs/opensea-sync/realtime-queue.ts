@@ -32,11 +32,15 @@ if (config.doRealtimeWork) {
         job.data.lastSyncedSecond = lastSyncedSecond; // Set the last synced seconds to the job data
 
         const lastCreatedDate = await fetchOrders(lastSyncedSecond);
-        const lastCreatedDateUnix = getUnixTime(new Date(lastCreatedDate));
 
-        // If we have new last date created update the cache
-        if (lastCreatedDateUnix > lastSyncedSecond) {
-          await redis.set(cacheKey, lastCreatedDateUnix);
+        // If new last created date was returned
+        if (lastCreatedDate) {
+          const lastCreatedDateUnix = getUnixTime(new Date(lastCreatedDate));
+
+          // If we have new last date created update the cache
+          if (lastCreatedDateUnix > lastSyncedSecond) {
+            await redis.set(cacheKey, lastCreatedDateUnix);
+          }
         }
       } catch (error) {
         logger.error(
