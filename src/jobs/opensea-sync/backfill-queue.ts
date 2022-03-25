@@ -30,7 +30,7 @@ if (config.doBackfillWork) {
     async (job: Job) => {
       const { minute, second } = job.data;
       const currentMinute = Math.floor(getUnixTime(new Date()) / 60);
-      const secondsTimeWindow = 5;
+      const secondsTimeWindow = 20;
 
       // If we are still in the current minute delay the job
       if (currentMinute == minute) {
