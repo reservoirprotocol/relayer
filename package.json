@@ -18,7 +18,7 @@
     "lint-check": "eslint --max-warnings 0 --ext .js,.ts,.json src",
     "format-check": "prettier --check \"src/**/*.+(js|ts|json)\"",
     "format": "prettier --write \"src/**/*.+(js|ts|json)\"",
-    "postinstall": "husky install"
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@bull-board/express": "^3.9.0",
