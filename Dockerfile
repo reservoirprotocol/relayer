@@ -4,6 +4,6 @@ ARG DATABASE_URL
 
 WORKDIR /opensea-indexer
 ADD . /opensea-indexer
-RUN yarn install
+RUN yarn install --frozen-lockfile --production
 RUN yarn build
 CMD yarn start
