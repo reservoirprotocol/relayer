@@ -107,7 +107,6 @@ export const fetchOrders = async (
             parsedOrders.map((order) => ({
               kind: "wyvern-v2.3",
               data: order.params,
-              logKey: backfill ? "backfill" : undefined,
             })),
             true
           );
