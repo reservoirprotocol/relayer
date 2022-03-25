@@ -15,7 +15,7 @@ if (config.doRealtimeWork) {
   cron.schedule("*/1 * * * *", async () => {
     const currentTimestamp = Math.floor(Date.now() / 1000);
 
-    const lockAcquired = await acquireLock("opensea-sync-lock", 60);
+    const lockAcquired = await acquireLock("opensea-sync-lock", 120);
 
     if (lockAcquired) {
       const cacheKey = "opensea-sync-last-second";
