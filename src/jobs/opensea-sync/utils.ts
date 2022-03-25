@@ -134,7 +134,7 @@ export const fetchOrders = async (
     } catch (error) {
       // If realtime sync return the lastCreatedDate
       if (!backfill) {
-        logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders`);
+        logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders error=${error}`);
         return lastCreatedDate;
       }
 
