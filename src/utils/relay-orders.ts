@@ -108,7 +108,6 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
         validOrders.map((order) => ({
           kind: "wyvern-v2.3",
           data: order.params,
-          logKey: "relay",
         }))
       );
     }
