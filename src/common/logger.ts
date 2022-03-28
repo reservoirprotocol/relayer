@@ -4,7 +4,7 @@ import { config } from "../config";
 
 const log = (level: "debug" | "error" | "info" | "warn") => {
   const network = config.chainId === 1 ? "mainnet" : "rinkeby";
-  const service = `opensea-indexer-${network}`;
+  const service = `relayer-${network}`;
 
   const logger = createLogger({
     exitOnError: false,
