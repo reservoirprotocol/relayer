@@ -1,6 +1,6 @@
-# Opensea Indexer
+# Relayer
 
-Service for continuously monitoring/indexing Opensea data (eg. orders, assets).
+Service for continuously monitoring/indexing orders from various marketplaces (eg. OpenSea, LooksRare).
 
 ### Setup
 
