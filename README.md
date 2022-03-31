@@ -1,6 +1,6 @@
 # Relayer
 
-Service for continuously monitoring/indexing orders from various marketplaces (eg. OpenSea, LooksRare).
+Service for monitoring/indexing orders from various marketplaces (eg. OpenSea, LooksRare).
 
 ### Setup
 
