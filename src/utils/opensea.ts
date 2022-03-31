@@ -2,7 +2,7 @@ import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
-import {logger} from "../common/logger";
+import { logger } from "../common/logger";
 
 type FetchOrdersParams = {
   listedAfter: number;
@@ -37,43 +37,6 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     searchParams.append("listed_before", String(params.listedBefore));
   }
   return `${baseOpenSeaApiUrl}/orders?${searchParams.toString()}`;
-};
-
-type FetchAssetsParams = {
-  contract?: string;
-  tokenIds?: string[];
-  collection?: string;
-  offset?: number;
-  limit?: number;
-};
-
-// https://docs.opensea.io/reference/getting-assets
-export const buildFetchAssetsURL = (params: FetchAssetsParams) => {
-  let baseOpenSeaApiUrl: string;
-  if (config.chainId === 1) {
-    baseOpenSeaApiUrl = "https://api.opensea.io/api/v1";
-  } else {
-    baseOpenSeaApiUrl = "https://rinkeby-api.opensea.io/api/v1";
-  }
-
-  let searchParams: URLSearchParams;
-  if (params.collection) {
-    searchParams = new URLSearchParams({
-      collection: params.collection,
-      offset: String(params.offset),
-      limit: String(params.limit),
-    });
-  } else if (params.contract && params.tokenIds) {
-    searchParams = new URLSearchParams({
-      asset_contract_address: params.contract,
-    });
-    for (const tokenId of params.tokenIds) {
-      searchParams.append("token_ids", tokenId);
-    }
-  }
-  searchParams!.append("include_orders", "true");
-
-  return `${baseOpenSeaApiUrl}/assets?${searchParams!.toString()}`;
 };
 
 type FetchEventsParams = {

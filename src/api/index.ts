@@ -7,7 +7,6 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
-import { addToOpenSeaRaribleQueue } from "../jobs/opensea-rarible-sync";
 import { addToBackfillQueue } from "../jobs/opensea-sync/backfill-queue";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
@@ -70,15 +69,6 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await relayOrdersByTimestamp(req.body.fromTimestamp, req.body.toTimestamp);
-    })
-  );
-
-  app.post(
-    "/sync/opensea-rarible",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      await addToOpenSeaRaribleQueue(null, req.body.stop);
     })
   );
 

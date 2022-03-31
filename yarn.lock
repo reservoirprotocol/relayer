@@ -501,10 +501,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.34.tgz#13611ff0a229082c4ac8ad7ed3631f1d87a5c7fb"
-  integrity sha512-VcPPxNUzoHynrxmc6nF3jbQswIQgRhb+NDguVCaeag90//pupo5lHlZUl2iVlinqP0mMLedEcWNiRZeLHsy4Jw==
+"@reservoir0x/sdk@0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.37.tgz#07344acf51133412b15f2831e9ca1f1e09ec1164"
+  integrity sha512-8AXoLSdltO7o/mCpkAnCicuWPgDsUmv2+j3F/ysImnrExR5b5DEF+Coe1LgR0oN4o/TAk74UT3CYLjvpOXmbSw==
   dependencies:
     ethers "^5.5.2"
     merkletreejs "^0.2.27"

@@ -1,35 +1,45 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import pLimit from "p-limit";
+import _ from "lodash";
 
 import { db, pgp } from "../../common/db";
-import { logger } from "../../common/logger";
 import { config } from "../../config";
-import { OpenSeaOrder, buildFetchOrdersURL, parseOpenSeaOrder } from "../../utils/opensea";
 import { addToRelayOrdersQueue } from "../relay-orders";
+import { logger } from "../../common/logger";
+import { LooksRare, LooksRareOrder } from "../../utils/looksrare";
 
 export const fetchOrders = async (
-  listedAfter: number,
-  listedBefore: number = 0,
+  lastSyncedHash: string = "",
+  cursor: string = "",
+  startTime: number = 0,
+  endTime: number = 0,
   backfill = false
 ) => {
-  logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
+  logger.info(
+    "fetch_orders",
+    `lastSyncedHash = ${lastSyncedHash}, cursor = ${cursor} Fetching orders from LooksRare`
+  );
 
-  let offset = 0;
-  let limit = 50;
+  const looksRare = new LooksRare();
+  let limit = 20;
   let maxOrdersToFetch = 1000;
-  let lastCreatedDate: string = "";
+  let mostRecentCreatedHash: string = "";
 
   let numOrders = 0;
 
   let done = false;
   while (!done) {
-    const url = buildFetchOrdersURL({
-      listedAfter,
-      listedBefore,
-      offset,
-      limit,
-    });
+    const url = looksRare.buildFetchOrdersURL(
+      {
+        startTime,
+        endTime,
+      },
+      {
+        limit,
+        cursor,
+      }
+    );
 
     try {
       const response = await axios.get(
@@ -37,8 +47,6 @@ export const fetchOrders = async (
         config.chainId === 1
           ? {
               headers: {
-                "x-api-key": backfill ? config.backfillOpenseaApiKey : config.realtimeOpenseaApiKey,
-                // https://twitter.com/lefterisjp/status/1483222328595165187?s=21
                 "user-agent":
                   "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
               },
@@ -48,35 +56,24 @@ export const fetchOrders = async (
             { timeout: 10000 }
       );
 
-      const orders: OpenSeaOrder[] = response.data.orders;
-      const parsedOrders: Sdk.WyvernV23.Order[] = [];
+      const orders: LooksRareOrder[] = response.data.data;
+      const parsedOrders: Sdk.LooksRare.Order[] = [];
 
       const values: any[] = [];
 
-      const handleOrder = async (order: OpenSeaOrder) => {
-        let orderTarget = order.target;
+      const handleOrder = async (order: LooksRareOrder) => {
+        const orderTarget = order.collectionAddress;
+        const parsed = await looksRare.parseLooksRareOrder(order);
 
-        const parsed = await parseOpenSeaOrder(order);
         if (parsed) {
           parsedOrders.push(parsed);
-
-          const info = parsed.getInfo();
-          if (info) {
-            orderTarget = info.contract;
-          }
-
-          if ((parsed.params as any).nonce) {
-            (order as any).nonce = (parsed.params as any).nonce;
-          }
         }
 
-        delete (order as any).asset;
-
         values.push({
-          hash: order.prefixed_hash,
+          hash: order.hash,
           target: orderTarget,
-          maker: order.maker.address,
-          created_at: new Date(order.created_date),
+          maker: order.signer,
+          created_at: new Date(order.startTime),
           data: order as any,
         });
       };
@@ -97,7 +94,7 @@ export const fetchOrders = async (
         if (backfill && result.length) {
           logger.warn(
             "fetch_orders",
-            `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
+            `(${startTime}, ${endTime}) Backfilled ${result.length} new orders`
           );
         }
       }
@@ -105,7 +102,7 @@ export const fetchOrders = async (
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
           parsedOrders.map((order) => ({
-            kind: "wyvern-v2.3",
+            kind: "looks-rare",
             data: order.params,
           })),
           true
@@ -114,31 +111,40 @@ export const fetchOrders = async (
 
       numOrders += orders.length;
 
-      if (orders.length < limit) {
-        done = true;
+      // Check if we reached the last synced order
+      const lastSyncedOrder = _.filter(orders, (order) => order.hash === lastSyncedHash);
+
+      if (!_.isEmpty(orders) && _.isEmpty(lastSyncedOrder)) {
+        // Last synced order wasn't found
+        const lastOrder = _.last(orders);
+
+        if (lastOrder) {
+          cursor = lastOrder.hash;
+        }
       } else {
-        offset += limit;
-      }
-
-      // If this is real time sync, and we reached the max orders to fetch -> end the loop and new job will trigger
-      if (!backfill && numOrders >= maxOrdersToFetch) {
         done = true;
       }
 
-      if (orders.length) {
-        lastCreatedDate = orders[orders.length - 1].created_date;
+      // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
+      if (cursor != "" && numOrders >= maxOrdersToFetch) {
+        return [mostRecentCreatedHash, cursor];
       }
 
-      // Wait for one second to avoid rate-limiting
+      if (mostRecentCreatedHash === "" && orders.length) {
+        mostRecentCreatedHash = orders[0].hash;
+      }
+
+      // Wait to avoid rate-limiting
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       // If realtime sync return the lastCreatedDate
       if (!backfill) {
         logger.info(
           "fetch_orders",
-          `(${listedAfter}, ${listedBefore}) Got ${numOrders} orders error=${error}`
+          `(${startTime}, ${endTime}) Got ${numOrders} orders error=${error}`
         );
-        return lastCreatedDate;
+
+        return [mostRecentCreatedHash, ""];
       }
 
       throw error;
@@ -147,7 +153,8 @@ export const fetchOrders = async (
 
   logger.info(
     "fetch_orders",
-    `FINAL - OpenSea - (${listedAfter}, ${listedBefore}) Got ${numOrders} orders up to ${lastCreatedDate}`
+    `FINAL - LooksRare - (${startTime}, ${endTime}) Got ${numOrders} orders`
   );
-  return lastCreatedDate;
+
+  return [mostRecentCreatedHash, ""];
 };
