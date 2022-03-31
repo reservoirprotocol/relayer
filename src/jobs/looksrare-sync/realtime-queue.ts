@@ -59,11 +59,13 @@ if (config.doRealtimeWork) {
   );
 
   realtimeWorker.on("completed", async (job) => {
+    let { cursor } = job.data;
+
     // Set the next sync attempt
     const lockExtended = await extendLock("looksrare-sync-lock", 120);
 
-    if (lockExtended) {
-      await addToRealtimeQueue(5000);
+    if (lockExtended && cursor == '') {
+      await addToRealtimeQueue(10000);
     }
 
     if (job.attemptsMade > 0) {
