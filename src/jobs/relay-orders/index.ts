@@ -54,7 +54,7 @@ if (config.doBackgroundWork) {
               )
               .catch((error) => {
                 logger.error("relay_orders", `Failed to relay orders to Indexer V3: ${error}`);
-                throw error;
+                // throw error;
               })
           );
         }
