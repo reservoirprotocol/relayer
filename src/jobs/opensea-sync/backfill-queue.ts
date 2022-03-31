@@ -35,12 +35,12 @@ if (config.doBackfillWork) {
       // If we are still in the current minute delay the job
       if (currentMinute == minute) {
         logger.error(BACKFILL_QUEUE_NAME, `Delay minute ${minute}`);
-        await addToBackfillQueue(minute, minute, 0,false, "", 60000);
+        await addToBackfillQueue(minute, minute, 0, false, "", 60000);
         return;
       }
 
       if (!second) {
-        let secondTimeWindow = (minute * 60) + secondsTimeWindow;
+        let secondTimeWindow = minute * 60 + secondsTimeWindow;
         while (secondTimeWindow <= (minute + 1) * 60) {
           await addToBackfillQueue(minute, minute, secondTimeWindow);
           secondTimeWindow += secondsTimeWindow;
