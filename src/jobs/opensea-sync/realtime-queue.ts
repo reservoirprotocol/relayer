@@ -4,6 +4,7 @@ import { config } from "../../config";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { getUnixTime } from "date-fns";
+import { addToBackfillQueue } from "./backfill-queue";
 
 const REALTIME_QUEUE_NAME = "realtime-opensea-sync";
 
@@ -32,6 +33,9 @@ if (config.doRealtimeWork) {
         job.data.lastSyncedSecond = lastSyncedSecond; // Set the last synced seconds to the job data
 
         const lastCreatedDate = await fetchOrders(lastSyncedSecond);
+
+        const minute = Math.floor(lastSyncedSecond / 60);
+        await addToBackfillQueue(minute, minute, 0, false, minute.toString(), 2 * 60000);
 
         // If new last created date was returned
         if (lastCreatedDate) {
