@@ -27,7 +27,7 @@ if (config.doRealtimeWork) {
         await redis.set(cacheKey, lastSyncedSecond);
       }
 
-      await openseaSyncRealtime.addToRealtimeQueue();
+      await openseaSyncRealtime.addToRealtimeQueue(30000);
 
       logger.info(realtimeQueue.name, `Start sync from lastSyncedSecond=(${lastSyncedSecond})`);
     }

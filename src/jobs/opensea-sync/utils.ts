@@ -114,7 +114,7 @@ export const fetchOrders = async (
 
       numOrders += orders.length;
 
-      logger.info("debug", `${url} - ${orders.length}`);
+      logger.info("debug", `${orders.length} - ${url}`);
 
       if (orders.length < limit) {
         done = true;
