@@ -27,6 +27,7 @@ if (config.doRealtimeWork) {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
+      return;
       try {
         const cacheKey = "opensea-sync-last-second";
         const lastSyncedSecond = Number(await redis.get(cacheKey));
@@ -57,11 +58,12 @@ if (config.doRealtimeWork) {
   );
 
   realtimeWorker.on("completed", async (job) => {
+    return;
     // Set the next sync attempt
     const lockExtended = await extendLock("opensea-sync-lock", 120);
 
     if (lockExtended) {
-      // await addToRealtimeQueue(1000);
+      await addToRealtimeQueue(1000);
     }
 
     if (job.attemptsMade > 0) {
