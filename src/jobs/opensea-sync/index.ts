@@ -21,7 +21,7 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doBackgroundWork) {
+if (config.doRealtimeWork) {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
