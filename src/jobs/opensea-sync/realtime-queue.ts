@@ -57,7 +57,7 @@ if (config.doRealtimeWork) {
     const lockExtended = await extendLock("opensea-sync-lock", 120);
 
     if (lockExtended) {
-      await addToRealtimeQueue(30000);
+      await addToRealtimeQueue(1000);
     }
 
     if (job.attemptsMade > 0) {
