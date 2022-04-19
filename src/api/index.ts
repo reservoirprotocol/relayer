@@ -7,7 +7,7 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
-import { addToBackfillQueue } from "../jobs/opensea-sync/backfill-queue";
+import { addToBackfillQueue } from "../jobs/opensea-sync";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
