@@ -14,7 +14,7 @@ export const fetchOrders = async (
   backfill = false
 ) => {
   // HACK: Sync with a delay of 1 minute
-  listedAfter -= 60;
+  listedAfter -= 90;
 
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
