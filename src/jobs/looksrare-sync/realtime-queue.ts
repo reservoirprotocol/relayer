@@ -55,7 +55,7 @@ if (config.doRealtimeWork) {
         );
       }
     },
-    { connection: redis.duplicate() }
+    { connection: redis.duplicate(), concurrency: 2 }
   );
 
   realtimeWorker.on("completed", async (job) => {

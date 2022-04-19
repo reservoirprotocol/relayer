@@ -52,8 +52,8 @@ if (config.doBackgroundWork) {
                 { orders },
                 { timeout: 3 * 60000 }
               )
-              .catch((error) => {
-                logger.error("relay_orders", `Failed to relay orders to Indexer V3: ${error}`);
+              .catch(() => {
+                // logger.error("relay_orders", `Failed to relay orders to Indexer V3: ${error}`);
                 // throw error;
               })
           );

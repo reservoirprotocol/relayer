@@ -13,6 +13,9 @@ export const fetchOrders = async (
   listedBefore: number = 0,
   backfill = false
 ) => {
+  // HACK: Sync with a delay of 1 minute
+  listedAfter -= 70;
+
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
   let offset = 0;
@@ -113,6 +116,8 @@ export const fetchOrders = async (
       }
 
       numOrders += orders.length;
+
+      logger.info("debug", `${orders.length} - ${url}`);
 
       if (orders.length < limit) {
         done = true;
