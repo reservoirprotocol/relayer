@@ -30,7 +30,6 @@ export const fetchOrders = async (
       offset,
       limit,
     });
-    logger.info("debug", `URL: ${url}`);
 
     try {
       const response = await axios.get(
@@ -114,6 +113,8 @@ export const fetchOrders = async (
       }
 
       numOrders += orders.length;
+
+      logger.info("debug", `${url} - ${orders.length}`);
 
       if (orders.length < limit) {
         done = true;
