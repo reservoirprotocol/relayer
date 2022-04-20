@@ -15,7 +15,7 @@ const LIVE_QUEUE_NAME = "live-opensea-sync";
 export const liveQueue = new Queue(LIVE_QUEUE_NAME, {
   connection: redis.duplicate(),
   defaultJobOptions: {
-    timeout: 5000,
+    timeout: 2000,
     removeOnComplete: 100,
     removeOnFail: 100,
   },
@@ -144,7 +144,7 @@ export const addToBackfillQueue = async (
 };
 
 if (config.doLiveWork) {
-  cron.schedule("*/5 * * * * *", async () => {
+  cron.schedule("*/2 * * * * *", async () => {
     await addToLiveQueue();
   });
 }
