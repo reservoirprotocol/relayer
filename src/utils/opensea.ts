@@ -6,6 +6,7 @@ import { config } from "../config";
 type FetchOrdersParams = {
   listedAfter?: number;
   listedBefore?: number;
+  orderDirection?: "asc" | "desc";
   offset: number;
   limit: number;
 };
@@ -28,7 +29,7 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     include_bundled: "false",
     include_invalid: "false",
     order_by: "created_date",
-    order_direction: "asc",
+    order_direction: params.orderDirection ? params.orderDirection : "asc",
   });
 
   if (params.listedAfter) {

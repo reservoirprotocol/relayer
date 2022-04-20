@@ -30,6 +30,7 @@ export const fetchOrders = async (
       listedBefore: once ? undefined : listedBefore,
       offset,
       limit,
+      orderDirection: "desc",
     });
 
     try {
