@@ -2,11 +2,10 @@ import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
-import { logger } from "../common/logger";
 
 type FetchOrdersParams = {
-  listedAfter: number;
-  listedBefore: number;
+  listedAfter?: number;
+  listedBefore?: number;
   offset: number;
   limit: number;
 };
@@ -21,7 +20,6 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
   }
 
   let searchParams = new URLSearchParams({
-    listed_after: String(params.listedAfter),
     offset: String(params.offset),
     limit: String(params.limit),
     side: "1",
@@ -33,6 +31,9 @@ export const buildFetchOrdersURL = (params: FetchOrdersParams) => {
     order_direction: "asc",
   });
 
+  if (params.listedAfter) {
+    searchParams.append("listed_after", String(params.listedAfter));
+  }
   if (params.listedBefore) {
     searchParams.append("listed_before", String(params.listedBefore));
   }

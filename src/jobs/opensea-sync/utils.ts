@@ -11,7 +11,8 @@ import { addToRelayOrdersQueue } from "../relay-orders";
 export const fetchOrders = async (
   listedAfter: number,
   listedBefore: number = 0,
-  backfill = false
+  backfill = false,
+  once = false
 ) => {
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
@@ -25,8 +26,8 @@ export const fetchOrders = async (
   let done = false;
   while (!done) {
     const url = buildFetchOrdersURL({
-      listedAfter,
-      listedBefore,
+      listedAfter: once ? undefined : listedAfter,
+      listedBefore: once ? undefined : listedBefore,
       offset,
       limit,
     });
@@ -114,9 +115,11 @@ export const fetchOrders = async (
 
       numOrders += orders.length;
 
-      logger.info("debug", `${orders.length} - ${url}`);
+      logger.info("debug", `${once ? "[LIVE]" : ""} ${orders.length} - ${url}`);
 
-      if (orders.length < limit) {
+      if (once) {
+        done = true;
+      } else if (orders.length < limit) {
         done = true;
       } else {
         offset += limit;

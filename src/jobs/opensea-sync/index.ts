@@ -1,11 +1,47 @@
 import cron from "node-cron";
 
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
+import { randomUUID } from "crypto";
 
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
+
+// For live order syncing
+
+const LIVE_QUEUE_NAME = "live-opensea-sync";
+
+export const liveQueue = new Queue(LIVE_QUEUE_NAME, {
+  connection: redis.duplicate(),
+  defaultJobOptions: {
+    timeout: 5000,
+    removeOnComplete: 100,
+    removeOnFail: 100,
+  },
+});
+new QueueScheduler(LIVE_QUEUE_NAME, { connection: redis.duplicate() });
+
+if (config.doLiveWork) {
+  const liveWorker = new Worker(
+    LIVE_QUEUE_NAME,
+    async (_job: Job) => {
+      try {
+        await fetchOrders(0, 0, false, true);
+      } catch {
+        // Skip in case of any errors
+      }
+    },
+    { connection: redis.duplicate() }
+  );
+  liveWorker.on("error", (error) => {
+    logger.error(LIVE_QUEUE_NAME, `Worker errored: ${error}`);
+  });
+}
+
+const addToLiveQueue = async () => {
+  await liveQueue.add(randomUUID(), {});
+};
 
 // For real-time order syncing
 
@@ -106,6 +142,12 @@ export const addToBackfillQueue = async (
     }))
   );
 };
+
+if (config.doLiveWork) {
+  cron.schedule("*/5 * * * * *", async () => {
+    await addToLiveQueue();
+  });
+}
 
 if (config.doRealtimeWork) {
   // Fetch new orders every 1 minute
