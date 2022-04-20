@@ -11,6 +11,7 @@ import * as syncToken from "./sync-token";
 export const allQueues = [
   openSeaSync.backfillQueue,
   openSeaSync.realtimeQueue,
+  openSeaSync.liveQueue,
   looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
   syncToken.queue,
