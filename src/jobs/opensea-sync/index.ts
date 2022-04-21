@@ -147,6 +147,11 @@ if (config.doLiveWork) {
   cron.schedule("*/2 * * * * *", async () => {
     await addToLiveQueue();
   });
+
+  // Every day, clear the live queue which might lag behind
+  cron.schedule("0 0 0 * * *", async () => {
+    await liveQueue.clean(0, 1000, "wait");
+  });
 }
 
 if (config.doRealtimeWork) {
