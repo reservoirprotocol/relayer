@@ -72,7 +72,7 @@ export class LooksRare {
       const order = new Sdk.LooksRare.Order(config.chainId, {
         // hash: looksRareOrder.hash,
         collection: looksRareOrder.collectionAddress,
-        tokenId: looksRareOrder.tokenId,
+        tokenId: looksRareOrder.tokenId || "0",
         isOrderAsk: Boolean(looksRareOrder.isOrderAsk),
         signer: looksRareOrder.signer,
         strategy: looksRareOrder.strategy,
