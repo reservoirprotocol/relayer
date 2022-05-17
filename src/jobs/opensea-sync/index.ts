@@ -1,9 +1,12 @@
-import cron from "node-cron";
+import { Network, OpenSeaStreamClient } from "@opensea/stream-js";
+import { WebSocket } from "ws";
 
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 import { randomUUID } from "crypto";
+import cron from "node-cron";
 
 import { fetchOrders } from "./utils";
+import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
@@ -152,6 +155,45 @@ if (config.doLiveWork) {
   cron.schedule("0 0 0 * * *", async () => {
     await liveQueue.clean(0, 1000, "wait");
   });
+
+  // Connect to OpenSea listing events
+  {
+    const columns = new pgp.helpers.ColumnSet(
+      ["maker", "contract", "token_id", "price", "listing_time", "event_date"],
+      { table: "listing_events" }
+    );
+
+    const client = new OpenSeaStreamClient({
+      token: config.realtimeOpenseaApiKey,
+      connectOptions: {
+        transport: WebSocket,
+      },
+      network: Network.MAINNET,
+    });
+
+    client.onItemListed("*", async (event) => {
+      try {
+        const [network, contract, tokenId] = event.payload.item.nft_id.split("/");
+        if (network === "ethereum") {
+          await db.manyOrNone(
+            pgp.helpers.insert(
+              {
+                maker: event.payload.maker.address,
+                contract: contract,
+                token_id: tokenId,
+                price: event.payload.base_price,
+                listing_time: Math.floor(new Date(event.payload.listing_date).getTime() / 1000),
+                event_date: event.payload.event_timestamp,
+              },
+              columns
+            ) + " ON CONFLICT DO NOTHING"
+          );
+        }
+      } catch (error) {
+        logger.error("opensea_websocket", `Failed to save listing event: ${error}`);
+      }
+    });
+  }
 }
 
 if (config.doRealtimeWork) {

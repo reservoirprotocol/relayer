@@ -27,7 +27,8 @@ export const fetchOrders = async (
   while (!done) {
     const url = buildFetchOrdersURL({
       listedAfter: once ? undefined : listedAfter,
-      listedBefore: once ? undefined : listedBefore,
+      // Break cache when fetching OpenSea's orders API without any filtering
+      listedBefore: once ? Math.floor(Date.now() / 1000) : listedBefore,
       offset,
       limit,
       orderDirection: "desc",
@@ -40,9 +41,6 @@ export const fetchOrders = async (
           ? {
               headers: {
                 "x-api-key": backfill ? config.backfillOpenseaApiKey : config.realtimeOpenseaApiKey,
-                // https://twitter.com/lefterisjp/status/1483222328595165187?s=21
-                "user-agent":
-                  "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
               },
               timeout: 10000,
             }
@@ -80,6 +78,7 @@ export const fetchOrders = async (
           maker: order.maker.address,
           created_at: new Date(order.created_date),
           data: order as any,
+          delayed: !once,
         });
       };
 
@@ -88,7 +87,7 @@ export const fetchOrders = async (
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
-          ["hash", "target", "maker", "created_at", "data"],
+          ["hash", "target", "maker", "created_at", "data", "delayed"],
           { table: "orders_v23" }
         );
 

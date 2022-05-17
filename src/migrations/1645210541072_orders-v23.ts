@@ -24,7 +24,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     },
     inserted_at: {
       type: "timestamptz",
-      default: "now()",
+      default: pgm.func("now()"),
+    },
+    delayed: {
+      type: "boolean",
     },
   });
 
