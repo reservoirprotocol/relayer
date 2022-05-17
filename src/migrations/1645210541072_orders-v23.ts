@@ -22,6 +22,10 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
       type: "jsonb",
       notNull: true,
     },
+    inserted_at: {
+      type: "timestamptz",
+      default: "now()",
+    },
   });
 
   pgm.createConstraint("orders_v23", "orders_v23_pk", {
