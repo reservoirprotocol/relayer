@@ -168,7 +168,7 @@ if (config.doLiveWork) {
       connectOptions: {
         transport: WebSocket,
       },
-      network: Network.MAINNET,
+      network: config.chainId === 1 ? Network.MAINNET : Network.TESTNET,
     });
 
     client.onItemListed("*", async (event) => {
