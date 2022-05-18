@@ -12,11 +12,11 @@ export const fetchOrders = async (
   listedAfter: number,
   listedBefore: number = 0,
   backfill = false,
-  once = false
+  once = false,
+  offset = 0
 ) => {
   logger.info("fetch_orders", `(${listedAfter}, ${listedBefore}) Fetching orders from OpenSea`);
 
-  let offset = 0;
   let limit = 50;
   let maxOrdersToFetch = 1000;
   let lastCreatedDate: string = "";
