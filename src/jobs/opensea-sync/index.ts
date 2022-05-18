@@ -30,7 +30,11 @@ if (config.doLiveWork) {
     LIVE_QUEUE_NAME,
     async (_job: Job) => {
       try {
-        await Promise.all([fetchOrders(0, 0, false, true), fetchOrders(0, 0, false, true, 50)]);
+        if (config.chainId === 1) {
+          await Promise.all([fetchOrders(0, 0, false, true), fetchOrders(0, 0, false, true, 50)]);
+        } else {
+          await fetchOrders(0, 0, false, true);
+        }
       } catch {
         // Skip in case of any errors
       }
