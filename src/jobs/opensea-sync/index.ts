@@ -31,7 +31,11 @@ if (config.doLiveWork) {
     async (_job: Job) => {
       try {
         if (config.chainId === 1) {
-          await Promise.all([fetchOrders(0, 0, false, true), fetchOrders(0, 0, false, true, 50)]);
+          await Promise.all([
+            fetchOrders(0, 0, false, true),
+            fetchOrders(0, 0, false, true, 50),
+            fetchOrders(0, 0, false, true, 100),
+          ]);
         } else {
           await fetchOrders(0, 0, false, true);
         }
