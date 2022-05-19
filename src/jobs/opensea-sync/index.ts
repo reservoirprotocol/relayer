@@ -32,8 +32,9 @@ if (config.doLiveWork) {
       try {
         if (config.chainId === 1) {
           await Promise.all([
-            fetchOrders(0, 0, false, true),
-            fetchOrders(0, 0, false, true, 50),
+            fetchOrders(0, 0, false, true, 0, 20),
+            fetchOrders(0, 0, false, true, 20, 20),
+            fetchOrders(0, 0, false, true, 40, 20),
           ]);
         } else {
           await fetchOrders(0, 0, false, true);
