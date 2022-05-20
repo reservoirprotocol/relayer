@@ -26,7 +26,7 @@ export const liveQueue = new Queue(LIVE_QUEUE_NAME, {
 new QueueScheduler(LIVE_QUEUE_NAME, { connection: redis.duplicate() });
 
 // Disabled
-if (config.doLiveWork && false) {
+if (config.doLiveWork) {
   const liveWorker = new Worker(
     LIVE_QUEUE_NAME,
     async (_job: Job) => {
@@ -36,10 +36,9 @@ if (config.doLiveWork && false) {
           const lockAcquired = await acquireLock("opensea-live-sync-lock", 2);
           if (lockAcquired) {
             await Promise.all([
-              fetchOrders(0, 0, false, true, 0, 30),
-              fetchOrders(0, 0, false, true, 30, 30),
-              fetchOrders(0, 0, false, true, 60, 30),
-              fetchOrders(0, 0, false, true, 90, 30),
+              fetchOrders(0, 0, false, true, 0),
+              fetchOrders(0, 0, false, true, 50),
+              fetchOrders(0, 0, false, true, 100),
             ]);
           }
         } else {
@@ -162,19 +161,20 @@ export const addToBackfillQueue = async (
 
 if (config.doLiveWork) {
   cron.schedule("*/1 * * * * *", async () => {
-    try {
-      const inFlight = await redis.get("opensea-in-flight-requests");
-      if (!inFlight || Number(inFlight) < (config.chainId === 1 ? 4 : 1)) {
-        await redis.incr("opensea-in-flight-requests");
-        try {
-          await fetchOrders(0, 0, false, true);
-        } finally {
-          await redis.decr("opensea-in-flight-requests");
-        }
-      }
-    } catch (error) {
-      logger.error("opensea-live-cron", `Error on live OpenSea cron: ${error}`);
-    }
+    await addToLiveQueue();
+    // try {
+    //   const inFlight = await redis.get("opensea-in-flight-requests");
+    //   if (!inFlight || Number(inFlight) < (config.chainId === 1 ? 4 : 1)) {
+    //     await redis.incr("opensea-in-flight-requests");
+    //     try {
+    //       await fetchOrders(0, 0, false, true);
+    //     } finally {
+    //       await redis.decr("opensea-in-flight-requests");
+    //     }
+    //   }
+    // } catch (error) {
+    //   logger.error("opensea-live-cron", `Error on live OpenSea cron: ${error}`);
+    // }
   });
 
   // Every day, clear the live queue which might lag behind
