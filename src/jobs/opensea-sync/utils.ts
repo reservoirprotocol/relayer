@@ -136,7 +136,9 @@ export const fetchOrders = async (
       }
 
       // Wait for one second to avoid rate-limiting
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!once) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
     } catch (error) {
       // If realtime sync return the lastCreatedDate
       if (!backfill) {
