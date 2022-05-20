@@ -79,6 +79,7 @@ export const fetchOrders = async (
           created_at: new Date(order.created_date),
           data: order as any,
           delayed: !once,
+          source: "opensea",
         });
       };
 
@@ -87,7 +88,7 @@ export const fetchOrders = async (
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
-          ["hash", "target", "maker", "created_at", "data", "delayed"],
+          ["hash", "target", "maker", "created_at", "data", "delayed", "source"],
           { table: "orders_v23" }
         );
 

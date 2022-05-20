@@ -1,6 +1,8 @@
 import { MigrationBuilder } from "node-pg-migrate";
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
+  pgm.createType("source_t", ["opensea", "looksrare"]);
+
   pgm.createTable("orders_v23", {
     hash: {
       type: "text",
@@ -25,6 +27,9 @@ export async function up(pgm: MigrationBuilder): Promise<void> {
     inserted_at: {
       type: "timestamptz",
       default: pgm.func("now()"),
+    },
+    source: {
+      type: "source_t",
     },
     delayed: {
       type: "boolean",

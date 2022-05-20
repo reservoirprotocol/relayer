@@ -75,6 +75,7 @@ export const fetchOrders = async (
           maker: order.signer,
           created_at: new Date(order.startTime),
           data: order as any,
+          source: "looksrare",
         });
       };
 
@@ -83,7 +84,7 @@ export const fetchOrders = async (
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
-          ["hash", "target", "maker", "created_at", "data"],
+          ["hash", "target", "maker", "created_at", "data", "source"],
           { table: "orders_v23" }
         );
 
