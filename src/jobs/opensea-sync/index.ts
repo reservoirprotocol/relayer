@@ -160,8 +160,20 @@ export const addToBackfillQueue = async (
 };
 
 if (config.doLiveWork) {
-  cron.schedule("*/2 * * * * *", async () => {
-    await addToLiveQueue();
+  cron.schedule("*/1 * * * * *", async () => {
+    try {
+      const inFlight = await redis.get("opensea-in-flight-requests");
+      if (!inFlight || Number(inFlight) < (config.chainId === 1 ? 4 : 1)) {
+        await redis.incr("opensea-in-flight-requests");
+        try {
+          await fetchOrders(0, 0, false, true);
+        } finally {
+          await redis.decr("opensea-in-flight-requests");
+        }
+      }
+    } catch (error) {
+      logger.error("opensea-live-cron", `Error on live OpenSea cron: ${error}`);
+    }
   });
 
   // Every day, clear the live queue which might lag behind
