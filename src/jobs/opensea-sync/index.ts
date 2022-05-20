@@ -25,7 +25,8 @@ export const liveQueue = new Queue(LIVE_QUEUE_NAME, {
 });
 new QueueScheduler(LIVE_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doLiveWork) {
+// Disabled
+if (config.doLiveWork && false) {
   const liveWorker = new Worker(
     LIVE_QUEUE_NAME,
     async (_job: Job) => {
