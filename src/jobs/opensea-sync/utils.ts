@@ -86,6 +86,16 @@ export const fetchOrders = async (
       const plimit = pLimit(20);
       await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
 
+      if (parsedOrders.length) {
+        await addToRelayOrdersQueue(
+          parsedOrders.map((order) => ({
+            kind: "wyvern-v2.3",
+            data: order.params,
+          })),
+          true
+        );
+      }
+
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
           ["hash", "target", "maker", "created_at", "data", "delayed", "source"],
@@ -102,16 +112,6 @@ export const fetchOrders = async (
             `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
           );
         }
-      }
-
-      if (parsedOrders.length) {
-        await addToRelayOrdersQueue(
-          parsedOrders.map((order) => ({
-            kind: "wyvern-v2.3",
-            data: order.params,
-          })),
-          true
-        );
       }
 
       numOrders += orders.length;
