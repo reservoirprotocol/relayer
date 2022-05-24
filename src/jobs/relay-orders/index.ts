@@ -50,7 +50,12 @@ if (config.doBackgroundWork) {
               .post(
                 `${process.env.BASE_INDEXER_V3_API_URL}/orders`,
                 { orders },
-                { timeout: 3 * 60000 }
+                {
+                  timeout: 3 * 60000,
+                  headers: {
+                    "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
+                  },
+                }
               )
               .catch(() => {
                 // logger.error("relay_orders", `Failed to relay orders to Indexer V3: ${error}`);
