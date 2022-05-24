@@ -70,9 +70,11 @@ if (config.doBackgroundWork) {
                 { orders },
                 {
                   timeout: 60000,
-                  headers: {
-                    "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
-                  },
+                  headers: process.env.INDEXER_ADMIN_API_KEY
+                    ? {
+                        "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
+                      }
+                    : undefined,
                 }
               )
               .catch((error) => {
