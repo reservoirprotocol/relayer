@@ -52,9 +52,6 @@ if (config.doBackgroundWork) {
                 { orders },
                 {
                   timeout: 3 * 60000,
-                  headers: {
-                    "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
-                  },
                 }
               )
               .catch(() => {
@@ -71,7 +68,12 @@ if (config.doBackgroundWork) {
               .post(
                 `${process.env.BASE_INDEXER_LITE_API_URL}/orders/v1`,
                 { orders },
-                { timeout: 60000 }
+                {
+                  timeout: 60000,
+                  headers: {
+                    "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
+                  },
+                }
               )
               .catch((error) => {
                 logger.error("relay_orders", `Failed to relay orders to Indexer Lite: ${error}`);
