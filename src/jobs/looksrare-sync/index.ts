@@ -11,6 +11,7 @@ import * as looksrareSyncRealtime from "./realtime-queue";
 if (config.doRealtimeWork) {
   cron.schedule("*/1 * * * *", async () => {
     const lockAcquired = await acquireLock("looksrare-sync-lock", 120);
+    logger.info(realtimeQueue.name, `Start sync lockAcquired=(${lockAcquired})`);
 
     if (lockAcquired) {
       const cacheKey = "looksrare-sync-last";
