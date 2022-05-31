@@ -92,7 +92,10 @@ export const fetchOrders = async (
           pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
         );
 
-        logger.info("fetch_orders", `LooksRare result=${JSON.stringify(result)}`);
+        // If result is empty, all transactions already exists
+        if (_.isEmpty(result)) {
+          return ["", ""];
+        }
 
         if (backfill && result.length) {
           logger.warn(
