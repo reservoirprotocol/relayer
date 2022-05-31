@@ -109,7 +109,7 @@ export const fetchOrders = async (
         if (backfill && result.length) {
           logger.warn(
             "fetch_orders",
-            `(${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
+            `OpenSea (${listedAfter}, ${listedBefore}) Backfilled ${result.length} new orders`
           );
         }
       }

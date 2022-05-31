@@ -92,10 +92,12 @@ export const fetchOrders = async (
           pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
         );
 
+        logger.info("fetch_orders", `LooksRare result=${JSON.stringify(result)}`);
+
         if (backfill && result.length) {
           logger.warn(
             "fetch_orders",
-            `(${startTime}, ${endTime}) Backfilled ${result.length} new orders`
+            `LooksRare (${startTime}, ${endTime}) Backfilled ${result.length} new orders`
           );
         }
       }
@@ -128,7 +130,7 @@ export const fetchOrders = async (
 
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
-        return [mostRecentCreatedHash, cursor];
+        return ["", cursor];
       }
 
       if (mostRecentCreatedHash === "" && orders.length) {
