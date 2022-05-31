@@ -93,7 +93,7 @@ export const fetchOrders = async (
         );
 
         // If result is empty, all transactions already exists
-        if (_.isEmpty(result)) {
+        if (cursor != "" && _.isEmpty(result)) {
           return ["", ""];
         }
 
