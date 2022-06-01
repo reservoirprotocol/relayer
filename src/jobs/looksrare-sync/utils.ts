@@ -94,6 +94,11 @@ export const fetchOrders = async (
 
         // If result is empty, all transactions already exists
         if (cursor != "" && _.isEmpty(result)) {
+          logger.info(
+            "fetch_orders",
+            `Empty result cursor=${cursor}`
+          );
+
           return ["", ""];
         }
 
@@ -133,6 +138,11 @@ export const fetchOrders = async (
 
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
+        logger.info(
+          "fetch_orders",
+          `Return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
+        );
+
         return ["", cursor];
       }
 
