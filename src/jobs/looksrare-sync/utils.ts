@@ -96,10 +96,10 @@ export const fetchOrders = async (
         if (cursor != "" && _.isEmpty(result)) {
           logger.info(
             "fetch_orders",
-            `Empty result cursor=${cursor}`
+            `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].hash}`
           );
 
-          return ["", ""];
+          return [orders[0].hash, ""];
         }
 
         if (backfill && result.length) {
@@ -140,7 +140,7 @@ export const fetchOrders = async (
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
         logger.info(
           "fetch_orders",
-          `Return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
+          `LooksRare return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
         );
 
         return ["", cursor];
