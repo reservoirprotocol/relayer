@@ -87,11 +87,15 @@ export const start = async () => {
   app.post(
     "/backfill/x2y2",
     asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
+      if (config.chainId === 4) {
+        res.status(501).json({ message: "X2Y2 Backfill isn't supported on rinkeby" });
+      } else {
+        res.status(202).json({ message: "Request accepted" });
 
-      const startTime = Number(req.body.fromTimestamp);
-      const endTime = Number(req.body.toTimestamp);
-      await addToX2Y2BackfillQueue(startTime, endTime);
+        const startTime = Number(req.body.fromTimestamp);
+        const endTime = Number(req.body.toTimestamp);
+        await addToX2Y2BackfillQueue(startTime, endTime);
+      }
     })
   );
 
