@@ -51,7 +51,7 @@ if (config.doRealtimeWork) {
 
     // Schedule the next sync
     if (lockExtended) {
-      await addToRealtimeQueue(60 * 1000);
+      await addToRealtimeQueue(10 * 1000);
     }
 
     if (job.attemptsMade > 0) {

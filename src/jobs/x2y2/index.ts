@@ -18,7 +18,7 @@ if (config.doRealtimeWork) {
         const cacheKey = "x2y2-sync-last";
         let lastSynced = await redis.get(cacheKey);
 
-        // If key doesn't exist set it to 0 which will cause the queue to sync last 60s
+        // If key doesn't exist set it to 0 which will cause the queue to sync from the first available order
         if (_.isNull(lastSynced)) {
           await redis.set(cacheKey, 0);
         }
