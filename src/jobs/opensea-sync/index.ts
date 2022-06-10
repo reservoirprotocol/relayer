@@ -85,7 +85,7 @@ if (config.doRealtimeWork) {
         await fetchOrders(listedAfter, listedBefore);
       } catch (error) {
         // In case of any errors, retry the job via the backfill queue
-        await addToBackfillQueue(minute, minute, true);
+        await addToOpenSeaBackfillQueue(minute, minute, true);
         throw error;
       }
     },
@@ -138,7 +138,7 @@ if (config.doBackgroundWork) {
   });
 }
 
-export const addToBackfillQueue = async (
+export const addToOpenSeaBackfillQueue = async (
   fromMinute: number,
   toMinute: number,
   prioritized = false
@@ -234,12 +234,12 @@ if (config.doRealtimeWork) {
 
       if (lastSyncedMinute === 0) {
         // No cache, so we only sync the last minute
-        await addToBackfillQueue(minute, minute);
+        await addToOpenSeaBackfillQueue(minute, minute);
       } else if (lastSyncedMinute < minute) {
         // Sync from last synced minute up to current minute
         await addToRealtimeQueue(minute);
         if (lastSyncedMinute < minute - 1) {
-          await addToBackfillQueue(lastSyncedMinute, minute - 1);
+          await addToOpenSeaBackfillQueue(lastSyncedMinute, minute - 1);
         }
       }
 

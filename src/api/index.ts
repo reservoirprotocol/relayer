@@ -7,7 +7,8 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
-import { addToBackfillQueue } from "../jobs/opensea-sync";
+import { addToOpenSeaBackfillQueue } from "../jobs/opensea-sync";
+import { addToX2Y2BackfillQueue } from "../jobs/x2y2/backfill-queue";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
@@ -73,13 +74,28 @@ export const start = async () => {
   );
 
   app.post(
-    "/backfill",
+    "/backfill/opensea",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
       const fromMinute = Math.floor(req.body.fromTimestamp / 60) - 1;
       const toMinute = Math.floor(req.body.toTimestamp / 60) + 1;
-      await addToBackfillQueue(fromMinute, toMinute);
+      await addToOpenSeaBackfillQueue(fromMinute, toMinute);
+    })
+  );
+
+  app.post(
+    "/backfill/x2y2",
+    asyncHandler(async (req, res) => {
+      if (config.chainId === 4) {
+        res.status(501).json({ message: "X2Y2 Backfill isn't supported on rinkeby" });
+      } else {
+        res.status(202).json({ message: "Request accepted" });
+
+        const startTime = Number(req.body.fromTimestamp);
+        const endTime = Number(req.body.toTimestamp);
+        await addToX2Y2BackfillQueue(startTime, endTime);
+      }
     })
   );
 

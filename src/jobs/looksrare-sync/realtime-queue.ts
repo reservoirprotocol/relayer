@@ -64,7 +64,7 @@ if (config.doRealtimeWork) {
     // Set the next sync attempt
     const lockExtended = await extendLock("looksrare-sync-lock", 120);
 
-    if (lockExtended && cursor == '') {
+    if (lockExtended && cursor == "") {
       await addToRealtimeQueue(10000);
     }
 
