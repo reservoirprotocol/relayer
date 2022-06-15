@@ -9,7 +9,7 @@ import { Seaport, SeaportOrder } from "../../utils/seaport";
 import _ from "lodash";
 
 export const fetchOrders = async (lastOrderHash: string | null) => {
-  logger.info("fetch_orders", `Fetch orders lastOrderHash=${lastOrderHash}`);
+  logger.info("fetch_orders", `Seaport Fetch orders lastOrderHash=${lastOrderHash}`);
 
   const seaport = new Seaport();
   let cursor = null;
@@ -112,7 +112,7 @@ export const fetchOrders = async (lastOrderHash: string | null) => {
 };
 
 export const fetchAllOrders = async (cursor: string | null = null) => {
-  logger.info("fetch_all_orders", `Fetch all orders cursor=${cursor}`);
+  logger.info("fetch_all_orders", `Seaport Fetch all orders cursor=${cursor}`);
 
   const seaport = new Seaport();
   let limit = 50;

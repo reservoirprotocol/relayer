@@ -1,6 +1,4 @@
 import cron from "node-cron";
-import _ from "lodash";
-
 import { config } from "../../config";
 import { acquireLock, redis } from "../../common/redis";
 import { logger } from "../../common/logger";
