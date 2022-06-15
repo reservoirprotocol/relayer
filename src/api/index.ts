@@ -8,7 +8,7 @@ import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
 import { addToOpenSeaBackfillQueue } from "../jobs/opensea-sync";
-import { addToX2Y2BackfillQueue } from "../jobs/x2y2/backfill-queue";
+import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/backfill-queue";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";

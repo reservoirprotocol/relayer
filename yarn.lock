@@ -849,10 +849,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@0.0.82":
-  version "0.0.82"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.82.tgz#2622bb3516b4412ec34460126fcf32621a457c8f"
-  integrity sha512-mPwz0Cn7pVSq2/rQwumbNYIVGhX3SD8k4o53IpE/E+dNukUE/XUlzw2BTsLr94ZHZgQ/+IxYHRI5YB0Grh9Z3Q==
+"@reservoir0x/sdk@0.0.94":
+  version "0.0.94"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.94.tgz#35df97ce370c13860139b922c4a6ab249580cd56"
+  integrity sha512-MHG+BbB7hEK+7lOlO2968CL67mn1fG6TEQe+3xU/S3cKQjLcwGxfH+une7cc7DrTBuL7jNH6OEJg6p+0c3PsPQ==
   dependencies:
     ethers "^5.5.2"
     merkletreejs "^0.2.27"
@@ -955,9 +955,9 @@
     "@types/tz-offset" "*"
 
 "@types/node@*":
-  version "17.0.41"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.41.tgz#1607b2fd3da014ae5d4d1b31bc792a39348dfb9b"
-  integrity sha512-xA6drNNeqb5YyV5fO3OAEsnXLfO7uF0whiOfPTz5AeDo8KeZFmODKnvwPymMNO8qE/an8pVY/O50tig2SQCrGw==
+  version "17.0.42"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.42.tgz#d7e8f22700efc94d125103075c074396b5f41f9b"
+  integrity sha512-Q5BPGyGKcvQgAMbsr7qEGN/kIPN6zZecYYABeTDBizOsau+2NMdSVTar9UQw21A2+JyA2KRNDYaYrPB0Rpk2oQ==
 
 "@types/node@>=12", "@types/node@>=13.7.0":
   version "17.0.7"
