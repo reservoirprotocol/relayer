@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    command: ["postgres", "-c", "log_statement=all"]
+    networks:
+      - local
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis:latest
+    command: sh -c "redis-server --requirepass password"
+    networks:
+      - local
+    ports:
+      - 6379:6379
+
+networks:
+  local:
+    driver: bridge
