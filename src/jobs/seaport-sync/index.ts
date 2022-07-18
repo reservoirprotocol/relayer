@@ -11,7 +11,7 @@ import * as seaportSyncBackfill from "./backfill-queue";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-lock", 4);
+    const lockAcquired = await acquireLock("seaport-sync-lock", 60);
     
     if (lockAcquired) {
       await seaportSyncRealtime.addToRealtimeQueue();
