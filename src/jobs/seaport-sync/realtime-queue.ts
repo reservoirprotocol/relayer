@@ -1,5 +1,5 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis } from "../../common/redis";
+import { redis, releaseLock } from "../../common/redis";
 import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
@@ -35,6 +35,11 @@ if (config.doRealtimeWork) {
     },
     { connection: redis.duplicate(), concurrency: 5 }
   );
+
+  realtimeWorker.on("completed", async (job) => {
+    // Release the lock and allow new job to be scheduled
+    await releaseLock("seaport-sync-lock");
+  });
 
   realtimeWorker.on("error", (error) => {
     logger.error(REALTIME_QUEUE_NAME, `Worker errored: ${error}`);

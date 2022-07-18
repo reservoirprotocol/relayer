@@ -10,9 +10,9 @@ import * as seaportSyncRealtime from "./realtime-queue";
 import * as seaportSyncBackfill from "./backfill-queue";
 
 if (config.doRealtimeWork) {
-  cron.schedule("* * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-lock", 59);
-
+  cron.schedule("*/5 * * * * *", async () => {
+    const lockAcquired = await acquireLock("seaport-sync-lock", 60);
+    
     if (lockAcquired) {
       await seaportSyncRealtime.addToRealtimeQueue();
       logger.info(realtimeQueue.name, `Start SeaPort realtime`);
