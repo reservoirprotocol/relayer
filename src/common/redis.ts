@@ -32,9 +32,13 @@ export const extendLock = async (name: string, expirationInSeconds: number) => {
   return extended === "OK";
 };
 
-export const releaseLock = async (name: string) => {
-  const currentId = await redis.get(name);
-  if (currentId === lockIds.get(name)) {
+export const releaseLock = async (name: string, verifyId = true) => {
+  if (verifyId) {
+    const currentId = await redis.get(name);
+    if (currentId === lockIds.get(name)) {
+      await redis.del(name);
+    }
+  } else {
     await redis.del(name);
   }
 };

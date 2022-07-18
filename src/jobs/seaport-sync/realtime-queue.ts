@@ -38,7 +38,7 @@ if (config.doRealtimeWork) {
 
   realtimeWorker.on("completed", async (job) => {
     // Release the lock and allow new job to be scheduled
-    await releaseLock("seaport-sync-lock");
+    await releaseLock("seaport-sync-lock", false);
   });
 
   realtimeWorker.on("error", (error) => {
