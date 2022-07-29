@@ -67,7 +67,11 @@ if (config.doBackfillWork) {
   });
 }
 
-export const createTimeFrameForBackfill = async (fromTimestamp: number, toTimestamp: number, delayMs: number = 0) => {
+export const createTimeFrameForBackfill = async (
+  fromTimestamp: number,
+  toTimestamp: number,
+  delayMs: number = 0
+) => {
   // Sync specific time frame
   for (let timestamp = fromTimestamp; timestamp <= toTimestamp; timestamp += 60) {
     // Add to the queue with extra seconds to each side

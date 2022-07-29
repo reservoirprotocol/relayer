@@ -1,6 +1,6 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 import { redis, extendLock } from "../../common/redis";
-import { fetchOrders } from "./utils";
+import { fetchOrdersByDateCreated } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
 
@@ -28,7 +28,7 @@ if (config.doBackfillWork) {
       let { startTime, endTime } = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrders(startTime);
+        const lastCreatedAt = await fetchOrdersByDateCreated(startTime);
 
         logger.info(
           BACKFILL_QUEUE_NAME,

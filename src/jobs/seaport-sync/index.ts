@@ -4,7 +4,7 @@ import { acquireLock } from "../../common/redis";
 import { logger } from "../../common/logger";
 import { realtimeQueue } from "./realtime-queue";
 import { backfillQueue } from "./backfill-queue";
-import {sub, getUnixTime, startOfHour, format } from 'date-fns'
+import { sub, getUnixTime, startOfHour, format } from "date-fns";
 
 import * as seaportSyncRealtime from "./realtime-queue";
 import * as seaportSyncBackfill from "./backfill-queue";
@@ -12,7 +12,7 @@ import * as seaportSyncBackfill from "./backfill-queue";
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
     const lockAcquired = await acquireLock("seaport-sync-lock", 60);
-    
+
     if (lockAcquired) {
       await seaportSyncRealtime.addToRealtimeQueue();
       logger.info(realtimeQueue.name, `Start SeaPort realtime`);
@@ -26,9 +26,19 @@ if (config.doRealtimeWork) {
     if (lockAcquired) {
       const toTimestamp = new Date();
       const fromTimestamp = startOfHour(sub(toTimestamp, { hours: 1 }));
-      await seaportSyncBackfill.createTimeFrameForBackfill(getUnixTime(fromTimestamp), getUnixTime(toTimestamp), 90 * 1000);
+      await seaportSyncBackfill.createTimeFrameForBackfill(
+        getUnixTime(fromTimestamp),
+        getUnixTime(toTimestamp),
+        90 * 1000
+      );
 
-      logger.info(backfillQueue.name, `Start SeaPort hourly full sync fromTimestamp=${format(fromTimestamp, "yyyy-MM-dd HH:mm:ss")} toTimestamp=${format(toTimestamp, "yyyy-MM-dd HH:mm:ss")}`);
+      logger.info(
+        backfillQueue.name,
+        `Start SeaPort hourly full sync fromTimestamp=${format(
+          fromTimestamp,
+          "yyyy-MM-dd HH:mm:ss"
+        )} toTimestamp=${format(toTimestamp, "yyyy-MM-dd HH:mm:ss")}`
+      );
     }
   });
 }

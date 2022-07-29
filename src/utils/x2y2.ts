@@ -6,6 +6,8 @@ type FetchOrdersParams = {
   createdAfter?: number;
   endTime?: number;
   limit?: number;
+  cursor?: string;
+  sort?: string;
 };
 
 export type X2Y2Order = {
@@ -14,10 +16,11 @@ export type X2Y2Order = {
   end_at: number;
   id: number;
   is_bundle: boolean;
+  is_collection_offer: boolean;
   item_hash: string;
   maker: string;
-  nft: {
-    token: string;
+  token: {
+    contract: string;
     token_id: string;
   };
   price: string;
@@ -31,7 +34,7 @@ export type X2Y2Order = {
 export class X2Y2 {
   // https://hackmd.io/7AnOgEqFT2mZHqUQ4bXwsw#GET-apiorders
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    const baseOpenSeaApiUrl = "https://api.x2y2.org/api/orders"; // For now there's no support for rinkeby net
+    const baseOpenSeaApiUrl = "https://api.x2y2.org/v1/orders"; // For now there's no support for rinkeby net
 
     let queryParams = new URLSearchParams();
 
@@ -47,6 +50,14 @@ export class X2Y2 {
       queryParams.append("limit", String(params.limit));
     }
 
+    if (params.cursor) {
+      queryParams.append("cursor", String(params.cursor));
+    }
+
+    if (params.sort) {
+      queryParams.append("sort", String(params.sort));
+    }
+
     return decodeURI(`${baseOpenSeaApiUrl}?${queryParams.toString()}`);
   }
 
@@ -57,8 +68,8 @@ export class X2Y2 {
         currency: x2y2Order.currency,
         maker: x2y2Order.maker,
         nft: {
-          token: x2y2Order.nft.token,
-          tokenId: x2y2Order.nft.token_id,
+          token: x2y2Order.token.contract,
+          tokenId: x2y2Order.token.token_id,
         },
         taker: x2y2Order.taker || "",
         price: x2y2Order.price,

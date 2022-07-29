@@ -1,6 +1,6 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis, extendLock } from "../../common/redis";
-import { fetchOrders } from "./utils";
+import {redis, extendLock, releaseLock} from "../../common/redis";
+import { fetchOrdersByCursor, fetchOrdersByDateCreated } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
 
@@ -26,13 +26,16 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const cacheKey = "x2y2-sync-last";
-        let cursor = Number(await redis.get(cacheKey));
+        const cacheKey = "x2y2-sync-cursor";
+        let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrders(cursor);
+        const newCursor = await fetchOrdersByCursor(cursor || "");
 
         if (newCursor == cursor) {
-          logger.info(REALTIME_QUEUE_NAME, `x2y2 cursor didn't change cursor=${cursor}, newCursor=${newCursor}`);
+          logger.info(
+            REALTIME_QUEUE_NAME,
+            `x2y2 cursor didn't change cursor=${cursor}, newCursor=${newCursor}`
+          );
         }
 
         // Set the new cursor for the next job
@@ -50,13 +53,8 @@ if (config.doRealtimeWork) {
   );
 
   realtimeWorker.on("completed", async (job) => {
-    // Set the next sync attempt
-    const lockExtended = await extendLock("x2y2-sync-lock", 60 * 5);
-
-    // Schedule the next sync
-    if (lockExtended) {
-      await addToRealtimeQueue(10 * 1000);
-    }
+    // Release the lock to allow the next sync
+    await releaseLock("x2y2-sync-lock", false);
 
     if (job.attemptsMade > 0) {
       logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
