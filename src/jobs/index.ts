@@ -1,4 +1,3 @@
-import "./opensea-sync";
 import "./looksrare-sync";
 import "./relay-orders";
 import "./sync-token";
