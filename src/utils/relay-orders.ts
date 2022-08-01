@@ -3,7 +3,7 @@ import * as Sdk from "@reservoir0x/sdk";
 import { db } from "../common/db";
 import { logger } from "../common/logger";
 import { addToRelayOrdersQueue } from "../jobs/relay-orders";
-import { parseOpenSeaOrder } from "./opensea";
+import { Seaport } from "./seaport";
 
 export const relayOrdersByContract = async (contract: string) => {
   const data: { max_created_at: number } = await db.one(
@@ -50,9 +50,9 @@ export const relayOrdersByContract = async (contract: string) => {
       data.max_created_at = Number(orders[orders.length - 1].created_at) - 1;
     }
 
-    const validOrders: Sdk.WyvernV23.Order[] = [];
+    const validOrders: Sdk.Seaport.Order[] = [];
     for (const { data } of orders) {
-      const parsed = await parseOpenSeaOrder(data);
+      const parsed = await new Seaport().parseSeaportOrder(data);
       if (parsed) {
         validOrders.push(parsed);
       }
@@ -60,7 +60,7 @@ export const relayOrdersByContract = async (contract: string) => {
 
     await addToRelayOrdersQueue(
       validOrders.map((order) => ({
-        kind: "wyvern-v2.3",
+        kind: "seaport",
         data: order.params,
       }))
     );
@@ -96,9 +96,9 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
         belowTimestamp = Number(orders[orders.length - 1].created_at);
       }
 
-      const validOrders: Sdk.WyvernV23.Order[] = [];
+      const validOrders: Sdk.Seaport.Order[] = [];
       for (const { data } of orders) {
-        const parsed = await parseOpenSeaOrder(data);
+        const parsed = await new Seaport().parseSeaportOrder(data);
         if (parsed) {
           validOrders.push(parsed);
         }
@@ -106,7 +106,7 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
 
       await addToRelayOrdersQueue(
         validOrders.map((order) => ({
-          kind: "wyvern-v2.3",
+          kind: "seaport",
           data: order.params,
         }))
       );
