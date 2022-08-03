@@ -44,7 +44,7 @@ export class LooksRare {
     }
 
     let searchParams = new URLSearchParams({
-      isOrderAsk: "true",
+      // isOrderAsk: "true",
       sort: "NEWEST",
     });
 
