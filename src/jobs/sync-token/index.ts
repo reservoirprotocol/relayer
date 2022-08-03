@@ -1,12 +1,12 @@
+import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
+import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { redis } from "../../common/redis";
 import { config } from "../../config";
-import * as Sdk from "@reservoir0x/sdk";
 import { Seaport } from "../../utils/seaport";
-import { db, pgp } from "../../common/db";
 import { addToRelayOrdersQueue } from "../relay-orders";
 
 const QUEUE_NAME = "sync-token";
@@ -79,16 +79,13 @@ if (config.doBackgroundWork) {
                 validOrders.push(parsed);
               }
 
-              logger.info("debug", JSON.stringify(order));
-              logger.info("debug", JSON.stringify(parsed));
-
               // Skip saving any irrelevant information
               delete (order as any).asset;
 
               // TODO: Use multi-row inserts for better performance
               insertQueries.push({
                 query: `
-                  INSERT INTO "orders_v23"(
+                  INSERT INTO "orders_v23" (
                     "hash",
                     "target",
                     "maker",

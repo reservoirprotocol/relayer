@@ -1,6 +1,6 @@
-import { config } from "../config";
 import * as Sdk from "@reservoir0x/sdk";
-import { logger } from "../common/logger";
+
+import { config } from "../config";
 
 type FetchOrdersParams = {
   orderBy?: "created_date";

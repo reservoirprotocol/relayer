@@ -7,7 +7,6 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
-import { addToOpenSeaBackfillQueue } from "../jobs/opensea-sync";
 import {
   addToSeaportBackfillQueue,
   createTimeFrameForBackfill,
@@ -74,17 +73,6 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await relayOrdersByTimestamp(req.body.fromTimestamp, req.body.toTimestamp);
-    })
-  );
-
-  app.post(
-    "/backfill/opensea",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      const fromMinute = Math.floor(req.body.fromTimestamp / 60) - 1;
-      const toMinute = Math.floor(req.body.toTimestamp / 60) + 1;
-      await addToOpenSeaBackfillQueue(fromMinute, toMinute);
     })
   );
 
