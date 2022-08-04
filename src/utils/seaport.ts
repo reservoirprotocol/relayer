@@ -1,6 +1,7 @@
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
+import {logger} from "../common/logger";
 
 type FetchOrdersParams = {
   orderBy?: "created_date";
@@ -94,7 +95,8 @@ export class Seaport {
         orderType: seaportOrder.protocol_data.parameters.orderType,
         signature: seaportOrder.protocol_data.signature,
       });
-    } catch {
+    } catch (error) {
+      logger.error("parse-seaport-order", `Failed to parse order ${error}`);
       return undefined;
     }
   }

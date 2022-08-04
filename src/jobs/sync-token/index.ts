@@ -51,6 +51,7 @@ if (config.doBackgroundWork) {
         const validOrders: Sdk.Seaport.Order[] = [];
         const insertQueries: any[] = [];
         const [contract, tokenId] = token.split(":");
+        let totalOrders = 0;
 
         // Fetch recent listings
         const url = `https://${config.chainId === 4 ? "testnets-" : ""}api.opensea.io/v2/orders/${
@@ -73,6 +74,8 @@ if (config.doBackgroundWork) {
                 { timeout: 5000 }
           )
           .then(async (response: any) => {
+            totalOrders = response.data.orders.length;
+
             for (const order of response.data.orders) {
               const parsed = await new Seaport().parseSeaportOrder(order);
               if (parsed) {
@@ -124,7 +127,7 @@ if (config.doBackgroundWork) {
           true
         );
 
-        logger.info("fast_sync_token", `Got ${validOrders.length} orders for token ${token}`);
+        logger.info("fast_sync_token", `Got total ${totalOrders} valid ${validOrders.length} orders for token ${token}`);
       }
     },
     { connection: redis.duplicate(), concurrency: 2 }
