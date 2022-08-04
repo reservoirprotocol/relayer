@@ -96,7 +96,7 @@ export class Seaport {
         signature: seaportOrder.protocol_data.signature,
       });
     } catch (error) {
-      logger.error("parse-seaport-order", `Failed to parse order ${error}`);
+      logger.error("parse-seaport-order", `Failed to parse order ${seaportOrder.order_hash} - ${error}`);
       return undefined;
     }
   }
