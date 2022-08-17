@@ -21,6 +21,7 @@ export type X2Y2Order = {
   maker: string;
   token: {
     contract: string;
+    erc_type: string;
     token_id: string;
   };
   price: string;
@@ -63,19 +64,32 @@ export class X2Y2 {
 
   public async parseX2Y2Order(x2y2Order: X2Y2Order): Promise<Sdk.X2Y2.Order | undefined> {
     try {
+      // TODO: Integrate bundle orders
+      if (x2y2Order.is_bundle) {
+        return undefined;
+      }
+      // TODO: Integrate private orders
+      if (x2y2Order.taker) {
+        return undefined;
+      }
+      // TODO: Integrate ERC1155 orders
+      if (x2y2Order.token?.erc_type === "erc1155") {
+        return undefined;
+      }
+
       return new Sdk.X2Y2.Order(config.chainId, {
         id: x2y2Order.id,
         currency: x2y2Order.currency,
         maker: x2y2Order.maker,
         nft: {
           token: x2y2Order.token.contract,
-          tokenId: x2y2Order.token.token_id,
+          tokenId: x2y2Order.is_collection_offer ? undefined : x2y2Order.token.token_id,
         },
         taker: x2y2Order.taker || "",
         price: x2y2Order.price,
         type: x2y2Order.type,
         itemHash: x2y2Order.item_hash,
-        kind: x2y2Order.is_bundle ? undefined : "single-token",
+        kind: x2y2Order.is_collection_offer ? "collection-wide" : "single-token",
         deadline: x2y2Order.end_at,
       });
     } catch {
