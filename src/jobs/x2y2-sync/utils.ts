@@ -1,16 +1,16 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
-import pLimit from "p-limit";
-import _ from "lodash";
-
-import { db, pgp } from "../../common/db";
-import { config } from "../../config";
-import { addToRelayOrdersQueue } from "../relay-orders";
 import { fromUnixTime } from "date-fns";
+import _ from "lodash";
+import pLimit from "p-limit";
+
+import { addToRelayOrdersQueue } from "../relay-orders";
+import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
+import { config } from "../../config";
 import { X2Y2, X2Y2Order } from "../../utils/x2y2";
 
-export const fetchOrdersByDateCreated = async (createdAfter: number = 0) => {
+export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfter = 0) => {
   logger.info("fetch_orders", `createdAfter = ${createdAfter} Fetching orders from X2Y2`);
 
   const x2y2 = new X2Y2();
@@ -22,6 +22,7 @@ export const fetchOrdersByDateCreated = async (createdAfter: number = 0) => {
   let done = false;
   while (!done) {
     const url = x2y2.buildFetchOrdersURL({
+      side,
       status,
       createdAfter,
       limit,
@@ -105,7 +106,7 @@ export const fetchOrdersByDateCreated = async (createdAfter: number = 0) => {
   return newCursor;
 };
 
-export const fetchOrdersByCursor = async (cursor: string = "") => {
+export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string = "") => {
   logger.info("fetch_orders", `cursor = ${cursor} Fetching orders from X2Y2`);
 
   const x2y2 = new X2Y2();
@@ -116,6 +117,7 @@ export const fetchOrdersByCursor = async (cursor: string = "") => {
   let newOrders = 0;
 
   const url = x2y2.buildFetchOrdersURL({
+    side,
     status,
     limit,
     cursor,
@@ -187,7 +189,10 @@ export const fetchOrdersByCursor = async (cursor: string = "") => {
     throw error;
   }
 
-  logger.info("fetch_orders", `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}`);
+  logger.info(
+    "fetch_orders",
+    `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}`
+  );
 
   return newCursor;
 };

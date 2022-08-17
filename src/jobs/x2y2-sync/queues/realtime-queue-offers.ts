@@ -1,10 +1,11 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis, releaseLock } from "../../common/redis";
-import { fetchOrdersByCursor } from "./utils";
-import { logger } from "../../common/logger";
-import { config } from "../../config";
 
-const REALTIME_QUEUE_NAME = "realtime-x2y2-sync";
+import { fetchOrdersByCursor } from "../utils";
+import { redis, releaseLock } from "../../../common/redis";
+import { logger } from "../../../common/logger";
+import { config } from "../../../config";
+
+const REALTIME_QUEUE_NAME = "realtime-x2y2-sync-offers";
 
 export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
@@ -26,15 +27,15 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const cacheKey = "x2y2-sync-cursor";
+        const cacheKey = "x2y2-sync-offers-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrdersByCursor(cursor || "");
+        const newCursor = await fetchOrdersByCursor("buy", cursor || "");
 
         if (newCursor == cursor) {
           logger.info(
             REALTIME_QUEUE_NAME,
-            `x2y2 cursor didn't change cursor=${cursor}, newCursor=${newCursor}`
+            `X2Y2 offers cursor didn't change cursor=${cursor}, newCursor=${newCursor}`
           );
         }
 
@@ -45,7 +46,7 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `X2Y2 Sync failed attempts=${job.attemptsMade}, error=${error}`
+          `X2Y2 Sync offers failed attempts=${job.attemptsMade}, error=${error}`
         );
       }
     },
@@ -54,10 +55,10 @@ if (config.doRealtimeWork) {
 
   realtimeWorker.on("completed", async (job) => {
     // Release the lock to allow the next sync
-    await releaseLock("x2y2-sync-lock", false);
+    await releaseLock("x2y2-sync-offers-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(REALTIME_QUEUE_NAME, `Sync offers recover attempts=${job.attemptsMade}`);
     }
   });
 

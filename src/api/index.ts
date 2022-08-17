@@ -11,9 +11,9 @@ import {
   addToSeaportBackfillQueue,
   createTimeFrameForBackfill,
 } from "../jobs/seaport-sync/backfill-queue";
-import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/backfill-queue";
-import { fastSyncContract } from "../utils/fast-sync-contract";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
+import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
+import { fastSyncContract } from "../utils/fast-sync-contract";
 import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
 
 export const start = async () => {
@@ -79,14 +79,14 @@ export const start = async () => {
   app.post(
     "/backfill/x2y2",
     asyncHandler(async (req, res) => {
-      if (config.chainId === 4) {
-        res.status(501).json({ message: "X2Y2 Backfill isn't supported on rinkeby" });
-      } else {
+      if (config.chainId === 1) {
         res.status(202).json({ message: "Request accepted" });
 
         const startTime = Number(req.body.fromTimestamp);
         const endTime = Number(req.body.toTimestamp);
         await addToX2Y2BackfillQueue(startTime, endTime);
+      } else {
+        res.status(501).json({ message: "X2Y2 not supported" });
       }
     })
   );

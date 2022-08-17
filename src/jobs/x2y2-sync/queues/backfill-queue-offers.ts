@@ -1,10 +1,11 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis } from "../../common/redis";
-import { fetchOrdersByDateCreated } from "./utils";
-import { logger } from "../../common/logger";
-import { config } from "../../config";
 
-const BACKFILL_QUEUE_NAME = "backfill-x2y2-sync";
+import { fetchOrdersByDateCreated } from "../utils";
+import { logger } from "../../../common/logger";
+import { redis } from "../../../common/redis";
+import { config } from "../../../config";
+
+const BACKFILL_QUEUE_NAME = "backfill-x2y2-sync-offers";
 
 export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
@@ -25,14 +26,19 @@ if (config.doBackfillWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
-      let { startTime, endTime } = job.data;
+      type Data = {
+        startTime: number;
+        endTime: number;
+      };
+
+      const { startTime, endTime }: Data = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrdersByDateCreated(startTime);
+        const lastCreatedAt = await fetchOrdersByDateCreated("buy", startTime);
 
         logger.info(
           BACKFILL_QUEUE_NAME,
-          `X2Y2 backfilled from startTime=${startTime} to endTime=${endTime}`
+          `X2Y2 backfilled offers from startTime=${startTime} to endTime=${endTime}`
         );
 
         // If there are more order within th given time frame
@@ -42,7 +48,7 @@ if (config.doBackfillWork) {
       } catch (error) {
         logger.error(
           BACKFILL_QUEUE_NAME,
-          `X2Y2 Sync failed attempts=${job.attemptsMade}, error=${error}`
+          `X2Y2 Sync offers failed attempts=${job.attemptsMade}, error=${error}`
         );
       }
     },
