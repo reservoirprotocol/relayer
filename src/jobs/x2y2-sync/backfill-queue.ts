@@ -1,5 +1,5 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
-import { redis, extendLock } from "../../common/redis";
+import { redis } from "../../common/redis";
 import { fetchOrdersByDateCreated } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
