@@ -331,10 +331,6 @@ export const refreshCollectionsToFetchOffers = async () => {
     const response = await axios.get(
       `${process.env.BASE_INDEXER_V3_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=1DayVolume`,
       {
-        headers: {
-          "user-agent":
-            "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-        },
         timeout: 20000,
       }
     );
@@ -349,10 +345,6 @@ export const refreshCollectionsToFetchOffers = async () => {
           const response = await axios.get(
             `${process.env.BASE_INDEXER_V3_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=1`,
             {
-              headers: {
-                "user-agent":
-                  "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-              },
               timeout: 20000,
             }
           );
@@ -364,8 +356,8 @@ export const refreshCollectionsToFetchOffers = async () => {
           });
         } catch (error) {
           logger.error(
-            "refresh_collections",
-            `Failed to add collection. collectionId=${collection.id}, error:${error}`
+            "refresh_collection",
+            `Failed to refresh collection. collectionId=${collection.id}, error:${error}`
           );
         }
       }
