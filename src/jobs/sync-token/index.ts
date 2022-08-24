@@ -127,7 +127,10 @@ if (config.doBackgroundWork) {
           true
         );
 
-        logger.info("fast_sync_token", `Got total ${totalOrders} valid ${validOrders.length} orders for token ${token}`);
+        logger.info(
+          "fast_sync_token",
+          `Got total ${totalOrders} valid ${validOrders.length} orders for token ${token}`
+        );
       }
     },
     { connection: redis.duplicate(), concurrency: 2 }

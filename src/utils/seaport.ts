@@ -1,7 +1,7 @@
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
-import {logger} from "../common/logger";
+import { logger } from "../common/logger";
 
 type FetchOrdersParams = {
   orderBy?: "created_date";
@@ -10,6 +10,11 @@ type FetchOrdersParams = {
   cursor?: string | null;
   listedBefore?: number | null;
   listedAfter?: number | null;
+};
+
+type FetchTokenOffersParams = {
+  contract: string;
+  tokenId: string;
 };
 
 export type SeaportOrder = {
@@ -77,6 +82,18 @@ export class Seaport {
     return decodeURI(`${baseOpenSeaApiUrl}?${queryParams.toString()}`);
   }
 
+  public buildFetchTokenOffersURL(params: FetchTokenOffersParams) {
+    let baseOpenSeaApiUrl: string;
+
+    if (config.chainId === 1) {
+      baseOpenSeaApiUrl = `https://api.opensea.io/api/v1/asset/${params.contract}/${params.tokenId}/offers`;
+    } else {
+      baseOpenSeaApiUrl = `https://testnets-api.opensea.io/api/v1/asset/${params.contract}/${params.tokenId}/offers`;
+    }
+
+    return baseOpenSeaApiUrl;
+  }
+
   public async parseSeaportOrder(
     seaportOrder: SeaportOrder
   ): Promise<Sdk.Seaport.Order | undefined> {
@@ -96,7 +113,10 @@ export class Seaport {
         signature: seaportOrder.protocol_data.signature,
       });
     } catch (error) {
-      logger.error("parse-seaport-order", `Failed to parse order ${seaportOrder.order_hash} - ${error}`);
+      logger.error(
+        "parse-seaport-order",
+        `Failed to parse order ${seaportOrder.order_hash} - ${error}`
+      );
       return undefined;
     }
   }
