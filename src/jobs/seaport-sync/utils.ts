@@ -327,10 +327,9 @@ export const getCollectionsToFetchOffers = async () => {
 export const refreshCollectionsToFetchOffers = async () => {
   logger.info("refresh_collections", `Start`);
 
-  const getCollectionsUrl = `${process.env.BASE_INDEXER_V3_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=1DayVolume`;
-
   try {
-    const response = await axios.get(getCollectionsUrl,
+    const response = await axios.get(
+      `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=1DayVolume`,
       {
         timeout: 20000,
       }
@@ -342,10 +341,9 @@ export const refreshCollectionsToFetchOffers = async () => {
       const fetchOffersCollectionToAdd: FetchOffersCollection[] = [];
 
       for (const collection of collections) {
-        const getTokenIdsUrl = `${process.env.BASE_INDEXER_V3_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=1`;
-
         try {
-          const response = await axios.get(getTokenIdsUrl,
+          const response = await axios.get(
+            `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=1`,
             {
               timeout: 20000,
             }
@@ -359,7 +357,7 @@ export const refreshCollectionsToFetchOffers = async () => {
         } catch (error) {
           logger.error(
             "refresh_collection",
-            `Failed to refresh collection. collectionId=${collection.id}, getTokenIdsUrl:${getTokenIdsUrl}, error:${error}`
+            `Failed to refresh collection. collectionId=${collection.id}, error:${error}`
           );
         }
       }
@@ -370,6 +368,6 @@ export const refreshCollectionsToFetchOffers = async () => {
 
     logger.info("refresh_collections", `Success. Got ${collections.length} collections`);
   } catch (error) {
-    logger.error("refresh_collections", `Failed. getCollectionsUrl:${getCollectionsUrl}, error:${error}`);
+    logger.error("refresh_collections", `Failed. error:${error}`);
   }
 };
