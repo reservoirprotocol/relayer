@@ -7,6 +7,8 @@ import { backfillQueue } from "./backfill-queue";
 import { sub, getUnixTime, startOfHour, format } from "date-fns";
 
 import * as seaportSyncRealtime from "./realtime-queue";
+import * as seaportSyncRealtimeOffers from "./realtime-queue-offers";
+
 import * as seaportSyncBackfill from "./backfill-queue";
 
 if (config.doRealtimeWork) {
@@ -39,6 +41,15 @@ if (config.doRealtimeWork) {
           "yyyy-MM-dd HH:mm:ss"
         )} toTimestamp=${format(toTimestamp, "yyyy-MM-dd HH:mm:ss")}`
       );
+    }
+  });
+
+  cron.schedule("*/1 * * * *", async () => {
+    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 60);
+
+    if (lockAcquired) {
+      await seaportSyncRealtimeOffers.addToRealtimeQueue();
+      logger.info(realtimeQueue.name, `Start SeaPort Offers realtime`);
     }
   });
 }
