@@ -14,7 +14,7 @@ import {
   FetchOffersCollections,
 } from "../../models/fetch-offers-collections";
 
-const MAX_FETCH_OFFERS_COLLECTIONS = 1;
+const MAX_FETCH_OFFERS_COLLECTIONS = 5;
 
 export const fetchOrders = async () => {
   logger.info("fetch_orders", `Seaport Fetch orders`);
@@ -235,7 +235,6 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
   try {
     const response = await axios.get(url, {
       headers: {
-        "x-api-key": config.realtimeOpenseaApiKey,
         "user-agent":
           "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
       },
