@@ -12,11 +12,6 @@ type FetchOrdersParams = {
   listedAfter?: number | null;
 };
 
-type FetchTokenOffersParams = {
-  contract: string;
-  tokenId: string;
-};
-
 export type SeaportOrder = {
   created_date: string;
   order_hash: string;
@@ -80,18 +75,6 @@ export class Seaport {
     }
 
     return decodeURI(`${baseOpenSeaApiUrl}?${queryParams.toString()}`);
-  }
-
-  public buildFetchTokenOffersURL(params: FetchTokenOffersParams) {
-    let baseOpenSeaApiUrl: string;
-
-    if (config.chainId === 1) {
-      baseOpenSeaApiUrl = `https://api.opensea.io/api/v1/asset/${params.contract}/${params.tokenId}/offers`;
-    } else {
-      baseOpenSeaApiUrl = `https://testnets-api.opensea.io/api/v1/asset/${params.contract}/${params.tokenId}/offers`;
-    }
-
-    return baseOpenSeaApiUrl;
   }
 
   public async parseSeaportOrder(

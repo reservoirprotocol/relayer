@@ -220,24 +220,21 @@ export const fetchAllOrders = async (
 };
 
 export const fetchCollectionOffers = async (contract: string, tokenId: string) => {
-  logger.info(
-    "fetch_collection_offers",
-    `Seaport Fetch offers start. contract:${contract}, tokenId:${tokenId}`
-  );
-
   const seaport = new Seaport();
 
-  const url = seaport.buildFetchTokenOffersURL({
-    contract,
-    tokenId,
-  });
+  const url =
+    config.chainId === 1
+      ? `https://api.opensea.io/api/v1/asset/${contract}/${tokenId}/offers`
+      : `https://testnets-api.opensea.io/api/v1/asset/${contract}/${tokenId}/offers`;
 
   try {
     const response = await axios.get(url, {
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-      },
+      headers:
+        config.chainId === 1
+          ? {
+              "X-API-KEY": config.realtimeOpenseaApiKey,
+            }
+          : {},
       timeout: 20000,
     });
 
@@ -248,7 +245,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
     const handleOrder = async (order: SeaportOrder) => {
       const parsed = await seaport.parseSeaportOrder(order);
 
-      if (parsed && parsed.params.kind != "single-token") {
+      if (parsed) {
         parsedOrders.push(parsed);
       }
 
@@ -282,7 +279,10 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
         const lastOrder = _.last(orders);
 
         if (lastOrder) {
-          logger.info("fetch_orders", `Seaport empty result. reached to=${lastOrder.created_date}`);
+          logger.info(
+            "fetch_collection_offers",
+            `Seaport empty result. reached to=${lastOrder.created_date}`
+          );
         }
       }
     }
@@ -297,26 +297,29 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
       );
     }
 
-    logger.info("fetch_collection_offers", `Seaport - DONE.  Got ${orders.length} orders`);
+    logger.info(
+      "fetch_collection_offers",
+      `Seaport - Success. contract:${contract}, tokenId:${tokenId}, orders:${orders.length}`
+    );
   } catch (error) {
+    logger.error(
+      "fetch_collection_offers",
+      `Seaport - Error. contract:${contract}, tokenId:${tokenId}, error:${error}`
+    );
     throw error;
   }
 };
 
 export const getCollectionsToFetchOffers = async () => {
-  logger.info("get_collections", `Start`);
-
   try {
     const fetchOffersCollections = new FetchOffersCollections("opensea");
     const fetchOffersCollectionsCount = await fetchOffersCollections.count();
 
     if (fetchOffersCollectionsCount === 0) {
       await refreshCollectionsToFetchOffers();
-
-      logger.info("get_collections", `Refresh.`);
     }
 
-    return fetchOffersCollections.getAll();
+    return await fetchOffersCollections.getAll();
   } catch (error) {
     logger.error("get_collections", `Failed. error:${error}`);
     return [];
@@ -324,8 +327,6 @@ export const getCollectionsToFetchOffers = async () => {
 };
 
 export const refreshCollectionsToFetchOffers = async () => {
-  logger.info("refresh_collections", `Start`);
-
   try {
     const response = await axios.get(
       `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=1DayVolume`,
@@ -364,8 +365,6 @@ export const refreshCollectionsToFetchOffers = async () => {
       const fetchOffersCollections = new FetchOffersCollections("opensea");
       await fetchOffersCollections.add(fetchOffersCollectionToAdd, true);
     }
-
-    logger.info("refresh_collections", `Success. Got ${collections.length} collections`);
   } catch (error) {
     logger.error("refresh_collections", `Failed. error:${error}`);
   }
