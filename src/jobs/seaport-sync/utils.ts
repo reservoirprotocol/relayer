@@ -14,7 +14,7 @@ import {
   FetchOffersCollections,
 } from "../../models/fetch-offers-collections";
 
-const MAX_FETCH_OFFERS_COLLECTIONS = 5;
+const MAX_FETCH_OFFERS_COLLECTIONS = 1;
 
 export const fetchOrders = async () => {
   logger.info("fetch_orders", `Seaport Fetch orders`);
