@@ -243,16 +243,9 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
-      logger.info("fetch_collection_offers", `Handling order. order=${JSON.stringify(order)}`);
-
       const parsed = await seaport.parseSeaportOrder(order);
 
       if (parsed) {
-        logger.info(
-          "fetch_collection_offers",
-          `order parsed. order=${JSON.stringify(order)}, parsed=${JSON.stringify(parsed.getInfo())}`
-        );
-
         parsedOrders.push(parsed);
       }
 
