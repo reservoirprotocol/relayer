@@ -329,7 +329,7 @@ export const getCollectionsToFetchOffers = async () => {
 export const refreshCollectionsToFetchOffers = async () => {
   try {
     const response = await axios.get(
-      `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=1DayVolume`,
+      `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=30DayVolume`,
       {
         timeout: 20000,
       }
