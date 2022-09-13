@@ -3,7 +3,12 @@ import tracer from "dd-trace";
 import { config } from "../config";
 
 if (process.env.DATADOG_AGENT_URL) {
-  const network = config.chainId === 1 ? "mainnet" : "rinkeby";
+  let network = "unknown";
+  if (config.chainId === 1) {
+    network = "mainnet";
+  } else if (config.chainId === 5) {
+    network = "goerli";
+  }
   const service = `relayer-${network}`;
 
   // TODO: Disable Redis tracing since that generates
