@@ -3,7 +3,12 @@ import { createLogger, format, transports } from "winston";
 import { config } from "../config";
 
 const log = (level: "debug" | "error" | "info" | "warn") => {
-  const network = config.chainId === 1 ? "mainnet" : "rinkeby";
+  let network = "unknown";
+  if (config.chainId === 1) {
+    network = "mainnet";
+  } else if (config.chainId === 5) {
+    network = "goerli";
+  }
   const service = `relayer-${network}`;
 
   const logger = createLogger({
