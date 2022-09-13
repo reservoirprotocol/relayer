@@ -1,5 +1,6 @@
-import { config } from "../config";
 import * as Sdk from "@reservoir0x/sdk";
+
+import { config } from "../config";
 
 type FetchOrdersParams = {
   side: "sell" | "buy";
@@ -37,9 +38,9 @@ export class X2Y2 {
   // https://hackmd.io/7AnOgEqFT2mZHqUQ4bXwsw#GET-apiorders
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     // For now there's no support for testnets
-    const baseUrl = `https://api.x2y2.org/v1/${params.side === "sell" ? "orders" : "offers"}`;
+    const baseApiUrl = `https://api.x2y2.org/v1/${params.side === "sell" ? "orders" : "offers"}`;
 
-    let queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
     if (params.status) {
       queryParams.append("status", String(params.status));
@@ -61,7 +62,7 @@ export class X2Y2 {
       queryParams.append("sort", String(params.sort));
     }
 
-    return decodeURI(`${baseUrl}?${queryParams.toString()}`);
+    return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
   public async parseX2Y2Order(x2y2Order: X2Y2Order): Promise<Sdk.X2Y2.Order | undefined> {
@@ -95,7 +96,7 @@ export class X2Y2 {
         deadline: x2y2Order.end_at,
       });
     } catch {
-      return undefined;
+      // Skip any errors
     }
   }
 }

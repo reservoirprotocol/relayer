@@ -1,5 +1,6 @@
-import { config } from "../config";
 import * as Sdk from "@reservoir0x/sdk";
+
+import { config } from "../config";
 
 type FetchOrdersParams = {
   startTime?: number;
@@ -36,14 +37,16 @@ export type LooksRareOrder = {
 export class LooksRare {
   // https://api.looksrare.org/api/documentation/#/Orders/OrderController.getOrders
   public buildFetchOrdersURL(params: FetchOrdersParams, pagination?: FetchOrdersPaginationParams) {
-    let baseOpenSeaApiUrl: string;
+    let baseApiUrl: string;
     if (config.chainId === 1) {
-      baseOpenSeaApiUrl = "https://api.looksrare.org/api/v1";
+      baseApiUrl = "https://api.looksrare.org/api/v1";
+    } else if (config.chainId === 5) {
+      baseApiUrl = "https://api-goerli.looksrare.org/api/v1";
     } else {
-      baseOpenSeaApiUrl = "https://api-rinkeby.looksrare.org/api/v1";
+      throw new Error("Unsupported chain");
     }
 
-    let searchParams = new URLSearchParams({
+    const searchParams = new URLSearchParams({
       // isOrderAsk: "true",
       sort: "NEWEST",
     });
@@ -63,7 +66,7 @@ export class LooksRare {
       searchParams.append("pagination[cursor]", pagination.cursor);
     }
 
-    return decodeURI(`${baseOpenSeaApiUrl}/orders?${searchParams.toString()}`);
+    return decodeURI(`${baseApiUrl}/orders?${searchParams.toString()}`);
   }
 
   public async parseLooksRareOrder(
@@ -71,7 +74,6 @@ export class LooksRare {
   ): Promise<Sdk.LooksRare.Order | undefined> {
     try {
       const order = new Sdk.LooksRare.Order(config.chainId, {
-        // hash: looksRareOrder.hash,
         collection: looksRareOrder.collectionAddress,
         tokenId: looksRareOrder.tokenId || "0",
         isOrderAsk: Boolean(looksRareOrder.isOrderAsk),
@@ -96,9 +98,7 @@ export class LooksRare {
         return order;
       }
     } catch {
-      return undefined;
+      // Skip any errors
     }
-
-    return undefined;
   }
 }

@@ -1,11 +1,10 @@
 import axios from "axios";
+import _ from "lodash";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
-
 import { buildFetchEventsURL } from "./opensea";
-import _ from "lodash";
 
 export const fastSyncContract = async (
   contract: string,

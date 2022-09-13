@@ -1,7 +1,7 @@
 import * as Sdk from "@reservoir0x/sdk";
 
-import { config } from "../config";
 import { logger } from "../common/logger";
+import { config } from "../config";
 
 type FetchOrdersParams = {
   orderBy?: "created_date";
@@ -39,16 +39,17 @@ export type SeaportOrder = {
 };
 
 export class Seaport {
-  // https://hackmd.io/7AnOgEqFT2mZHqUQ4bXwsw#GET-apiorders
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    let baseOpenSeaApiUrl: string;
+    let baseApiUrl: string;
     if (config.chainId === 1) {
-      baseOpenSeaApiUrl = "https://api.opensea.io/v2/orders/ethereum/seaport/listings";
+      baseApiUrl = "https://api.opensea.io/v2/orders/ethereum/seaport/listings";
+    } else if (config.chainId === 5) {
+      baseApiUrl = "https://testnets-api.opensea.io/v2/orders/goerli/seaport/listings";
     } else {
-      baseOpenSeaApiUrl = "https://testnets-api.opensea.io/v2/orders/rinkeby/seaport/listings";
+      throw new Error("Unsupported chain");
     }
 
-    let queryParams = new URLSearchParams();
+    const queryParams = new URLSearchParams();
 
     if (params.orderBy) {
       queryParams.append("order_by", String(params.orderBy));
@@ -74,7 +75,7 @@ export class Seaport {
       queryParams.append("listed_after", String(params.listedAfter));
     }
 
-    return decodeURI(`${baseOpenSeaApiUrl}?${queryParams.toString()}`);
+    return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
   public async parseSeaportOrder(
@@ -100,7 +101,6 @@ export class Seaport {
         "parse-seaport-order",
         `Failed to parse order ${seaportOrder.order_hash} - ${error}`
       );
-      return undefined;
     }
   }
 }

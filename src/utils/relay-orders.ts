@@ -60,6 +60,7 @@ export const relayOrdersByContract = async (contract: string) => {
 
     await addToRelayOrdersQueue(
       validOrders.map((order) => ({
+        // TODO: Add support for LooksRare and X2Y2 orders as well
         kind: "seaport",
         data: order.params,
       }))
@@ -106,13 +107,14 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
 
       await addToRelayOrdersQueue(
         validOrders.map((order) => ({
+          // TODO: Add support for LooksRare and X2Y2 orders as well
           kind: "seaport",
           data: order.params,
         }))
       );
     }
 
-    logger.info("relay_orders_by_timestamp", `Done relaying orders`);
+    logger.info("relay_orders_by_timestamp", "Done relaying orders");
   } catch (error) {
     logger.error("relay_orders_by_timestamp", `Failed to relay orders: ${error}`);
   }
