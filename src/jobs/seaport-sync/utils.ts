@@ -16,8 +16,8 @@ import {
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 20;
 
-export const fetchOrders = async () => {
-  logger.info("fetch_orders", `Seaport Fetch orders`);
+export const fetchOrders = async (side: "sell" | "buy") => {
+  logger.info("fetch_orders", `Seaport Fetch orders. side=${side}`);
 
   const seaport = new Seaport();
   let cursor = null;
@@ -26,6 +26,7 @@ export const fetchOrders = async () => {
 
   while (!done) {
     const url = seaport.buildFetchOrdersURL({
+      side,
       orderBy: "created_date",
       orderDirection: "desc",
       limit,
@@ -103,7 +104,10 @@ export const fetchOrders = async () => {
         );
       }
 
-      logger.info("fetch_orders", `Seaport - DONE - cursor=${cursor} Got ${orders.length} orders`);
+      logger.info(
+        "fetch_orders",
+        `Seaport - DONE - side=${side}, cursor=${cursor} Got ${orders.length} orders`
+      );
     } catch (error) {
       throw error;
     }
@@ -135,6 +139,7 @@ export const fetchAllOrders = async (
   let limit = 50;
 
   const url = seaport.buildFetchOrdersURL({
+    side: "sell",
     orderBy: "created_date",
     orderDirection: "desc",
     limit,

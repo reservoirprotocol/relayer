@@ -6,8 +6,9 @@ import { realtimeQueue } from "./realtime-queue";
 import { backfillQueue } from "./backfill-queue";
 import { sub, getUnixTime, startOfHour, format } from "date-fns";
 
-import * as seaportSyncRealtime from "./realtime-queue";
+import * as seaportSyncRealtimeListings from "./realtime-queue";
 import * as seaportSyncRealtimeOffers from "./realtime-queue-offers";
+import * as seaportSyncRealtimeCollectionOffers from "./realtime-queue-collection-offers";
 
 import * as seaportSyncBackfill from "./backfill-queue";
 
@@ -16,7 +17,7 @@ if (config.doRealtimeWork) {
     const lockAcquired = await acquireLock("seaport-sync-lock", 60);
 
     if (lockAcquired) {
-      await seaportSyncRealtime.addToRealtimeQueue();
+      await seaportSyncRealtimeListings.addToRealtimeQueue();
       logger.info(realtimeQueue.name, `Start SeaPort realtime`);
     }
   });
@@ -44,11 +45,20 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule("*/1 * * * *", async () => {
+  cron.schedule("*/5 * * * * *", async () => {
     const lockAcquired = await acquireLock("seaport-sync-offers-lock", 60);
 
     if (lockAcquired) {
       await seaportSyncRealtimeOffers.addToRealtimeQueue();
+      logger.info(realtimeQueue.name, `Start SeaPort realtime`);
+    }
+  });
+
+  cron.schedule("*/1 * * * *", async () => {
+    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 60);
+
+    if (lockAcquired) {
+      await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
       logger.info(realtimeQueue.name, `Start SeaPort Offers realtime`);
     }
   });
