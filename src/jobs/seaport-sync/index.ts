@@ -50,16 +50,16 @@ if (config.doRealtimeWork) {
 
     if (lockAcquired) {
       await seaportSyncRealtimeOffers.addToRealtimeQueue();
-      logger.info(realtimeQueue.name, `Start SeaPort realtime`);
+      logger.info(realtimeQueue.name, `Start SeaPort offers realtime`);
     }
   });
 
   cron.schedule("*/1 * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 60);
+    const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 60);
 
     if (lockAcquired) {
       await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
-      logger.info(realtimeQueue.name, `Start SeaPort Offers realtime`);
+      logger.info(realtimeQueue.name, `Start SeaPort Collection Offers realtime`);
     }
   });
 }
