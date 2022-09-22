@@ -8,7 +8,7 @@ import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
 import * as seaportSyncListingsRealtime from "./seaport-sync/realtime-queue";
 import * as seaportSyncOffersRealtime from "./seaport-sync/realtime-queue-offers";
-import * as seaportSyncCollectionOffersRealtime from "./seaport-sync/realtime-queue-offers";
+import * as seaportSyncCollectionOffersRealtime from "./seaport-sync/realtime-queue-collection-offers";
 
 import * as seaportSyncBackfill from "./seaport-sync/backfill-queue";
 import * as syncToken from "./sync-token";
