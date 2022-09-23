@@ -368,7 +368,7 @@ export const refreshCollectionsToFetchOffers = async () => {
           });
         } catch (error) {
           logger.error(
-            "refresh_collection",
+            "refresh_collections",
             `Failed to refresh collection. collectionId=${collection.id}, error:${error}`
           );
         }
