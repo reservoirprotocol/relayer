@@ -331,6 +331,8 @@ export const refreshCollectionsToFetchOffers = async () => {
     let collections = [];
     let continuation = null;
 
+    logger.info("refresh_collections", `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`);
+
     for (let i = 0; i < Math.ceil(MAX_FETCH_OFFERS_COLLECTIONS / 20); i++) {
       const response: any = await axios.get(
         continuation
