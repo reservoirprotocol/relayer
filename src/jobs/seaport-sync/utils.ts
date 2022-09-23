@@ -14,7 +14,7 @@ import {
   FetchOffersCollections,
 } from "../../models/fetch-offers-collections";
 
-const MAX_FETCH_OFFERS_COLLECTIONS = 20;
+const MAX_FETCH_OFFERS_COLLECTIONS = 50;
 
 export const fetchOrders = async () => {
   logger.info("fetch_orders", `Seaport Fetch orders`);
@@ -328,14 +328,26 @@ export const getCollectionsToFetchOffers = async () => {
 
 export const refreshCollectionsToFetchOffers = async () => {
   try {
-    const response = await axios.get(
-      `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v4?limit=${MAX_FETCH_OFFERS_COLLECTIONS}&sortBy=30DayVolume`,
-      {
-        timeout: 20000,
-      }
-    );
+    let collections = [];
+    let continuation = null;
 
-    const collections = response.data.collections;
+    for (let i = 0; i < Math.ceil(MAX_FETCH_OFFERS_COLLECTIONS / 20); i++) {
+      const response: any = await axios.get(
+        continuation
+          ? `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=allTimeVolume&continuation=${continuation}`
+          : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=allTimeVolume`,
+        {
+          timeout: 20000,
+        }
+      );
+
+      collections.push(...response.data.collections);
+      continuation = response.data.continuation;
+
+      if (response.data.collections.length < 20) {
+        break;
+      }
+    }
 
     if (collections.length) {
       const fetchOffersCollectionToAdd: FetchOffersCollection[] = [];
@@ -356,7 +368,7 @@ export const refreshCollectionsToFetchOffers = async () => {
           });
         } catch (error) {
           logger.error(
-            "refresh_collection",
+            "refresh_collections",
             `Failed to refresh collection. collectionId=${collection.id}, error:${error}`
           );
         }
