@@ -91,13 +91,6 @@ export const fetchOrders = async (side: "sell" | "buy") => {
           }
 
           done = true;
-        } else {
-          for (const order of orders) {
-            logger.info(
-                "fetch_orders",
-                `Seaport order new. side=${side}, order_hash=${order.order_hash.toLowerCase()}`
-            );
-          }
         }
       }
 
