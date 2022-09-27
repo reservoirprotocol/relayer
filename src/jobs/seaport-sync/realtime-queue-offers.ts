@@ -41,6 +41,13 @@ if (config.doRealtimeWork) {
     await releaseLock("seaport-sync-offers-lock", false);
   });
 
+  realtimeWorker.on("failed", async (job) => {
+    // Release the lock and allow new job to be scheduled
+    await releaseLock("seaport-sync-offers-lock", false);
+
+    logger.error(REALTIME_QUEUE_NAME, `Worker failed: ${JSON.stringify(job)}`);
+  });
+
   realtimeWorker.on("error", (error) => {
     logger.error(REALTIME_QUEUE_NAME, `Worker errored: ${error}`);
   });

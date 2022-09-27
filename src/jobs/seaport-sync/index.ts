@@ -45,8 +45,8 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule(config.chainId === 1 ? "*/5 * * * * *": "*/30 * * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 600);
+  cron.schedule(config.chainId === 1 ? "*/5 * * * * *" : "*/30 * * * * *", async () => {
+    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 3600);
 
     if (lockAcquired) {
       await seaportSyncRealtimeOffers.addToRealtimeQueue();

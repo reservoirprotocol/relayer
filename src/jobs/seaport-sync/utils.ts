@@ -17,12 +17,13 @@ import {
 const MAX_FETCH_OFFERS_COLLECTIONS = 100;
 
 export const fetchOrders = async (side: "sell" | "buy") => {
-  logger.info("fetch_orders", `Seaport Fetch orders. side=${side}`);
+  logger.info("fetch_orders", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
   let cursor = null;
   let limit = 50;
   let done = false;
+  let total = 0;
 
   while (!done) {
     const url = seaport.buildFetchOrdersURL({
@@ -46,6 +47,8 @@ export const fetchOrders = async (side: "sell" | "buy") => {
       const parsedOrders: Sdk.Seaport.Order[] = [];
       cursor = response.data.next;
       const values: any[] = [];
+
+      total += orders.length;
 
       const handleOrder = async (order: SeaportOrder) => {
         const parsed = await seaport.parseSeaportOrder(order);
@@ -106,12 +109,19 @@ export const fetchOrders = async (side: "sell" | "buy") => {
 
       logger.info(
         "fetch_orders",
-        `Seaport - DONE - side=${side}, cursor=${cursor} Got ${orders.length} orders`
+        `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
       );
     } catch (error) {
+      logger.info(
+        "fetch_orders",
+        `Seaport - Error. side=${side}, cursor=${cursor}, error=${error}`
+      );
+
       throw error;
     }
   }
+
+  logger.info("fetch_orders", `Seaport - Done. side=${side}, total=${total}`);
 };
 
 export const fetchAllOrders = async (
