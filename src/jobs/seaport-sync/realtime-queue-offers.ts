@@ -1,6 +1,6 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 import { redis, releaseLock } from "../../common/redis";
-import { fetchCollectionOffers, getCollectionsToFetchOffers } from "./utils";
+import { fetchOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
 
@@ -25,36 +25,18 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const fetchOffersCollections = await getCollectionsToFetchOffers();
-
-        for (const fetchOffersCollection of fetchOffersCollections) {
-          try {
-            await fetchCollectionOffers(
-              fetchOffersCollection.contract,
-              fetchOffersCollection.tokenId
-            );
-          } catch (error) {
-            logger.error(
-              REALTIME_QUEUE_NAME,
-              `SeaPort Sync collection offers failed contract=${fetchOffersCollection.contract}, tokenId=${fetchOffersCollection.tokenId},error=${error}`
-            );
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
+        await fetchOrders("buy");
       } catch (error) {
-        logger.error(REALTIME_QUEUE_NAME, `SeaPort Sync offers failed. error=${error}`);
+        logger.error(
+          REALTIME_QUEUE_NAME,
+          `SeaPort Sync Offers failed attempts=${job.attemptsMade}, error=${error}`
+        );
       }
     },
     { connection: redis.duplicate(), concurrency: 5 }
   );
 
   realtimeWorker.on("completed", async (job) => {
-    // Release the lock and allow new job to be scheduled
-    await releaseLock("seaport-sync-offers-lock", false);
-  });
-
-  realtimeWorker.on("failed", async (job) => {
     // Release the lock and allow new job to be scheduled
     await releaseLock("seaport-sync-offers-lock", false);
   });

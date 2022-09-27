@@ -6,8 +6,10 @@ import "./x2y2-sync";
 
 import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
-import * as seaportSyncRealtime from "./seaport-sync/realtime-queue";
+import * as seaportSyncListingsRealtime from "./seaport-sync/realtime-queue";
 import * as seaportSyncOffersRealtime from "./seaport-sync/realtime-queue-offers";
+import * as seaportSyncCollectionOffersRealtime from "./seaport-sync/realtime-queue-collection-offers";
+
 import * as seaportSyncBackfill from "./seaport-sync/backfill-queue";
 import * as syncToken from "./sync-token";
 import * as x2y2SyncListingsRealtime from "./x2y2-sync/queues/realtime-queue";
@@ -18,8 +20,9 @@ import * as x2y2SyncOffersBackfill from "./x2y2-sync/queues/backfill-queue-offer
 export const allQueues = [
   looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
-  seaportSyncRealtime.realtimeQueue,
+  seaportSyncListingsRealtime.realtimeQueue,
   seaportSyncOffersRealtime.realtimeQueue,
+  seaportSyncCollectionOffersRealtime.realtimeQueue,
   seaportSyncBackfill.backfillQueue,
   syncToken.queue,
   x2y2SyncListingsRealtime.realtimeQueue,

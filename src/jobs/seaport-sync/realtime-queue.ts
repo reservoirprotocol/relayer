@@ -25,7 +25,7 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        await fetchOrders();
+        await fetchOrders("sell");
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
