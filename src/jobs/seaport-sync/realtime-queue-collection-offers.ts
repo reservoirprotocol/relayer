@@ -40,13 +40,13 @@ if (config.doRealtimeWork) {
             );
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          // await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       } catch (error) {
         logger.error(REALTIME_QUEUE_NAME, `SeaPort Sync collection offers failed. error=${error}`);
       }
     },
-    { connection: redis.duplicate(), concurrency: 5 }
+    { connection: redis.duplicate(), concurrency: 1 }
   );
 
   realtimeWorker.on("completed", async (job) => {
