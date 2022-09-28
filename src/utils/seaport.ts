@@ -50,6 +50,7 @@ export class Seaport {
         break;
 
       case 4:
+      case 5:
         hostname = "testnets-api.opensea.io";
         network = "rinkeby";
         break;
