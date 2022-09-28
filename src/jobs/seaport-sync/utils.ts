@@ -295,8 +295,8 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
 
         if (lastOrder) {
           logger.info(
-              "fetch_collection_offers",
-              `Seaport empty result. reached to=${lastOrder.created_date}`
+            "fetch_collection_offers",
+            `Seaport empty result. reached to=${lastOrder.created_date}`
           );
         }
       }
