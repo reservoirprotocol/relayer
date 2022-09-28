@@ -372,16 +372,17 @@ export const refreshCollectionsToFetchOffers = async () => {
       for (const collection of collections) {
         try {
           const response = await axios.get(
-            `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=1`,
+            `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=20`,
             {
               timeout: 20000,
             }
           );
 
+          // OpenSea returns 404 on certain tokens, so we get 10 and choose a random token id.
           fetchOffersCollectionToAdd.push({
             collection: collection.id,
             contract: collection.primaryContract,
-            tokenId: response.data.tokens[0],
+            tokenId: _.sample(response.data.tokens),
           });
         } catch (error) {
           logger.error(
