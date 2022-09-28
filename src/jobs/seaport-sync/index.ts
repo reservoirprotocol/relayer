@@ -55,7 +55,7 @@ if (config.doRealtimeWork) {
   });
 
   cron.schedule("*/1 * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 60);
+    const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 3600);
 
     if (lockAcquired) {
       await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
