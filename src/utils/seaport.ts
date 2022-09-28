@@ -42,17 +42,26 @@ export type SeaportOrder = {
 export class Seaport {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     let baseApiUrl: string;
-    if (config.chainId === 1) {
-      baseApiUrl = `https://api.opensea.io/v2/orders/ethereum/seaport/${
-        params.side === "sell" ? "listings" : "offers"
-      }`;
-    } else if (config.chainId === 5) {
-      baseApiUrl = `https://testnets-api.opensea.io/v2/orders/goerli/seaport/${
-        params.side === "sell" ? "listings" : "offers"
-      }`;
-    } else {
-      throw new Error("Unsupported chain");
+
+    let hostname = "api.opensea.io";
+    let network = "ethereum";
+    switch (config.chainId) {
+      case 4:
+        hostname = "testnets-api.opensea.io";
+        network = "rinkeby";
+        break;
+
+      case 137:
+        network = "matic";
+        break;
+
+      default:
+        throw new Error("Unsupported chain");
     }
+
+    baseApiUrl = `https://${hostname}/v2/orders/${network}/seaport/${
+      params.side === "sell" ? "listings" : "offers"
+    }`;
 
     const queryParams = new URLSearchParams();
 

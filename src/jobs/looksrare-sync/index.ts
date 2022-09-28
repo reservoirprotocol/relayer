@@ -10,20 +10,22 @@ import * as looksrareSyncRealtime from "./realtime-queue";
 
 if (config.doRealtimeWork) {
   cron.schedule("* * * * *", async () => {
-    const lockAcquired = await acquireLock("looksrare-sync-lock", 120);
+    if (_.indexOf([1, 5], config.chainId) !== -1) {
+      const lockAcquired = await acquireLock("looksrare-sync-lock", 120);
 
-    if (lockAcquired) {
-      const cacheKey = "looksrare-sync-last";
-      let lastSynced = await redis.get(cacheKey);
+      if (lockAcquired) {
+        const cacheKey = "looksrare-sync-last";
+        let lastSynced = await redis.get(cacheKey);
 
-      // If key doesn't exist set it to 0 which will cause the queue to sync last 60s
-      if (_.isNull(lastSynced)) {
-        await redis.set(cacheKey, 0);
+        // If key doesn't exist set it to 0 which will cause the queue to sync last 60s
+        if (_.isNull(lastSynced)) {
+          await redis.set(cacheKey, 0);
+        }
+
+        await looksrareSyncRealtime.addToRealtimeQueue();
+
+        logger.info(realtimeQueue.name, `Start LookRare sync from lastSynced=(${lastSynced})`);
       }
-
-      await looksrareSyncRealtime.addToRealtimeQueue();
-
-      logger.info(realtimeQueue.name, `Start LookRare sync from lastSynced=(${lastSynced})`);
     }
   });
 }

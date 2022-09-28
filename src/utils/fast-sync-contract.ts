@@ -29,7 +29,7 @@ export const fastSyncContract = async (
       await axios
         .get(
           url,
-          config.chainId === 1
+          _.indexOf([1, 137], config.chainId) !== -1
             ? {
                 headers: {
                   "x-api-key": config.backfillOpenseaApiKey,

@@ -4,11 +4,20 @@ import { config } from "../config";
 
 const log = (level: "debug" | "error" | "info" | "warn") => {
   let network = "unknown";
-  if (config.chainId === 1) {
-    network = "mainnet";
-  } else if (config.chainId === 5) {
-    network = "goerli";
+  switch (config.chainId) {
+    case 1:
+      network = "mainnet";
+      break;
+
+    case 5:
+      network = "goerli";
+      break;
+
+    case 137:
+      network = "polygon";
+      break;
   }
+
   const service = `relayer-${network}`;
 
   const logger = createLogger({

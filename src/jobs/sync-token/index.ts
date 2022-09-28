@@ -8,6 +8,7 @@ import { redis } from "../../common/redis";
 import { config } from "../../config";
 import { Seaport } from "../../utils/seaport";
 import { addToRelayOrdersQueue } from "../relay-orders";
+import _ from "lodash";
 
 const QUEUE_NAME = "sync-token";
 
@@ -53,15 +54,26 @@ if (config.doBackgroundWork) {
         const [contract, tokenId] = token.split(":");
         let totalOrders = 0;
 
+        let network = "ethereum";
+        switch (config.chainId) {
+          case 4:
+            network = "rinkeby";
+            break;
+
+          case 137:
+            network = "matic";
+            break;
+        }
+
         // Fetch recent listings
-        const url = `https://${config.chainId === 4 ? "testnets-" : ""}api.opensea.io/v2/orders/${
-          config.chainId === 4 ? "rinkeby" : "ethereum"
-        }/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}`;
+        const url = `https://${
+          config.chainId === 4 ? "testnets-" : ""
+        }api.opensea.io/v2/orders/${network}/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}`;
 
         await axios
           .get(
             url,
-            config.chainId === 1
+            _.indexOf([1, 137], config.chainId) !== -1
               ? {
                   headers: {
                     "x-api-key": config.backfillOpenseaApiKey,

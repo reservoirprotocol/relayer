@@ -245,7 +245,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
   try {
     const response = await axios.get(url, {
       headers:
-        config.chainId === 1
+        _.indexOf([1, 137], config.chainId) !== -1
           ? {
               "X-API-KEY": config.realtimeOpenseaApiKey,
             }

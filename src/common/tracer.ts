@@ -4,11 +4,20 @@ import { config } from "../config";
 
 if (process.env.DATADOG_AGENT_URL) {
   let network = "unknown";
-  if (config.chainId === 1) {
-    network = "mainnet";
-  } else if (config.chainId === 5) {
-    network = "goerli";
+  switch (config.chainId) {
+    case 1:
+      network = "mainnet";
+      break;
+
+    case 5:
+      network = "goerli";
+      break;
+
+    case 137:
+      network = "polygon";
+      break;
   }
+
   const service = `relayer-${network}`;
 
   // TODO: Disable Redis tracing since that generates

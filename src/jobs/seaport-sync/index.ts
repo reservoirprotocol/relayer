@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import _ from "lodash";
 import { config } from "../../config";
 import { acquireLock } from "../../common/redis";
 import { logger } from "../../common/logger";
@@ -45,21 +46,26 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule(config.chainId === 1 ? "*/5 * * * * *" : "*/30 * * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-offers-lock", 3600);
+  if (_.indexOf([1, 5], config.chainId) !== -1) {
+    cron.schedule(
+      _.indexOf([1, 137], config.chainId) !== -1 ? "*/5 * * * * *" : "*/30 * * * * *",
+      async () => {
+        const lockAcquired = await acquireLock("seaport-sync-offers-lock", 3600);
 
-    if (lockAcquired) {
-      await seaportSyncRealtimeOffers.addToRealtimeQueue();
-      logger.info(realtimeQueue.name, `Start SeaPort offers realtime`);
-    }
-  });
+        if (lockAcquired) {
+          await seaportSyncRealtimeOffers.addToRealtimeQueue();
+          logger.info(realtimeQueue.name, `Start SeaPort offers realtime`);
+        }
+      }
+    );
 
-  cron.schedule("*/1 * * * *", async () => {
-    const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 3600);
+    cron.schedule("*/1 * * * *", async () => {
+      const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 3600);
 
-    if (lockAcquired) {
-      await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
-      logger.info(realtimeQueue.name, `Start SeaPort Collection Offers realtime`);
-    }
-  });
+      if (lockAcquired) {
+        await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
+        logger.info(realtimeQueue.name, `Start SeaPort Collection Offers realtime`);
+      }
+    });
+  }
 }
