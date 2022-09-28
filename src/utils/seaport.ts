@@ -46,6 +46,9 @@ export class Seaport {
     let hostname = "api.opensea.io";
     let network = "ethereum";
     switch (config.chainId) {
+      case 1:
+        break;
+
       case 4:
         hostname = "testnets-api.opensea.io";
         network = "rinkeby";
