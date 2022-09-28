@@ -294,7 +294,10 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
         const lastOrder = _.last(orders);
 
         if (lastOrder) {
-          logger.info("git mer", `Seaport empty result. reached to=${lastOrder.created_date}`);
+          logger.info(
+              "fetch_collection_offers",
+              `Seaport empty result. reached to=${lastOrder.created_date}`
+          );
         }
       }
     }
