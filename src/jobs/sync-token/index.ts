@@ -54,9 +54,11 @@ if (config.doBackgroundWork) {
         const [contract, tokenId] = token.split(":");
         let totalOrders = 0;
 
+        let hostname = "api.opensea.io";
         let network = "ethereum";
         switch (config.chainId) {
           case 4:
+            hostname = "testnets-api.opensea.io";
             network = "rinkeby";
             break;
 
@@ -66,9 +68,7 @@ if (config.doBackgroundWork) {
         }
 
         // Fetch recent listings
-        const url = `https://${
-          config.chainId === 4 ? "testnets-" : ""
-        }api.opensea.io/v2/orders/${network}/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}`;
+        const url = `https://${hostname}/v2/orders/${network}/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}`;
 
         await axios
           .get(
