@@ -351,8 +351,8 @@ export const refreshCollectionsToFetchOffers = async () => {
     for (let i = 0; i < Math.ceil(MAX_FETCH_OFFERS_COLLECTIONS / 20); i++) {
       const response: any = await axios.get(
         continuation
-          ? `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=allTimeVolume&continuation=${continuation}`
-          : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=allTimeVolume`,
+          ? `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=30DayVolume&continuation=${continuation}`
+          : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=30DayVolume`,
         {
           timeout: 20000,
         }
@@ -372,13 +372,13 @@ export const refreshCollectionsToFetchOffers = async () => {
       for (const collection of collections) {
         try {
           const response = await axios.get(
-            `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=20`,
+            `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=50`,
             {
               timeout: 20000,
             }
           );
 
-          // OpenSea returns 404 on certain tokens, so we get 10 and choose a random token id.
+          // OpenSea returns 404 on certain tokens, so we get 50 and choose a random token id.
           fetchOffersCollectionToAdd.push({
             collection: collection.id,
             contract: collection.primaryContract,
