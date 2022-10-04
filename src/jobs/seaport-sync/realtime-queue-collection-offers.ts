@@ -3,6 +3,7 @@ import { redis, releaseLock } from "../../common/redis";
 import { fetchCollectionOffers, getCollectionsToFetchOffers } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
+import { randomUUID } from "crypto";
 
 const REALTIME_QUEUE_NAME = "realtime-seaport-sync-collection-offers";
 
@@ -25,6 +26,8 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
+        logger.info(REALTIME_QUEUE_NAME, `SeaPort Sync collection offers start. job=${job.name}`);
+
         const fetchOffersCollections = await getCollectionsToFetchOffers();
 
         for (const fetchOffersCollection of fetchOffersCollections) {
@@ -36,14 +39,22 @@ if (config.doRealtimeWork) {
           } catch (error) {
             logger.error(
               REALTIME_QUEUE_NAME,
-              `SeaPort Sync collection offers failed contract=${fetchOffersCollection.contract}, tokenId=${fetchOffersCollection.tokenId}, error=${error}`
+              `SeaPort Sync collection offers failed. job=${job.name}, contract=${fetchOffersCollection.contract}, tokenId=${fetchOffersCollection.tokenId}, error=${error}`
             );
           }
 
           // await new Promise((resolve) => setTimeout(resolve, 1000));
         }
+
+        logger.info(
+          REALTIME_QUEUE_NAME,
+          `SeaPort Sync collection offers finished. job=${job.name}, collections=${fetchOffersCollections.length}`
+        );
       } catch (error) {
-        logger.error(REALTIME_QUEUE_NAME, `SeaPort Sync collection offers failed. error=${error}`);
+        logger.error(
+          REALTIME_QUEUE_NAME,
+          `SeaPort Sync collection offers failed. job=${job.name}, error=${error}`
+        );
       }
     },
     { connection: redis.duplicate(), concurrency: 1 }
@@ -65,5 +76,5 @@ if (config.doRealtimeWork) {
 }
 
 export const addToRealtimeQueue = async (delayMs: number = 0) => {
-  await realtimeQueue.add(REALTIME_QUEUE_NAME, {}, { delay: delayMs });
+  await realtimeQueue.add(randomUUID(), {}, { delay: delayMs });
 };
