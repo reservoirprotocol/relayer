@@ -355,6 +355,11 @@ export const refreshCollectionsToFetchOffers = async () => {
           : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=30DayVolume`,
         {
           timeout: 20000,
+          headers: process.env.INDEXER_API_KEY
+            ? {
+                "x-api-key": process.env.INDEXER_API_KEY,
+              }
+            : undefined,
         }
       );
 
@@ -375,6 +380,11 @@ export const refreshCollectionsToFetchOffers = async () => {
             `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=50`,
             {
               timeout: 20000,
+              headers: process.env.INDEXER_API_KEY
+                ? {
+                    "x-api-key": process.env.INDEXER_API_KEY,
+                  }
+                : undefined,
             }
           );
 
