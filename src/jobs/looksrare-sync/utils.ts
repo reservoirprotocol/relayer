@@ -157,7 +157,7 @@ export const fetchOrders = async (
       if (!backfill) {
         logger.error(
           "fetch_orders_looksrare",
-          `(${startTime}, ${endTime}) Got ${numOrders} orders error=${error}`
+          `(${startTime}, ${endTime}) ${url} Got ${numOrders} orders error=${error}`
         );
 
         return [mostRecentCreatedHash, ""];
