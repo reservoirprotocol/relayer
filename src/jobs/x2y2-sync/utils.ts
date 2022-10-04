@@ -11,7 +11,7 @@ import { config } from "../../config";
 import { X2Y2, X2Y2Order } from "../../utils/x2y2";
 
 export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfter = 0) => {
-  logger.info("fetch_orders", `createdAfter = ${createdAfter} Fetching orders from X2Y2`);
+  logger.info("fetch_orders_x2y2", `createdAfter = ${createdAfter} Fetching orders from X2Y2`);
 
   const x2y2 = new X2Y2();
   let limit = 50;
@@ -101,13 +101,13 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
     }
   }
 
-  logger.info("fetch_orders", `FINAL - X2Y2 - (${createdAfter}) Got ${numOrders} orders`);
+  logger.info("fetch_orders_x2y2", `FINAL - X2Y2 - (${createdAfter}) Got ${numOrders} orders`);
 
   return newCursor;
 };
 
 export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string = "") => {
-  logger.info("fetch_orders", `cursor = ${cursor} Fetching orders from X2Y2`);
+  logger.info("fetch_orders_x2y2", `cursor = ${cursor} Fetching orders from X2Y2`);
 
   const x2y2 = new X2Y2();
   let limit = 50;
@@ -190,7 +190,7 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
   }
 
   logger.info(
-    "fetch_orders",
+    "fetch_orders_x2y2",
     `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}`
   );
 

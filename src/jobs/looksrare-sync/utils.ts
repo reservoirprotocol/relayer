@@ -17,7 +17,7 @@ export const fetchOrders = async (
   backfill = false
 ) => {
   logger.info(
-    "fetch_orders",
+    "fetch_orders_looksrare",
     `lastSyncedHash = ${lastSyncedHash}, cursor = ${cursor} Fetching orders from LooksRare`
   );
 
@@ -95,7 +95,7 @@ export const fetchOrders = async (
         // If result is empty, all transactions already exists
         if (cursor != "" && _.isEmpty(result)) {
           logger.info(
-            "fetch_orders",
+            "fetch_orders_looksrare",
             `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].hash}`
           );
 
@@ -104,7 +104,7 @@ export const fetchOrders = async (
 
         if (backfill && result.length) {
           logger.warn(
-            "fetch_orders",
+            "fetch_orders_looksrare",
             `LooksRare (${startTime}, ${endTime}) Backfilled ${result.length} new orders`
           );
         }
@@ -139,7 +139,7 @@ export const fetchOrders = async (
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
         logger.info(
-          "fetch_orders",
+          "fetch_orders_looksrare",
           `LooksRare return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
         );
 
@@ -156,7 +156,7 @@ export const fetchOrders = async (
       // If realtime sync return the lastCreatedDate
       if (!backfill) {
         logger.error(
-          "fetch_orders",
+          "fetch_orders_looksrare",
           `(${startTime}, ${endTime}) Got ${numOrders} orders error=${error}`
         );
 
@@ -168,7 +168,7 @@ export const fetchOrders = async (
   }
 
   logger.info(
-    "fetch_orders",
+    "fetch_orders_looksrare",
     `FINAL - LooksRare - (${startTime}, ${endTime}) Got ${numOrders} orders`
   );
 

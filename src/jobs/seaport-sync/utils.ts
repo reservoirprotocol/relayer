@@ -17,7 +17,7 @@ import {
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
 export const fetchOrders = async (side: "sell" | "buy") => {
-  logger.info("fetch_orders", `Seaport - Start. side=${side}`);
+  logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
   let cursor = null;
@@ -88,7 +88,7 @@ export const fetchOrders = async (side: "sell" | "buy") => {
 
           if (lastOrder) {
             logger.info(
-              "fetch_orders",
+              "fetch_orders_seaport",
               `Seaport empty result. side=${side}, cursor=${cursor}, reached to=${lastOrder.created_date}`
             );
           }
@@ -108,12 +108,12 @@ export const fetchOrders = async (side: "sell" | "buy") => {
       }
 
       logger.info(
-        "fetch_orders",
+        "fetch_orders_seaport",
         `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
       );
     } catch (error) {
       logger.info(
-        "fetch_orders",
+        "fetch_orders_seaport",
         `Seaport - Error. side=${side}, cursor=${cursor}, error=${error}`
       );
 
@@ -121,7 +121,7 @@ export const fetchOrders = async (side: "sell" | "buy") => {
     }
   }
 
-  logger.info("fetch_orders", `Seaport - Done. side=${side}, total=${total}`);
+  logger.info("fetch_orders_seaport", `Seaport - Done. side=${side}, total=${total}`);
 };
 
 export const fetchAllOrders = async (
