@@ -348,6 +348,11 @@ export const refreshCollectionsToFetchOffers = async () => {
 
     logger.info("refresh_collections", `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`);
 
+    const headers = {};
+    if(process.env.INDEXER_API_KEY) {
+      (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
+    }
+
     for (let i = 0; i < Math.ceil(MAX_FETCH_OFFERS_COLLECTIONS / 20); i++) {
       const response: any = await axios.get(
         continuation
@@ -355,6 +360,7 @@ export const refreshCollectionsToFetchOffers = async () => {
           : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=allTimeVolume`,
         {
           timeout: 20000,
+          headers
         }
       );
 
@@ -369,12 +375,18 @@ export const refreshCollectionsToFetchOffers = async () => {
     if (collections.length) {
       const fetchOffersCollectionToAdd: FetchOffersCollection[] = [];
 
+      const headers = {};
+      if(process.env.INDEXER_API_KEY) {
+        (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
+      }
+
       for (const collection of collections) {
         try {
           const response = await axios.get(
             `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=20`,
             {
               timeout: 20000,
+              headers
             }
           );
 

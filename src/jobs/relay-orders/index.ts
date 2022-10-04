@@ -63,6 +63,15 @@ if (config.doBackgroundWork) {
 
         // Post orders to Indexer Lite
         if (process.env.BASE_INDEXER_LITE_API_URL) {
+          const headers = {};
+          if(process.env.INDEXER_ADMIN_API_KEY) {
+            (headers as any)["X-Admin-Api-Key"] = process.env.INDEXER_ADMIN_API_KEY;
+          }
+
+          if(process.env.INDEXER_API_KEY) {
+            (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
+          }
+
           requests.push(
             axios
               .post(
@@ -70,11 +79,7 @@ if (config.doBackgroundWork) {
                 { orders },
                 {
                   timeout: 60000,
-                  headers: process.env.INDEXER_ADMIN_API_KEY
-                    ? {
-                        "X-Admin-Api-Key": process.env.INDEXER_ADMIN_API_KEY,
-                      }
-                    : undefined,
+                  headers
                 }
               )
               .catch((error) => {
