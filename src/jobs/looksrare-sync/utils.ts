@@ -73,7 +73,7 @@ export const fetchOrders = async (
           hash: order.hash,
           target: orderTarget.toLowerCase(),
           maker: order.signer,
-          created_at: new Date(order.startTime),
+          created_at: new Date(Number(order.startTime)),
           data: order as any,
           source: "looksrare",
         });
