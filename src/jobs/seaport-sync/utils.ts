@@ -39,6 +39,7 @@ export const fetchOrders = async (side: "sell" | "buy") => {
         headers: {
           "user-agent":
             "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+          "x-api-key": config.realtimeOpenseaApiKey,
         },
         timeout: 20000,
       });
