@@ -38,7 +38,7 @@ if (config.doBackfillWork) {
         );
       }
     },
-    { connection: redis.duplicate(), concurrency: 5 }
+    { connection: redis.duplicate(), concurrency: 2 }
   );
 
   backfillWorker.on("completed", async (job) => {
