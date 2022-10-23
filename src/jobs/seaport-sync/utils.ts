@@ -163,6 +163,12 @@ export const fetchAllOrders = async (
       headers: {
         "user-agent":
           "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+        headers:
+          _.indexOf([1, 137], config.chainId) !== -1
+            ? {
+              "x-api-key": config.backfillOpenseaApiKey,
+            }
+            : {},
       },
       timeout: 20000,
     });
