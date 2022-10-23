@@ -10,6 +10,7 @@ export const config = {
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
   doRealtimeWork: Boolean(Number(process.env.DO_REALTIME_WORK)),
   doLiveWork: Boolean(Number(process.env.DO_LIVE_WORK)),
+  doOffers: Boolean(Number(process.env.DO_OFFERS)),
 
   databaseUrl: String(process.env.DATABASE_URL),
   redisUrl: String(process.env.REDIS_URL),
