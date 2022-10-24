@@ -16,7 +16,7 @@ import {
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
-export const fetchOrders = async (side: "sell" | "buy") => {
+export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
   logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
@@ -39,7 +39,7 @@ export const fetchOrders = async (side: "sell" | "buy") => {
         headers: {
           "user-agent":
             "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          "x-api-key": config.realtimeOpenseaApiKey,
+          "x-api-key": apiKey || config.realtimeOpenseaApiKey,
         },
         timeout: 20000,
       });
@@ -236,7 +236,7 @@ export const fetchAllOrders = async (
   }
 };
 
-export const fetchCollectionOffers = async (contract: string, tokenId: string) => {
+export const fetchCollectionOffers = async (contract: string, tokenId: string, apiKey = "") => {
   const seaport = new Seaport();
 
   const url =
@@ -249,7 +249,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
       headers:
         _.indexOf([1, 137], config.chainId) !== -1
           ? {
-              "X-API-KEY": config.realtimeOpenseaApiKey,
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
             }
           : {},
       timeout: 20000,
