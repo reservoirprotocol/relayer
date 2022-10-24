@@ -21,7 +21,7 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doRealtimeWork && (config.offersOpenseaApiKey !== "")) {
+if (config.doRealtimeWork && (config.collectionsOffersOpenseaApiKey !== "")) {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
@@ -35,7 +35,7 @@ if (config.doRealtimeWork && (config.offersOpenseaApiKey !== "")) {
             await fetchCollectionOffers(
               fetchOffersCollection.contract,
               fetchOffersCollection.tokenId,
-              config.offersOpenseaApiKey
+              config.collectionsOffersOpenseaApiKey
             );
           } catch (error) {
             logger.error(
