@@ -319,10 +319,6 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       `Seaport - Success. contract:${contract}, tokenId:${tokenId}, orders:${orders.length}`
     );
   } catch (error) {
-    logger.error(
-      "fetch_collection_offers",
-      `Seaport - Error. contract:${contract}, tokenId:${tokenId}, error:${error}`
-    );
     throw error;
   }
 };
