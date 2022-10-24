@@ -26,6 +26,8 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
   let total = 0;
 
   while (!done) {
+    logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
+
     const url = seaport.buildFetchOrdersURL({
       side,
       orderBy: "created_date",
@@ -112,11 +114,29 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
         "fetch_orders_seaport",
         `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
       );
-    } catch (error) {
-      logger.info(
+    } catch (error: any) {
+      logger.error(
         "fetch_orders_seaport",
         `Seaport - Error. side=${side}, cursor=${cursor}, error=${error}`
       );
+
+      if (error.response?.status === 429) {
+        logger.warn(
+          "fetch_orders_seaport",
+          `Seaport - Rate Limited. side=${side}, cursor=${cursor}, error=${error}`
+        );
+
+        if (cursor) {
+          logger.warn(
+            "fetch_orders_seaport",
+            `Seaport - Rate Limited - Retry. side=${side}, cursor=${cursor}, error=${error}`
+          );
+
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+
+          continue;
+        }
+      }
 
       throw error;
     }
@@ -347,7 +367,7 @@ export const refreshCollectionsToFetchOffers = async () => {
     logger.info("refresh_collections", `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`);
 
     const headers = {};
-    if(process.env.INDEXER_API_KEY) {
+    if (process.env.INDEXER_API_KEY) {
       (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
     }
 
@@ -358,7 +378,7 @@ export const refreshCollectionsToFetchOffers = async () => {
           : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=30DayVolume`,
         {
           timeout: 20000,
-          headers
+          headers,
         }
       );
 
@@ -374,7 +394,7 @@ export const refreshCollectionsToFetchOffers = async () => {
       const fetchOffersCollectionToAdd: FetchOffersCollection[] = [];
 
       const headers = {};
-      if(process.env.INDEXER_API_KEY) {
+      if (process.env.INDEXER_API_KEY) {
         (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
       }
 
@@ -384,7 +404,7 @@ export const refreshCollectionsToFetchOffers = async () => {
             `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=50`,
             {
               timeout: 20000,
-              headers
+              headers,
             }
           );
 
