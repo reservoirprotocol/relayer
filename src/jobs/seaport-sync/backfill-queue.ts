@@ -29,8 +29,13 @@ if (config.doBackfillWork) {
       try {
         // If this is the first run
         job.data.newCursor = await fetchAllOrders(fromTimestamp, toTimestamp, cursor);
-      } catch (error) {
+      } catch (error: any) {
         job.data.newCursor = cursor;
+
+        if (error.response?.status === 429) {
+          // Wait to avoid rate-limiting
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
 
         logger.error(
           BACKFILL_QUEUE_NAME,
