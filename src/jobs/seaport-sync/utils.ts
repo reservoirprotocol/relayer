@@ -39,11 +39,12 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
 
     try {
       const response = await axios.get(url, {
-        headers: {
-          "user-agent":
-            "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          "x-api-key": apiKey || config.realtimeOpenseaApiKey,
-        },
+        headers:
+          _.indexOf([1, 137], config.chainId) !== -1
+            ? {
+                "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+              }
+            : {},
         timeout: 20000,
       });
 
