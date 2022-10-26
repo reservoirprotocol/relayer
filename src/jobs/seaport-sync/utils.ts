@@ -13,6 +13,7 @@ import {
   FetchOffersCollection,
   FetchOffersCollections,
 } from "../../models/fetch-offers-collections";
+import tracer from "../../common/tracer";
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
@@ -54,21 +55,23 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       total += orders.length;
 
       const handleOrder = async (order: SeaportOrder) => {
-        const parsed = await seaport.parseSeaportOrder(order);
+        await tracer.trace('handleOrder', { resource: order.order_hash.toLowerCase() }, async () => {
+          const parsed = await seaport.parseSeaportOrder(order);
 
-        if (parsed) {
-          parsedOrders.push(parsed);
-        }
+          if (parsed) {
+            parsedOrders.push(parsed);
+          }
 
-        values.push({
-          hash: order.order_hash.toLowerCase(),
-          target:
-            parsed?.getInfo()?.contract.toLowerCase() ||
-            order.protocol_data.parameters.offer[0].token.toLowerCase(),
-          maker: order.maker.address.toLowerCase(),
-          created_at: new Date(order.created_date),
-          data: order.protocol_data as any,
-          source: "opensea",
+          values.push({
+            hash: order.order_hash.toLowerCase(),
+            target:
+                parsed?.getInfo()?.contract.toLowerCase() ||
+                order.protocol_data.parameters.offer[0].token.toLowerCase(),
+            maker: order.maker.address.toLowerCase(),
+            created_at: new Date(order.created_date),
+            data: order.protocol_data as any,
+            source: "opensea",
+          });
         });
       };
 
