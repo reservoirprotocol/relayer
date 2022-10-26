@@ -55,24 +55,28 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       total += orders.length;
 
       const handleOrder = async (order: SeaportOrder) => {
-        await tracer.trace('handleOrder', { resource: order.order_hash.toLowerCase() }, async () => {
-          const parsed = await seaport.parseSeaportOrder(order);
+        await tracer.trace(
+          "handleOrder",
+          { resource: order.order_hash.toLowerCase() },
+          async () => {
+            const parsed = await seaport.parseSeaportOrder(order);
 
-          if (parsed) {
-            parsedOrders.push(parsed);
-          }
+            if (parsed) {
+              parsedOrders.push(parsed);
+            }
 
-          values.push({
-            hash: order.order_hash.toLowerCase(),
-            target:
+            values.push({
+              hash: order.order_hash.toLowerCase(),
+              target:
                 parsed?.getInfo()?.contract.toLowerCase() ||
                 order.protocol_data.parameters.offer[0].token.toLowerCase(),
-            maker: order.maker.address.toLowerCase(),
-            created_at: new Date(order.created_date),
-            data: order.protocol_data as any,
-            source: "opensea",
-          });
-        });
+              maker: order.maker.address.toLowerCase(),
+              created_at: new Date(order.created_date),
+              data: order.protocol_data as any,
+              source: "opensea",
+            });
+          }
+        );
       };
 
       const plimit = pLimit(20);
@@ -120,7 +124,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
     } catch (error: any) {
       logger.error(
         "fetch_orders_seaport",
-        `Seaport - Error. side=${side}, cursor=${cursor}, error=${error}`
+        `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
       );
 
       if (error.response?.status === 429) {
