@@ -23,7 +23,7 @@
   "dependencies": {
     "@bull-board/express": "^3.9.0",
     "@opensea/stream-js": "^0.0.20",
-    "@reservoir0x/sdk": "0.0.173",
+    "@reservoir0x/sdk": "0.0.208",
     "@types/date-fns": "^2.6.0",
     "@types/express": "^4.17.13",
     "@types/ioredis": "^4.28.7",
