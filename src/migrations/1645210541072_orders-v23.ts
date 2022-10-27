@@ -1,7 +1,7 @@
 import { MigrationBuilder } from "node-pg-migrate";
 
 export async function up(pgm: MigrationBuilder): Promise<void> {
-  pgm.createType("source_t", ["opensea", "looksrare", "x2y2", "element"]);
+  pgm.createType("source_t", ["opensea", "looksrare", "x2y2"]);
 
   pgm.createTable("orders_v23", {
     hash: {
