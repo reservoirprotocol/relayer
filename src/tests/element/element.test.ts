@@ -25,11 +25,12 @@ describe("Element", () => {
   });
 
   test("parseOrder", async () => {
-    const orders = ordersResult.data.orders.slice(0, 10)
+    const orders = ordersResult.data.orders.slice(0, 20)
     for (let index = 0; index < orders.length; index++) {
       const order = orders[index];
       const parsedOrder = await element.parseOrder(order)
       if (parsedOrder) {
+        // console.log(parsedOrder.getRaw())
         // hash check
         expect(parsedOrder.hash()).toEqual(order.hash)
         parsedOrder.checkSignature();
