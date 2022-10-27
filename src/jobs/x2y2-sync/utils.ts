@@ -35,7 +35,7 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
           "user-agent":
             "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
         },
-        timeout: 10000,
+        timeout: 20000,
       });
 
       const orders: X2Y2Order[] = response.data.data;
@@ -131,7 +131,7 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
         "user-agent":
           "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
       },
-      timeout: 10000,
+      timeout: 20000,
     });
 
     const orders: X2Y2Order[] = response.data.data;
