@@ -38,8 +38,6 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
         timeout: 10000,
       });
 
-      // console.log(response)
-
       const orders: ElementOrder[] = response.data.data.orders;
       const parsedOrders: Sdk.Element.Order[] = [];
 
