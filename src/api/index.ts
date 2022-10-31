@@ -102,7 +102,7 @@ export const start = async () => {
         const endTime = Number(req.body.toTimestamp);
         await addToElementBackfillQueue(startTime, endTime);
       } else {
-        res.status(501).json({ message: "X2Y2 not supported" });
+        res.status(501).json({ message: "Element not supported" });
       }
     })
   );
