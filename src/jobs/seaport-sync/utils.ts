@@ -16,7 +16,7 @@ import {
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
-export const fetchOrders = async (side: "sell" | "buy") => {
+export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
   logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
@@ -26,6 +26,8 @@ export const fetchOrders = async (side: "sell" | "buy") => {
   let total = 0;
 
   while (!done) {
+    logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
+
     const url = seaport.buildFetchOrdersURL({
       side,
       orderBy: "created_date",
@@ -39,7 +41,7 @@ export const fetchOrders = async (side: "sell" | "buy") => {
         headers: {
           "user-agent":
             "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          "x-api-key": config.realtimeOpenseaApiKey,
+          "x-api-key": apiKey || config.realtimeOpenseaApiKey,
         },
         timeout: 20000,
       });
@@ -112,11 +114,29 @@ export const fetchOrders = async (side: "sell" | "buy") => {
         "fetch_orders_seaport",
         `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
       );
-    } catch (error) {
-      logger.info(
+    } catch (error: any) {
+      logger.error(
         "fetch_orders_seaport",
         `Seaport - Error. side=${side}, cursor=${cursor}, error=${error}`
       );
+
+      if (error.response?.status === 429) {
+        logger.warn(
+          "fetch_orders_seaport",
+          `Seaport - Rate Limited. side=${side}, cursor=${cursor}, error=${error}`
+        );
+
+        if (cursor) {
+          logger.warn(
+            "fetch_orders_seaport",
+            `Seaport - Rate Limited - Retry. side=${side}, cursor=${cursor}, error=${error}`
+          );
+
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+
+          continue;
+        }
+      }
 
       throw error;
     }
@@ -236,7 +256,7 @@ export const fetchAllOrders = async (
   }
 };
 
-export const fetchCollectionOffers = async (contract: string, tokenId: string) => {
+export const fetchCollectionOffers = async (contract: string, tokenId: string, apiKey = "") => {
   const seaport = new Seaport();
 
   const url =
@@ -249,7 +269,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
       headers:
         _.indexOf([1, 137], config.chainId) !== -1
           ? {
-              "X-API-KEY": config.realtimeOpenseaApiKey,
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
             }
           : {},
       timeout: 20000,
@@ -319,10 +339,6 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string) =
       `Seaport - Success. contract:${contract}, tokenId:${tokenId}, orders:${orders.length}`
     );
   } catch (error) {
-    logger.error(
-      "fetch_collection_offers",
-      `Seaport - Error. contract:${contract}, tokenId:${tokenId}, error:${error}`
-    );
     throw error;
   }
 };
@@ -351,7 +367,7 @@ export const refreshCollectionsToFetchOffers = async () => {
     logger.info("refresh_collections", `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`);
 
     const headers = {};
-    if(process.env.INDEXER_API_KEY) {
+    if (process.env.INDEXER_API_KEY) {
       (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
     }
 
@@ -362,7 +378,7 @@ export const refreshCollectionsToFetchOffers = async () => {
           : `${process.env.BASE_INDEXER_LITE_API_URL}/collections/v5?limit=20&sortBy=30DayVolume`,
         {
           timeout: 20000,
-          headers
+          headers,
         }
       );
 
@@ -378,7 +394,7 @@ export const refreshCollectionsToFetchOffers = async () => {
       const fetchOffersCollectionToAdd: FetchOffersCollection[] = [];
 
       const headers = {};
-      if(process.env.INDEXER_API_KEY) {
+      if (process.env.INDEXER_API_KEY) {
         (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
       }
 
@@ -388,7 +404,7 @@ export const refreshCollectionsToFetchOffers = async () => {
             `${process.env.BASE_INDEXER_LITE_API_URL}/tokens/ids/v1?collection=${collection.id}&limit=50`,
             {
               timeout: 20000,
-              headers
+              headers,
             }
           );
 

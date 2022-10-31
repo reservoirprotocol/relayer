@@ -20,12 +20,12 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doRealtimeWork && config.doOffers) {
+if (config.doRealtimeWork && config.offersOpenseaApiKey !== "") {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        await fetchOrders("buy");
+        await fetchOrders("buy", config.offersOpenseaApiKey);
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
