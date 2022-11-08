@@ -58,14 +58,5 @@ if (config.doRealtimeWork) {
         }
       }
     );
-
-    cron.schedule("*/1 * * * *", async () => {
-      const lockAcquired = await acquireLock("seaport-sync-collection-offers-lock", 3600);
-
-      if (lockAcquired) {
-        await seaportSyncRealtimeCollectionOffers.addToRealtimeQueue();
-        logger.info(realtimeQueue.name, `Start SeaPort Collection Offers realtime`);
-      }
-    });
   }
 }
