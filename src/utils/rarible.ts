@@ -67,7 +67,14 @@ export type RaribleOrder = {
 export class Rarible {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     //TESTNET: https://testnet-api.rarible.org/v0.1/doc
-    const baseApiUrl = `https://api.rarible.org/v0.1/orders/sync/`;
+    let baseApiUrl = "";
+    if (config.chainId === 1) {
+      baseApiUrl = "https://api.rarible.org/v0.1/orders/sync/";
+    } else if (config.chainId === 5) {
+      baseApiUrl = "https://testnet-api.rarible.org/v0.1/orders/sync/";
+    } else {
+      throw new Error("Unsupported chain");
+    }
 
     const queryParams = new URLSearchParams();
 
