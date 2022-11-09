@@ -1,6 +1,6 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
-import { fetchOrdersByCursor } from "../utils";
+import { fetchOrdersByTimestamp } from "../utils";
 import { redis, releaseLock } from "../../../common/redis";
 import { logger } from "../../../common/logger";
 import { config } from "../../../config";
@@ -27,21 +27,20 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const cacheKey = "rarible-sync-cursor";
-        let cursor = await redis.get(cacheKey);
+        const cacheKey = "rarible-realtime-timestamp";
 
-        const newCursor = await fetchOrdersByCursor(cursor || "", "DB_UPDATE_DESC");
+        let timestamp = Number((await redis.get(cacheKey)) || 0);
 
-        if (newCursor == cursor) {
+        // Using the cursor with DESC sorting goes back in time. Do not use cursor for realtime fetching.
+        const newTimestamp = await fetchOrdersByTimestamp("DB_UPDATE_DESC", 1000, timestamp);
+
+        if (timestamp == newTimestamp) {
           logger.info(
             REALTIME_QUEUE_NAME,
-            `rarible cursor didn't change cursor=${cursor}, newCursor=${newCursor}`
+            `rarible realtime timestamp didn't change timestamp=${timestamp}, newTimestamp=${newTimestamp}`
           );
-        }
-
-        // Set the new cursor for the next job
-        if (newCursor) {
-          await redis.set(cacheKey, newCursor);
+        } else {
+          await redis.set(cacheKey, newTimestamp);
         }
       } catch (error) {
         logger.error(

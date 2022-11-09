@@ -30,7 +30,7 @@ if (config.doBackfillWork) {
         const cacheKey = "rarible-backfill-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrdersByCursor(cursor || "", "DB_UPDATE_ASC");
+        const newCursor = await fetchOrdersByCursor("DB_UPDATE_ASC", 1000, cursor || "");
 
         if (newCursor == cursor) {
           logger.info(
