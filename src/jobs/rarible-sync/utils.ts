@@ -48,18 +48,14 @@ export const fetchOrdersByCursor = async (
       if (parsed) {
         parsedOrders.push(parsed);
       }
+
       const orderTarget =
         parsed!.params.side === "buy"
           ? parsed?.params.take.assetType?.contract || ""
           : parsed?.params.make.assetType?.contract || "";
-      //TODO: This hash extraction process should be moved to the SDK. Not sure why SDK doesn't return it though.
-      let hash = order.hash || order.id;
-      const hasChainInfo = hash.indexOf(":") >= 0;
-      if (hasChainInfo) {
-        hash = hash.split(":")[1];
-      }
+
       values.push({
-        hash: hash,
+        hash: parsed?.params.hash,
         target: orderTarget!.toLowerCase(),
         maker: order.maker,
         created_at: order.createdAt,
