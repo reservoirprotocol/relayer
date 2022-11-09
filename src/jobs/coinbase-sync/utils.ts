@@ -124,7 +124,7 @@ export const fetchOrdersByPageToken = async (pageToken: string = "") => {
   const coinbase = new Coinbase();
   let limit = 50;
   let newPageToken = "";
-  let isDesc = "true";
+  let isDesc = "false";
   let newOrders = 0;
   let numOrders = 0;
   let lastCreatedAtOrder;

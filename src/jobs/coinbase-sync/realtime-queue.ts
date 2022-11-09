@@ -41,11 +41,11 @@ if (config.doRealtimeWork) {
         if (newPageToken == pageTokenCache) {
           logger.info(
             REALTIME_QUEUE_NAME,
-            `Coinbase cursor didn't change cursor=${pageTokenCache}, newCursor=${newPageToken}`
+            `Coinbase pageToken didn't change pageToken=${pageTokenCache}, newPageToken=${newPageToken}`
           );
         }
 
-        // Set the new cursor for the next job
+        // Set the new pageToken for the next job
         if (newPageToken) {
           await redis.set(cacheKey, newPageToken);
         }
@@ -73,6 +73,6 @@ if (config.doRealtimeWork) {
   });
 }
 
-export const addToRealtimeQueue = async (delayMs: number = 0, cursor: string = "") => {
-  await realtimeQueue.add(REALTIME_QUEUE_NAME, { cursor }, { delay: delayMs });
+export const addToRealtimeQueue = async (delayMs: number = 0) => {
+  await realtimeQueue.add(REALTIME_QUEUE_NAME, {}, { delay: delayMs });
 };
