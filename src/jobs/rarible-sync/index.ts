@@ -1,54 +1,25 @@
 import _ from "lodash";
 import cron from "node-cron";
 
-import * as realtimeQueueListings from "./queues/realtime-queue";
-import * as realtimeQueueOffers from "./queues/realtime-queue-offers";
+import * as realtimeQueue from "./queues/realtime-queue";
 import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    // Rarible only supports mainnet
-    if (config.chainId === 1) {
-      const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);
-      if (lockAcquired) {
-        const cacheKey = "rarible-sync-cursor";
-        const cursor = await redis.get(cacheKey);
+    const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);
+    if (lockAcquired) {
+      const cacheKey = "rarible-sync-cursor";
+      const cursor = await redis.get(cacheKey);
 
-        // If key doesn't exist, set it to empty string which will trigger a sync from the beginning
-        if (_.isNull(cursor)) {
-          await redis.set(cacheKey, "");
-        }
-
-        await realtimeQueueListings.addToRealtimeQueue();
-        logger.info(
-          realtimeQueueListings.realtimeQueue.name,
-          `Start Rarible listings sync from cursor=(${cursor})`
-        );
+      // If key doesn't exist, set it to empty string which will trigger a sync from the beginning
+      if (_.isNull(cursor)) {
+        await redis.set(cacheKey, "");
       }
-    }
-  });
 
-  cron.schedule("*/5 * * * * *", async () => {
-    // Rarible only supports mainnet
-    if (config.chainId === 1) {
-      const lockAcquired = await acquireLock("rarible-sync-offers-lock", 60 * 5);
-      if (lockAcquired) {
-        const cacheKey = "rarible-sync-offers-cursor";
-        const cursor = await redis.get(cacheKey);
-
-        // If key doesn't exist, set it to empty string which will trigger a sync from the beginning
-        if (_.isNull(cursor)) {
-          await redis.set(cacheKey, "");
-        }
-
-        await realtimeQueueOffers.addToRealtimeQueue();
-        logger.info(
-          realtimeQueueOffers.realtimeQueue.name,
-          `Start Rarible offers sync from cursor=(${cursor})`
-        );
-      }
+      await realtimeQueue.addToRealtimeQueue();
+      logger.info(realtimeQueue.realtimeQueue.name, `Start Rarible sync from cursor=(${cursor})`);
     }
   });
 }
