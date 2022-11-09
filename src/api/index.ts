@@ -95,15 +95,8 @@ export const start = async () => {
   app.post(
     "/backfill/rarible",
     asyncHandler(async (req, res) => {
-      if (config.chainId === 1) {
-        res.status(202).json({ message: "Request accepted" });
-
-        const startTime = Number(req.body.fromTimestamp);
-        const endTime = Number(req.body.toTimestamp);
-        await addToRaribleBackfillQueue(startTime, endTime);
-      } else {
-        res.status(501).json({ message: "X2Y2 not supported" });
-      }
+      res.status(202).json({ message: "Request accepted" });
+      await addToRaribleBackfillQueue();
     })
   );
 

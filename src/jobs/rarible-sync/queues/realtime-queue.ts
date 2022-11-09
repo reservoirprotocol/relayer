@@ -30,7 +30,7 @@ if (config.doRealtimeWork) {
         const cacheKey = "rarible-sync-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrdersByCursor("sell", cursor || "");
+        const newCursor = await fetchOrdersByCursor(cursor || "", "DB_UPDATE_DESC");
 
         if (newCursor == cursor) {
           logger.info(

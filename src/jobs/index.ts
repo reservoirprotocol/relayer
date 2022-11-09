@@ -17,10 +17,8 @@ import * as x2y2SyncListingsRealtime from "./x2y2-sync/queues/realtime-queue";
 import * as x2y2SyncOffersRealtime from "./x2y2-sync/queues/realtime-queue-offers";
 import * as x2y2SyncListingsBackfill from "./x2y2-sync/queues/backfill-queue";
 import * as x2y2SyncOffersBackfill from "./x2y2-sync/queues/backfill-queue-offers";
-import * as raribleSyncListingsRealtime from "./rarible-sync/queues/realtime-queue";
-import * as raribleSyncOffersRealtime from "./rarible-sync/queues/realtime-queue-offers";
-import * as raribleSyncListingsBackfill from "./rarible-sync/queues/backfill-queue";
-import * as raribleSyncOffersBackfill from "./rarible-sync/queues/backfill-queue-offers";
+import * as raribleSyncRealtime from "./rarible-sync/queues/realtime-queue";
+import * as raribleSyncBackfill from "./rarible-sync/queues/backfill-queue";
 
 export const allQueues = [
   looksRareSyncRealtime.realtimeQueue,
@@ -34,8 +32,6 @@ export const allQueues = [
   x2y2SyncOffersRealtime.realtimeQueue,
   x2y2SyncListingsBackfill.backfillQueue,
   x2y2SyncOffersBackfill.backfillQueue,
-  raribleSyncListingsRealtime.realtimeQueue,
-  // raribleSyncOffersRealtime.realtimeQueue,
-  raribleSyncListingsBackfill.backfillQueue,
-  // raribleSyncOffersBackfill.backfillQueue,
+  raribleSyncRealtime.realtimeQueue,
+  raribleSyncBackfill.backfillQueue,
 ];

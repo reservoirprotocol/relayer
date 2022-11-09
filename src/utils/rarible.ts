@@ -5,7 +5,7 @@ import { constants } from "ethers";
 import { config } from "../config";
 
 type FetchOrdersParams = {
-  blockchain: "ETHEREUM";
+  blockchain: string;
   continuation?: string;
   size?: number;
   sort?: "DB_UPDATE_DESC" | "DB_UPDATE_ASC";
@@ -83,6 +83,7 @@ type FetchOrdersParams = {
 // },
 
 export type RaribleOrder = {
+  id: string;
   type: string;
   maker: string;
   make: {
@@ -130,12 +131,16 @@ export class Rarible {
 
     const queryParams = new URLSearchParams();
 
+    if (params.blockchain) {
+      queryParams.append("blockchain", params.blockchain);
+    }
+
     if (params.size) {
       queryParams.append("size", String(params.size));
     }
 
     if (params.continuation) {
-      queryParams.append("continuation", String(params.continuation));
+      queryParams.append("continuation", params.continuation);
     }
 
     if (params.sort) {
