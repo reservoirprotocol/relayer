@@ -37,8 +37,9 @@ export type X2Y2Order = {
 export class X2Y2 {
   // https://hackmd.io/7AnOgEqFT2mZHqUQ4bXwsw#GET-apiorders
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    // For now there's no support for testnets
-    const baseApiUrl = `https://api.x2y2.org/v1/${params.side === "sell" ? "orders" : "offers"}`;
+    const baseApiUrl = `https://${config.chainId === 5 ? "goerli-" : ""}api.x2y2.org/v1/${
+      params.side === "sell" ? "orders" : "offers"
+    }`;
 
     const queryParams = new URLSearchParams();
 
