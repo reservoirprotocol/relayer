@@ -7,6 +7,7 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
+import { addToRaribleBackfillQueue } from "../jobs/rarible-sync/queues/backfill-queue";
 import {
   addToSeaportBackfillQueue,
   createTimeFrameForBackfill,
@@ -85,6 +86,21 @@ export const start = async () => {
         const startTime = Number(req.body.fromTimestamp);
         const endTime = Number(req.body.toTimestamp);
         await addToX2Y2BackfillQueue(startTime, endTime);
+      } else {
+        res.status(501).json({ message: "X2Y2 not supported" });
+      }
+    })
+  );
+
+  app.post(
+    "/backfill/rarible",
+    asyncHandler(async (req, res) => {
+      if (config.chainId === 1) {
+        res.status(202).json({ message: "Request accepted" });
+
+        const startTime = Number(req.body.fromTimestamp);
+        const endTime = Number(req.body.toTimestamp);
+        await addToRaribleBackfillQueue(startTime, endTime);
       } else {
         res.status(501).json({ message: "X2Y2 not supported" });
       }
