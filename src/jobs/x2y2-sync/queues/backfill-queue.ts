@@ -58,8 +58,7 @@ if (config.doBackfillWork) {
   backfillWorker.on("completed", async (job: Job) => {
     // If there's newStartTime schedule the next job
     if (job.data.newStartTime) {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait to avoid rate-limiting
-      await addToX2Y2BackfillQueue(job.data.newStartTime, job.data.endTime);
+      await addToX2Y2BackfillQueue(job.data.newStartTime, job.data.endTime, 1000);
     }
   });
 

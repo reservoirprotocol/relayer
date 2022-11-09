@@ -3,6 +3,7 @@ import "./relay-orders";
 import "./seaport-sync";
 import "./sync-token";
 import "./x2y2-sync";
+import "./coinbase-sync";
 
 import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
@@ -17,6 +18,9 @@ import * as x2y2SyncOffersRealtime from "./x2y2-sync/queues/realtime-queue-offer
 import * as x2y2SyncListingsBackfill from "./x2y2-sync/queues/backfill-queue";
 import * as x2y2SyncOffersBackfill from "./x2y2-sync/queues/backfill-queue-offers";
 
+import * as coinbaseSyncListingsRealtime from "./coinbase-sync/realtime-queue";
+import * as coinbaseSyncListingsBackfill from "./coinbase-sync/backfill-queue";
+
 export const allQueues = [
   looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
@@ -29,4 +33,6 @@ export const allQueues = [
   x2y2SyncOffersRealtime.realtimeQueue,
   x2y2SyncListingsBackfill.backfillQueue,
   x2y2SyncOffersBackfill.backfillQueue,
+  coinbaseSyncListingsRealtime.realtimeQueue,
+  coinbaseSyncListingsBackfill.backfillQueue,
 ];
