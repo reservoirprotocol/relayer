@@ -111,13 +111,9 @@ export const start = async () => {
   app.post(
     "/backfill/rarible",
     asyncHandler(async (req, res) => {
-      if (config.chainId === 1) {
-        res.status(202).json({ message: "Request accepted" });
+      res.status(202).json({ message: "Request accepted" });
 
-        await addToRaribleBackfillQueue();
-      } else {
-        res.status(501).json({ message: "Rarible not supported" });
-      }
+      await addToRaribleBackfillQueue();
     })
   );
 
