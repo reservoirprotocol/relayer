@@ -15,6 +15,7 @@ import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
+import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
 
 export const start = async () => {
   const app = express();
@@ -87,6 +88,21 @@ export const start = async () => {
         await addToX2Y2BackfillQueue(startTime, endTime);
       } else {
         res.status(501).json({ message: "X2Y2 not supported" });
+      }
+    })
+  );
+
+  app.post(
+    "/backfill/element",
+    asyncHandler(async (req, res) => {
+      if (config.chainId === 1) {
+        res.status(202).json({ message: "Request accepted" });
+
+        const startTime = Number(req.body.fromTimestamp);
+        const endTime = Number(req.body.toTimestamp);
+        await addToElementBackfillQueue(startTime, endTime);
+      } else {
+        res.status(501).json({ message: "Element not supported" });
       }
     })
   );
