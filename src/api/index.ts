@@ -7,6 +7,7 @@ import asyncHandler from "express-async-handler";
 import { logger } from "../common/logger";
 import { config } from "../config";
 import { allQueues } from "../jobs";
+import { addToRaribleBackfillQueue } from "../jobs/rarible-sync/queues/backfill-queue";
 import {
   addToSeaportBackfillQueue,
   createTimeFrameForBackfill,
@@ -104,6 +105,15 @@ export const start = async () => {
       } else {
         res.status(501).json({ message: "Element not supported" });
       }
+    })
+  );
+
+  app.post(
+    "/backfill/rarible",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      await addToRaribleBackfillQueue();
     })
   );
 
