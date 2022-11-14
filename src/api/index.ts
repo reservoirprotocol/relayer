@@ -94,11 +94,6 @@ export const start = async () => {
   );
 
   app.post(
-<<<<<<< HEAD
-    "/backfill/rarible",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-=======
     "/backfill/element",
     asyncHandler(async (req, res) => {
       if (config.chainId === 1) {
@@ -118,7 +113,6 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
->>>>>>> main
       await addToRaribleBackfillQueue();
     })
   );
