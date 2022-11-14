@@ -1,11 +1,11 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
-import { fetchOrdersByDateCreated } from "../utils";
+import { fetchOrders } from "../utils";
 import { logger } from "../../../common/logger";
 import { redis } from "../../../common/redis";
 import { config } from "../../../config";
 
-const BACKFILL_QUEUE_NAME = "backfill-x2y2-sync";
+const BACKFILL_QUEUE_NAME = "backfill-element-sync-offers";
 
 export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
   connection: redis.duplicate(),
@@ -34,11 +34,11 @@ if (config.doBackfillWork) {
       const { startTime, endTime }: Data = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrdersByDateCreated("sell", startTime);
+        const lastCreatedAt = await fetchOrders("buy", startTime);
 
         logger.info(
           BACKFILL_QUEUE_NAME,
-          `X2Y2 backfilled from startTime=${startTime} to endTime=${endTime}`
+          `Element backfilled offers from startTime=${startTime} to endTime=${endTime}`
         );
 
         // If there are more order within th given time frame
@@ -48,7 +48,7 @@ if (config.doBackfillWork) {
       } catch (error) {
         logger.error(
           BACKFILL_QUEUE_NAME,
-          `X2Y2 Sync failed attempts=${job.attemptsMade}, error=${error}`
+          `Element Sync offers failed attempts=${job.attemptsMade}, error=${error}`
         );
       }
     },
@@ -58,7 +58,8 @@ if (config.doBackfillWork) {
   backfillWorker.on("completed", async (job: Job) => {
     // If there's newStartTime schedule the next job
     if (job.data.newStartTime) {
-      await addToX2Y2BackfillQueue(job.data.newStartTime, job.data.endTime, 1000);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait to avoid rate-limiting
+      await addToElementBackfillQueue(job.data.newStartTime, job.data.endTime);
     }
   });
 
@@ -67,7 +68,7 @@ if (config.doBackfillWork) {
   });
 }
 
-export const addToX2Y2BackfillQueue = async (
+export const addToElementBackfillQueue = async (
   startTime: number,
   endTime: number,
   delayMs: number = 0
