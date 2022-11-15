@@ -29,7 +29,7 @@ if (config.doRealtimeWork) {
         const cacheKey = "element-sync-offers-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrders("sell", cursor ? Number(cursor) : 0);
+        const newCursor = await fetchOrders("buy", cursor ? Number(cursor) : 0);
 
         if (cursor && newCursor == Number(cursor)) {
           logger.info(
