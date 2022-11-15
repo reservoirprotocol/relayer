@@ -28,18 +28,19 @@ if (config.doBackfillWork) {
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
       type Data = {
+        side: "sell" | "buy";
         startTime: number;
         endTime: number;
         pageToken?: string;
       };
 
-      const { startTime, endTime, pageToken }: Data = job.data;
+      const { startTime, endTime, pageToken, side }: Data = job.data;
       let newPageToken;
       let lastCreatedAt;
 
       try {
         if (pageToken) {
-          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken("sell", pageToken);
+          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(side, pageToken);
         } else {
           const startTimeDate = fromUnixTime(startTime);
           [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(
@@ -65,6 +66,7 @@ if (config.doBackfillWork) {
     // If there's newStartTime schedule the next job
     if (job.data.newPageToken) {
       await addToCoinbaseBackfillQueue(
+        job.data.side,
         job.data.newStartTime,
         job.data.endTime,
         job.data.newPageToken,
@@ -84,6 +86,7 @@ if (config.doBackfillWork) {
 }
 
 export const addToCoinbaseBackfillQueue = async (
+  side: "sell" | "buy",
   startTime: number,
   endTime: number,
   pageToken = "",
@@ -96,7 +99,7 @@ export const addToCoinbaseBackfillQueue = async (
 
   await backfillQueue.add(
     BACKFILL_QUEUE_NAME,
-    { startTime, endTime, pageToken },
+    { startTime, endTime, pageToken, side },
     { delay: delayMs }
   );
 };
