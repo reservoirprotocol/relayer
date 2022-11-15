@@ -115,10 +115,10 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
   return [newPageToken, lastCreatedAtOrder];
 };
 
-export const fetchOrdersByPageToken = async (pageToken: string = "") => {
+export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: string = "") => {
   logger.info(
     "fetch_orders_coinbase",
-    `pageToken = ${pageToken} Fetching orders from Coinbase`
+    `side = ${side}, pageToken = ${pageToken} Fetching orders from Coinbase`
   );
 
   const coinbase = new Coinbase();
@@ -131,6 +131,7 @@ export const fetchOrdersByPageToken = async (pageToken: string = "") => {
 
   const url = coinbase.buildFetchOrdersURL(
     {
+      side,
       limit,
       isDesc,
     },
@@ -165,7 +166,7 @@ export const fetchOrdersByPageToken = async (pageToken: string = "") => {
     const handleOrder = async (order: CoinbaseOrder) => {
       const maxDate = addYears(new Date(), 5);
       if (isAfter(new Date(order.expiry), maxDate)) {
-        logger.warn("fetch_orders_coinbase", `Order ID ${order.id} expiry ${order.expiry} is in more than 5 years`);
+        logger.warn("fetch_orders_coinbase", `side - ${side} Order ID ${order.id} expiry ${order.expiry} is in more than 5 years`);
         return;
       }
 
@@ -222,7 +223,7 @@ export const fetchOrdersByPageToken = async (pageToken: string = "") => {
 
   logger.info(
     "fetch_orders_coinbase",
-    `FINAL - Coinbase - lastCreatedAtOrder = ${lastCreatedAtOrder}, current = ${pageToken} new = ${newPageToken} total orders ${numOrders}, new orders ${newOrders}`
+    `FINAL - Coinbase - side = ${side}, lastCreatedAtOrder = ${lastCreatedAtOrder}, current = ${pageToken} new = ${newPageToken} total orders ${numOrders}, new orders ${newOrders}`
   );
 
   return [newPageToken, lastCreatedAtOrder];

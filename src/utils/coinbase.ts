@@ -5,6 +5,7 @@ import { getUnixTime } from "date-fns";
 import {logger} from "../common/logger";
 
 type FetchOrdersParams = {
+  side?: "sell" | "buy",
   createdAfter?: string;
   endTime?: string;
   limit?: number;
@@ -59,7 +60,9 @@ export class Coinbase {
       }
     }
 
-    return decodeURI(`${baseApiUrl}/api/nft/marketplaceorderbook/v1/orders?${searchParams.toString()}`);
+    const path = params.side === "sell" ? "orders" : "offers";
+
+    return decodeURI(`${baseApiUrl}/api/nft/marketplaceorderbook/v1/${path}?${searchParams.toString()}`);
   }
 
   public async parseCoinbaseOrder(

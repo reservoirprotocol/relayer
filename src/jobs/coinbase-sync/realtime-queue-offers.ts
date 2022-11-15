@@ -6,7 +6,7 @@ import { config } from "../../config";
 import { fetchOrdersByPageToken } from "./utils";
 import { logger } from "../../common/logger";
 
-const REALTIME_QUEUE_NAME = "realtime-coinbase-sync";
+const REALTIME_QUEUE_NAME = "realtime-coinbase-offers-sync";
 
 export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
   connection: redis.duplicate(),
@@ -28,20 +28,20 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const cacheKey = "coinbase-sync-last";
+        const cacheKey = "coinbase-offers-sync-last";
         let pageTokenCache = await redis.get(cacheKey);
 
         if (_.isNull(pageTokenCache)) {
           pageTokenCache = "";
         }
 
-        logger.info(REALTIME_QUEUE_NAME, `Start Coinbase sync from pageTokenCache=${pageTokenCache}`);
-        const [newPageToken, ] = await fetchOrdersByPageToken("sell", pageTokenCache);
+        logger.info(REALTIME_QUEUE_NAME, `Start Coinbase offers sync from pageTokenCache=${pageTokenCache}`);
+        const [newPageToken, ] = await fetchOrdersByPageToken("buy", pageTokenCache);
 
         if (newPageToken == pageTokenCache) {
           logger.info(
             REALTIME_QUEUE_NAME,
-            `Coinbase pageToken didn't change pageToken=${pageTokenCache}, newPageToken=${newPageToken}`
+            `Coinbase offers pageToken didn't change pageToken=${pageTokenCache}, newPageToken=${newPageToken}`
           );
         }
 
@@ -52,7 +52,7 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Coinbase sync failed attempts=${job.attemptsMade}, error=${error}`
+          `Coinbase offers sync failed attempts=${job.attemptsMade}, error=${error}`
         );
       }
     },
@@ -61,10 +61,10 @@ if (config.doRealtimeWork) {
 
   realtimeWorker.on("completed", async (job) => {
     // Release the lock to allow the next sync
-    await releaseLock("coinbase-sync-lock", false);
+    await releaseLock("coinbase-offers-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(REALTIME_QUEUE_NAME, `Offers sync recover attempts=${job.attemptsMade}`);
     }
   });
 

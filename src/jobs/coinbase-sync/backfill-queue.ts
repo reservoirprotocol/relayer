@@ -39,7 +39,7 @@ if (config.doBackfillWork) {
 
       try {
         if (pageToken) {
-          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(pageToken);
+          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken("sell", pageToken);
         } else {
           const startTimeDate = fromUnixTime(startTime);
           [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(startTimeDate.toISOString());
