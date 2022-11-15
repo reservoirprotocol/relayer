@@ -24,30 +24,28 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
   let numOrders = 0;
   let lastCreatedAtOrder;
 
-  const url = coinbase.buildFetchOrdersURL(
-    {
-      limit,
-      isDesc,
-      createdAfter,
-    },
-  );
+  const url = coinbase.buildFetchOrdersURL({
+    limit,
+    isDesc,
+    createdAfter,
+  });
 
   try {
     const response = await axios.get(
       url,
       config.chainId === 1
         ? {
-          headers: {
-            "Content-Type": "application/json",
-            "accept": "application/json",
-            "cb-nft-api-token": config.coinbaseApiKey,
-            "user-agent":
-              "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          },
-          timeout: 10000,
-        }
+            headers: {
+              "Content-Type": "application/json",
+              accept: "application/json",
+              "cb-nft-api-token": config.coinbaseApiKey,
+              "user-agent":
+                "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+            },
+            timeout: 10000,
+          }
         : // Skip including the API key on Rinkeby or else the request will fail
-        { timeout: 10000 }
+          { timeout: 10000 }
     );
 
     const orders: CoinbaseOrder[] = response.data.orders;
@@ -145,17 +143,17 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
       url,
       config.chainId === 1
         ? {
-          headers: {
-            "Content-Type": "application/json",
-            "accept": "application/json",
-            "cb-nft-api-token": config.coinbaseApiKey,
-            "user-agent":
-              "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          },
-          timeout: 10000,
-        }
+            headers: {
+              "Content-Type": "application/json",
+              accept: "application/json",
+              "cb-nft-api-token": config.coinbaseApiKey,
+              "user-agent":
+                "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
+            },
+            timeout: 10000,
+          }
         : // Skip including the API key on Rinkeby or else the request will fail
-        { timeout: 10000 }
+          { timeout: 10000 }
     );
 
     const orders: CoinbaseOrder[] = response.data.orders;
@@ -166,7 +164,10 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
     const handleOrder = async (order: CoinbaseOrder) => {
       const maxDate = addYears(new Date(), 5);
       if (isAfter(new Date(order.expiry), maxDate)) {
-        logger.warn("fetch_orders_coinbase", `side - ${side} Order ID ${order.id} expiry ${order.expiry} is in more than 5 years`);
+        logger.warn(
+          "fetch_orders_coinbase",
+          `side - ${side} Order ID ${order.id} expiry ${order.expiry} is in more than 5 years`
+        );
         return;
       }
 

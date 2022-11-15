@@ -2,10 +2,10 @@ import * as Sdk from "@reservoir0x/sdk";
 import _ from "lodash";
 import { config } from "../config";
 import { getUnixTime } from "date-fns";
-import {logger} from "../common/logger";
+import { logger } from "../common/logger";
 
 type FetchOrdersParams = {
-  side?: "sell" | "buy",
+  side?: "sell" | "buy";
   createdAfter?: string;
   endTime?: string;
   limit?: number;
@@ -19,15 +19,15 @@ type FetchOrdersPaginationParams = {
 export type CoinbaseOrder = {
   id: string;
   orderType: string;
-  maker: string,
+  maker: string;
   expiry: string;
-  createdAt: string,
-  startTime: string,
-  fees: { recipient: string, amount: string }[],
-  currencyAddress: string,
-  takerAmount: string,
-  collectionAddress: string,
-  tokenId: string,
+  createdAt: string;
+  startTime: string;
+  fees: { recipient: string; amount: string }[];
+  currencyAddress: string;
+  takerAmount: string;
+  collectionAddress: string;
+  tokenId: string;
   nonce: string;
 };
 
@@ -62,14 +62,16 @@ export class Coinbase {
 
     const path = params.side === "sell" ? "orders" : "offers";
 
-    return decodeURI(`${baseApiUrl}/api/nft/marketplaceorderbook/v1/${path}?${searchParams.toString()}`);
+    return decodeURI(
+      `${baseApiUrl}/api/nft/marketplaceorderbook/v1/${path}?${searchParams.toString()}`
+    );
   }
 
   public async parseCoinbaseOrder(
     coinbaseOrder: CoinbaseOrder
   ): Promise<Sdk.ZeroExV4.Order | undefined> {
     const makerParams = _.split(coinbaseOrder.maker, "/");
-    const fees = _.map(coinbaseOrder.fees, fee => ({
+    const fees = _.map(coinbaseOrder.fees, (fee) => ({
       recipient: fee.recipient,
       amount: fee.amount,
       feeData: "0x",
@@ -80,7 +82,12 @@ export class Coinbase {
         direction: coinbaseOrder.orderType === "list" ? 0 : 1,
         maker: makerParams[2],
         expiry: getUnixTime(new Date(coinbaseOrder.expiry)),
-        erc20Token: coinbaseOrder.currencyAddress === "" ? Sdk.ZeroExV4.Addresses.Eth[config.chainId] : coinbaseOrder.currencyAddress,
+        erc20Token:
+          coinbaseOrder.currencyAddress === ""
+            ? coinbaseOrder.orderType === "list"
+              ? Sdk.ZeroExV4.Addresses.Eth[config.chainId]
+              : Sdk.Common.Addresses.Weth[config.chainId]
+            : coinbaseOrder.currencyAddress,
         erc20TokenAmount: coinbaseOrder.takerAmount,
         nft: coinbaseOrder.collectionAddress,
         nftId: coinbaseOrder.tokenId,
@@ -99,10 +106,7 @@ export class Coinbase {
         return order;
       }
     } catch (error) {
-      logger.error(
-        "parse-coinbase-order",
-        `Coinbase failed to parse order, error=${error}`
-      );
+      logger.error("parse-coinbase-order", `Coinbase failed to parse order, error=${error}`);
     }
   }
 }

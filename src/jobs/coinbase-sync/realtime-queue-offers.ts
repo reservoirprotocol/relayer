@@ -35,8 +35,11 @@ if (config.doRealtimeWork) {
           pageTokenCache = "";
         }
 
-        logger.info(REALTIME_QUEUE_NAME, `Start Coinbase offers sync from pageTokenCache=${pageTokenCache}`);
-        const [newPageToken, ] = await fetchOrdersByPageToken("buy", pageTokenCache);
+        logger.info(
+          REALTIME_QUEUE_NAME,
+          `Start Coinbase offers sync from pageTokenCache=${pageTokenCache}`
+        );
+        const [newPageToken] = await fetchOrdersByPageToken("buy", pageTokenCache);
 
         if (newPageToken == pageTokenCache) {
           logger.info(

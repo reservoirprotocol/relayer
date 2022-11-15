@@ -25,7 +25,7 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
       side: side === "sell" ? "1" : "0",
       listed_after: listedAfter > 0 ? listedAfter : undefined,
       listed_before: listedBefore > 0 ? listedBefore : undefined,
-      limit
+      limit,
     });
 
     try {
@@ -101,7 +101,10 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
     }
   }
 
-  logger.info("fetch_orders_element", `FINAL - Element - (${listedBefore}) Got ${numOrders} orders`);
+  logger.info(
+    "fetch_orders_element",
+    `FINAL - Element - (${listedBefore}) Got ${numOrders} orders`
+  );
 
   return newCursor;
 };

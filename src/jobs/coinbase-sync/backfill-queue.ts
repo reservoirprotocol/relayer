@@ -2,7 +2,7 @@ import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
 import { redis } from "../../common/redis";
 import { config } from "../../config";
-import {fetchOrdersByDateCreated, fetchOrdersByPageToken} from "./utils";
+import { fetchOrdersByDateCreated, fetchOrdersByPageToken } from "./utils";
 import { logger } from "../../common/logger";
 import { fromUnixTime, isBefore } from "date-fns";
 
@@ -42,7 +42,9 @@ if (config.doBackfillWork) {
           [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken("sell", pageToken);
         } else {
           const startTimeDate = fromUnixTime(startTime);
-          [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(startTimeDate.toISOString());
+          [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(
+            startTimeDate.toISOString()
+          );
         }
 
         // If there are more order within th given time frame
@@ -62,7 +64,12 @@ if (config.doBackfillWork) {
   backfillWorker.on("completed", async (job: Job) => {
     // If there's newStartTime schedule the next job
     if (job.data.newPageToken) {
-      await addToCoinbaseBackfillQueue(job.data.newStartTime, job.data.endTime, job.data.newPageToken, 1000);
+      await addToCoinbaseBackfillQueue(
+        job.data.newStartTime,
+        job.data.endTime,
+        job.data.newPageToken,
+        1000
+      );
     } else {
       logger.info(
         BACKFILL_QUEUE_NAME,
@@ -87,5 +94,9 @@ export const addToCoinbaseBackfillQueue = async (
     endTime = startTime + 1;
   }
 
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { startTime, endTime, pageToken }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    { startTime, endTime, pageToken },
+    { delay: delayMs }
+  );
 };
