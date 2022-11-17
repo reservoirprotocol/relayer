@@ -26,6 +26,7 @@ export type X2Y2Order = {
     erc_type: string;
     token_id: string;
   };
+  royalty_fee: number;
   price: string;
   side: number;
   status: string;
@@ -95,6 +96,7 @@ export class X2Y2 {
         itemHash: x2y2Order.item_hash,
         kind: x2y2Order.is_collection_offer ? "collection-wide" : "single-token",
         deadline: x2y2Order.end_at,
+        royalty_fee: x2y2Order.royalty_fee,
       });
     } catch {
       // Skip any errors

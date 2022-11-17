@@ -1394,10 +1394,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@0.0.226":
-  version "0.0.226"
-  resolved "https://registry.npmjs.org/@reservoir0x/sdk/-/sdk-0.0.226.tgz#7dbfb6ff7f2f06e9c1e751a9c97d188d7e7c4f08"
-  integrity sha512-G7ombhZMerXP9kN24cR0bAaCPnFBx0Qj1xAbmCtc1RqHnxVkAQ2Qc/Ki2vWkow8a3/nWpXXtPbNIYV8nZ9cPrA==
+"@reservoir0x/sdk@0.0.236":
+  version "0.0.236"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.236.tgz#0e31d707cac5eb1081587d6615c28fe27501d4d3"
+  integrity sha512-G2EnlJj/RO9Kk9Kytil4c1egQGlhA8FYLeeznAiIGEdyTmYZFrbjb47all90o7TnQMMteJ7fNDK+o976EAVo5Q==
   dependencies:
     ethers "^5.7.2"
     merkletreejs "0.2.31"
