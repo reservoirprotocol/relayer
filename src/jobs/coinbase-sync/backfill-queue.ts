@@ -2,7 +2,7 @@ import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
 import { redis } from "../../common/redis";
 import { config } from "../../config";
-import {fetchOrdersByDateCreated, fetchOrdersByPageToken} from "./utils";
+import { fetchOrdersByDateCreated, fetchOrdersByPageToken } from "./utils";
 import { logger } from "../../common/logger";
 import { fromUnixTime, isBefore } from "date-fns";
 
@@ -28,21 +28,24 @@ if (config.doBackfillWork) {
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
       type Data = {
+        side: "sell" | "buy";
         startTime: number;
         endTime: number;
         pageToken?: string;
       };
 
-      const { startTime, endTime, pageToken }: Data = job.data;
+      const { startTime, endTime, pageToken, side }: Data = job.data;
       let newPageToken;
       let lastCreatedAt;
 
       try {
         if (pageToken) {
-          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(pageToken);
+          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(side, pageToken);
         } else {
           const startTimeDate = fromUnixTime(startTime);
-          [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(startTimeDate.toISOString());
+          [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(
+            startTimeDate.toISOString()
+          );
         }
 
         // If there are more order within th given time frame
@@ -62,7 +65,13 @@ if (config.doBackfillWork) {
   backfillWorker.on("completed", async (job: Job) => {
     // If there's newStartTime schedule the next job
     if (job.data.newPageToken) {
-      await addToCoinbaseBackfillQueue(job.data.newStartTime, job.data.endTime, job.data.newPageToken, 1000);
+      await addToCoinbaseBackfillQueue(
+        job.data.side,
+        job.data.newStartTime,
+        job.data.endTime,
+        job.data.newPageToken,
+        1000
+      );
     } else {
       logger.info(
         BACKFILL_QUEUE_NAME,
@@ -77,6 +86,7 @@ if (config.doBackfillWork) {
 }
 
 export const addToCoinbaseBackfillQueue = async (
+  side: "sell" | "buy",
   startTime: number,
   endTime: number,
   pageToken = "",
@@ -87,5 +97,9 @@ export const addToCoinbaseBackfillQueue = async (
     endTime = startTime + 1;
   }
 
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { startTime, endTime, pageToken }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    { startTime, endTime, pageToken, side },
+    { delay: delayMs }
+  );
 };

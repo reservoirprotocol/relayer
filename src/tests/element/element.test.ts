@@ -8,9 +8,7 @@ jest.setTimeout(1000 * 1000);
 
 export const bn = (value: BigNumberish) => BigNumber.from(value);
 
-
 describe("Element", () => {
-
   let element: Element;
 
   beforeEach(async () => {
@@ -19,20 +17,20 @@ describe("Element", () => {
 
   test("genUrl", async () => {
     const url = element.buildFetchOrdersURL({
-      chain: "eth"
+      chain: "eth",
     });
     // console.log("url", url)
   });
 
   test("parseOrder", async () => {
-    const orders = ordersResult.data.orders.slice(0, 20)
+    const orders = ordersResult.data.orders.slice(0, 20);
     for (let index = 0; index < orders.length; index++) {
       const order = orders[index];
-      const parsedOrder = await element.parseOrder(order)
+      const parsedOrder = await element.parseOrder(order);
       if (parsedOrder) {
         // console.log(parsedOrder.getRaw())
         // hash check
-        expect(parsedOrder.hash()).toEqual(order.hash)
+        expect(parsedOrder.hash()).toEqual(order.hash);
         parsedOrder.checkSignature();
       }
     }

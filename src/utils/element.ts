@@ -184,6 +184,10 @@ export class Element {
       queryParams.append("order_by", String(params.order_by));
     }
 
+    if (params.side) {
+      queryParams.append("side", String(params.side));
+    }
+
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
@@ -196,7 +200,8 @@ export class Element {
         params.listingTime,
         params.expirationTime
       );
-      const erc20TokenAmount = calcPayERC20Amount(params.basePrice, params.fees);
+      const fees = params.fees || [];
+      const erc20TokenAmount = calcPayERC20Amount(params.basePrice, fees);
       const erc20Token =
         params.paymentToken.toLowerCase() == NULL_ADDRESS ? ETH_TOKEN_ADDRESS : params.paymentToken;
       return new Sdk.Element.Order(config.chainId, {
@@ -211,7 +216,7 @@ export class Element {
         erc20Token: erc20Token,
         erc20TokenAmount: erc20TokenAmount,
         hashNonce: params.hashNonce,
-        fees: params.fees!.map(({ recipient, amount, feeData }) => ({
+        fees: fees.map(({ recipient, amount, feeData }) => ({
           recipient: recipient,
           amount: amount,
           feeData: feeData,

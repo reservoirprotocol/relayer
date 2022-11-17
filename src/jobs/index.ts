@@ -29,6 +29,7 @@ import * as elementSyncOffersBackfill from "./element-sync/queues/backfill-queue
 
 import * as coinbaseSyncListingsRealtime from "./coinbase-sync/realtime-queue";
 import * as coinbaseSyncListingsBackfill from "./coinbase-sync/backfill-queue";
+import * as coinbaseSyncOffersRealtime from "./coinbase-sync/realtime-queue-offers";
 
 export const allQueues = [
   looksRareSyncRealtime.realtimeQueue,
@@ -48,6 +49,7 @@ export const allQueues = [
   elementSyncOffersBackfill.backfillQueue,
   coinbaseSyncListingsRealtime.realtimeQueue,
   coinbaseSyncListingsBackfill.backfillQueue,
+  coinbaseSyncOffersRealtime.realtimeQueue,
   raribleSyncRealtime.realtimeQueue,
   raribleSyncBackfill.backfillQueue,
 ];
