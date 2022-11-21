@@ -47,7 +47,6 @@ export type ManifoldOrder = {
     };
   };
   fees: {
-    //TODO: deliverFixed
     deliverFixed: null;
   };
   bid: {
@@ -81,10 +80,6 @@ export class Manifold {
     try {
       const order = new Sdk.Manifold.Order(config.chainId, manifoldOrder as any);
       return order;
-    } catch (err) {
-      // Skip any errors
-      //DEBUG PURPOSES ONLY:
-      console.log(err);
-    }
+    } catch {}
   }
 }

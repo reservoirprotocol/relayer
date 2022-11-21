@@ -103,10 +103,6 @@ export class Rarible {
     try {
       const order = new Sdk.Rarible.Order(config.chainId, raribleOrder as any);
       return order;
-    } catch (err) {
-      // Skip any errors
-      //DEBUG PURPOSES ONLY:
-      console.log(err);
-    }
+    } catch {}
   }
 }
