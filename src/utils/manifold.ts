@@ -1,16 +1,13 @@
 import * as Sdk from "@reservoir0x/sdk";
+import { BigNumber } from "ethers";
 
 import { config } from "../config";
-export type ManifoldOrder = {
+export type ManifoldApiOrder = {
   id: string;
   seller: string;
-  createdAt: number;
   details: {
     type_: number;
-    initialAmount: {
-      type: string;
-      hex: string;
-    };
+    initialAmount: BNHex;
     totalAvailable: string;
     totalPerSale: string;
     extensionInterval: number;
@@ -22,63 +19,74 @@ export type ManifoldOrder = {
   token: {
     spec: string;
     address_: string;
-    id: {
-      type: string;
-      hex: string;
-    };
+    id: BNHex;
     lazy: boolean;
-    metadata: {
-      name: string;
-      image: string;
-      image_url: string;
-      attributes: {
-        value: string;
-        trait_type: string;
-      }[];
-      created_by: string;
-      description: string;
-      image_details: {
-        bytes: number;
-        width: number;
-        format: string;
-        height: number;
-        sha256: string;
-      };
-    };
   };
   fees: {
     deliverFixed: null;
   };
   bid: {
-    amount: {
-      type: string;
-      hex: string;
-    };
+    amount: BNHex;
     timestamp: string;
     bidder: string;
   };
   address: string;
   version: string;
 };
+
+type BNHex = {
+  type: string;
+  hex: string;
+};
+
+enum Spec {
+  NONE,
+  ERC721,
+  ERC1155,
+}
+
 export class Manifold {
-  public buildFetchListingsURL = () => {
-    // type=2 is fixed price listings
-    // order=1 is sort by created at
+  public buildFetchListingsURL = (page: number) => {
     switch (config.chainId) {
       case 1:
-        return "https://marketplace.api.manifoldxyz.dev/listing/0x3a3548e060be10c2614d0a4cb0c03cc9093fd799/active?type=2&order=1";
+        return `https://marketplace.api.manifoldxyz.dev/listing/0x3a3548e060be10c2614d0a4cb0c03cc9093fd799/activity?sortAscending=true&pageNumber=${page}`;
       case 5:
-        return "https://goerli.marketplace.api.manifoldxyz.dev/listing/0x554fa73be2f122374e148b35de3ed6c34602dbf6/active?type=2&order=1";
+        return `https://goerli.marketplace.api.manifoldxyz.dev/listing/0x554fa73be2f122374e148b35de3ed6c34602dbf6/activity?sortAscending=true&pageNumber=${page}`;
       default:
         throw Error(`Unknown chain id: ${config.chainId}`);
     }
   };
+  private bnHexToString = (bnHex: BNHex) => {
+    return BigNumber.from(bnHex.hex).toString();
+  };
 
   public async parseManifoldOrder(
-    manifoldOrder: ManifoldOrder
+    manifoldOrder: ManifoldApiOrder
   ): Promise<Sdk.Manifold.Order | undefined> {
     try {
-      const order = new Sdk.Manifold.Order(config.chainId, manifoldOrder as any);
+      const contractOrder = JSON.parse(JSON.stringify(manifoldOrder));
+
+      contractOrder.details.initialAmount = this.bnHexToString(manifoldOrder.details.initialAmount);
+      contractOrder.token.id = this.bnHexToString(manifoldOrder.token.id);
+      contractOrder.token.spec =
+        manifoldOrder.token.spec.toLowerCase() === "erc721"
+          ? Spec.ERC721
+          : manifoldOrder.token.spec.toLowerCase() === "erc1155"
+          ? Spec.ERC1155
+          : Spec.NONE;
+      if (!contractOrder.fees) {
+        contractOrder.fees = {
+          deliverFixed: 0,
+          deliverBPS: 0,
+        };
+      }
+      if (!contractOrder.fees.deliverFixed) {
+        contractOrder.fees.deliverFixed = 0;
+      }
+      if (!contractOrder.fees.deliverBPS) {
+        contractOrder.fees.deliverBPS = 0;
+      }
+      const order = new Sdk.Manifold.Order(config.chainId, contractOrder);
       return order;
     } catch {}
   }

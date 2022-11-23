@@ -28,18 +28,32 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        const cacheKey = "manifold-realtime-timestamp";
-        let timestamp = Number((await redis.get(cacheKey)) || 0);
+        const cacheIdKey = "manifold-realtime-id";
+        const cachePageKey = "manifold-realtime-page";
 
-        const newTimestamp = await fetchOrders(timestamp);
+        let id = Number((await redis.get(cacheIdKey)) || 0);
+        let page = Number((await redis.get(cachePageKey)) || 1);
 
-        if (timestamp === newTimestamp) {
+        const [newId, newPage] = await fetchOrders(id, page);
+
+        if (id === newId) {
+          logger.info(REALTIME_QUEUE_NAME, `manifold realtime order id didn't change id=${id}`);
+        } else {
           logger.info(
             REALTIME_QUEUE_NAME,
-            `manifold realtime timestamp didn't change timestamp=${timestamp}, newTimestamp=${newTimestamp}`
+            `manifold realtime order id changed id=${id}, new id=${newId}`
           );
+          await redis.set(cacheIdKey, newId);
+        }
+
+        if (page === newPage) {
+          logger.info(REALTIME_QUEUE_NAME, `manifold realtime page didn't change page=${page}`);
         } else {
-          await redis.set(cacheKey, newTimestamp);
+          logger.info(
+            REALTIME_QUEUE_NAME,
+            `manifold realtime page changed page=${page}, newPage=${newPage}`
+          );
+          await redis.set(cachePageKey, newPage);
         }
       } catch (error) {
         logger.error(

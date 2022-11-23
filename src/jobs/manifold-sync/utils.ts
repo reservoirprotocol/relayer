@@ -6,27 +6,33 @@ import _ from "lodash";
 import { db, pgp } from "../../common/db";
 import { addToRelayOrdersQueue } from "../relay-orders";
 import { logger } from "../../common/logger";
-import { Manifold, ManifoldOrder } from "../../utils/manifold";
+import { Manifold, ManifoldApiOrder } from "../../utils/manifold";
 
-export const fetchOrders = async (timestamp: number) => {
+export const fetchOrders = async (id: number, page: number) => {
   const manifold = new Manifold();
 
   let newOrdersCount = 0;
-  let newTimestamp = timestamp;
+  let newOrderId = id;
+  let newPage = page;
 
   try {
-    const url = manifold.buildFetchListingsURL();
+    const url = manifold.buildFetchListingsURL(page);
     const response = await axios.get(url, { timeout: 10000 });
 
-    const newOrders: ManifoldOrder[] = response.data.filter(
-      (order: ManifoldOrder) => order.createdAt > timestamp
+    // type_ === 2 filters fixed price listings
+    const newOrders: ManifoldApiOrder[] = response.data.listings.filter(
+      (order: ManifoldApiOrder) => order.details.type_ === 2 && Number(order.id) > id
     );
-
+    const pageOrderCount = response.data.count;
+    // Manifold api returns 20 orders. If we've received 20 orders, then it's time to start fetching the next page
+    if (pageOrderCount === 20) {
+      newPage += 1;
+    }
     const parsedOrders: Sdk.Manifold.Order[] = [];
 
     const values: any[] = [];
 
-    const handleOrder = async (order: ManifoldOrder) => {
+    const handleOrder = async (order: ManifoldApiOrder) => {
       const orderTarget = order.token.address_;
       const parsed = await manifold.parseManifoldOrder(order);
 
@@ -34,9 +40,9 @@ export const fetchOrders = async (timestamp: number) => {
         parsedOrders.push(parsed);
 
         // Update timestamp if newer
-        const orderTimestamp = order.createdAt;
-        if (orderTimestamp > timestamp) {
-          newTimestamp = orderTimestamp;
+        const orderId = Number(order.id);
+        if (orderId > id) {
+          newOrderId = orderId;
         }
       }
 
@@ -81,5 +87,5 @@ export const fetchOrders = async (timestamp: number) => {
 
   logger.info("fetch_orders_manifold", `FINAL - manifold - Got ${newOrdersCount} new orders`);
 
-  return newTimestamp;
+  return [newOrderId, newPage];
 };
