@@ -46,12 +46,12 @@ enum Spec {
 }
 
 export class Manifold {
-  public buildFetchListingsURL = (page: number) => {
+  public buildFetchListingsURL = (page: number, pageSize: number) => {
     switch (config.chainId) {
       case 1:
-        return `https://marketplace.api.manifoldxyz.dev/listing/0x3a3548e060be10c2614d0a4cb0c03cc9093fd799/activity?sortAscending=true&pageNumber=${page}`;
+        return `https://marketplace.api.manifoldxyz.dev/listing/0x3a3548e060be10c2614d0a4cb0c03cc9093fd799/activity?sortAscending=true&pageNumber=${page}&pageSize=${pageSize}`;
       case 5:
-        return `https://goerli.marketplace.api.manifoldxyz.dev/listing/0x554fa73be2f122374e148b35de3ed6c34602dbf6/activity?sortAscending=true&pageNumber=${page}`;
+        return `https://goerli.marketplace.api.manifoldxyz.dev/listing/0x554fa73be2f122374e148b35de3ed6c34602dbf6/activity?sortAscending=true&pageNumber=${page}&pageSize=${pageSize}`;
       default:
         throw Error(`Unknown chain id: ${config.chainId}`);
     }

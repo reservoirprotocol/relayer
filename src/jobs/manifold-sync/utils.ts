@@ -14,9 +14,9 @@ export const fetchOrders = async (id: number, page: number) => {
   let newOrdersCount = 0;
   let newOrderId = id;
   let newPage = page;
-
+  let pageSize = 100;
   try {
-    const url = manifold.buildFetchListingsURL(page);
+    const url = manifold.buildFetchListingsURL(page, pageSize);
     const response = await axios.get(url, { timeout: 10000 });
 
     // type_ === 2 filters fixed price listings
@@ -25,7 +25,7 @@ export const fetchOrders = async (id: number, page: number) => {
     );
     const pageOrderCount = response.data.count;
     // Manifold api returns 20 orders. If we've received 20 orders, then it's time to start fetching the next page
-    if (pageOrderCount === 20) {
+    if (pageOrderCount === pageSize) {
       newPage += 1;
     }
     const parsedOrders: Sdk.Manifold.Order[] = [];
