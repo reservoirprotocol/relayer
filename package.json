@@ -12,7 +12,7 @@
     "compile": "tsc",
     "build": "yarn migrate up; yarn clean; yarn compile",
     "start": "node ./dist/index.js",
-    "migrate": "ts-node ./node_modules/node-pg-migrate/bin/node-pg-migrate -m ./src/migrations",
+    "migrate": "ts-node ./node_modules/node-pg-migrate/bin/node-pg-migrate -m ./src/migrations --no-check-order",
     "debug": "yarn build && yarn migrate up; node --inspect -r module-alias/register ./dist/index.js",
     "commitlint": "commitlint --edit",
     "lint-check": "eslint --max-warnings 0 --ext .js,.ts,.json src",
