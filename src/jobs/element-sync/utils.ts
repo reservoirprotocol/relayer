@@ -8,7 +8,7 @@ import { addToRelayOrdersQueue } from "../relay-orders";
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
-import { Element, ElementOrder } from "../../utils/element";
+import { Element, ElementOrder, SaleKind } from "../../utils/element";
 
 export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedBefore = 0) => {
   logger.info("fetch_orders_element", `listedAfter = ${listedAfter} Fetching orders from Element`);
@@ -44,21 +44,27 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
       const values: any[] = [];
 
       const handleOrder = async (order: ElementOrder) => {
-        const orderTarget = order.assetContract;
+        const orderTarget = order.contractAddress;
         const parsed = await element.parseOrder(order);
 
         if (parsed) {
-          parsedOrders.push(parsed);
+          if (
+            order.saleKind === SaleKind.FixedPrice ||
+            order.saleKind === SaleKind.BatchSignedOrder ||
+            order.saleKind === SaleKind.ContractOffer
+          ) {
+            parsedOrders.push(parsed);
+          }
+  
+          values.push({
+            hash: parsed.id(),
+            target: orderTarget.toLowerCase(),
+            maker: order.maker,
+            created_at: fromUnixTime(order.createTime),
+            data: order as any,
+            source: "element",
+          });
         }
-
-        values.push({
-          hash: order.hash,
-          target: orderTarget.toLowerCase(),
-          maker: order.maker,
-          created_at: fromUnixTime(order.createTime),
-          data: order as any,
-          source: "element",
-        });
       };
 
       const plimit = pLimit(20);

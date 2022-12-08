@@ -30,7 +30,7 @@ describe("Element", () => {
       if (parsedOrder) {
         // console.log(parsedOrder.getRaw())
         // hash check
-        expect(parsedOrder.hash()).toEqual(order.hash);
+        expect(parsedOrder.hash()).toEqual(order.orderHash.split("_")[0]);
         parsedOrder.checkSignature();
       }
     }
