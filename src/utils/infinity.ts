@@ -31,7 +31,7 @@ export type InfinityOrder = {
 
 export class Infinity {
   public buildFetchOrderURL(params: FetchOrderParams) {
-    let url = new URL("https://sv.infinity.xyz/orders-v2/bulk");
+    let url = new URL("https://sv.infinity.xyz/v2/bulk/orders");
 
     if (params.side) {
       url.searchParams.append("side", params.side);
