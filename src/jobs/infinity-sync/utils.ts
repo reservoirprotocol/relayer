@@ -109,7 +109,7 @@ export const fetchOrders = async (
           if (lastOrder) {
             logger.info(
               "fetch_orders_infinity",
-              `Infinity empty result. side=${side}, cursor=${cursor}, reached to=${lastOrder.id} cursor={${cursor}}`
+              `Infinity empty result. side=${side}, cursor, reached to=${lastOrder.id}`
             );
             lastCreatedAt = lastOrder.createdAt;
           }
