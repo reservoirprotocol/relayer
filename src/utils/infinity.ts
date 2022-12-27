@@ -2,6 +2,7 @@ import * as Sdk from "@reservoir0x/sdk";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
+import { join, normalize } from "path";
 
 type FetchOrderParams = {
   side: "sell" | "buy";
@@ -31,7 +32,8 @@ export type InfinityOrder = {
 
 export class Infinity {
   public buildFetchOrderURL(params: FetchOrderParams) {
-    let url = new URL("https://sv.infinity.xyz/v2/bulk/orders");
+    const endpoint = "/v2/bulk/orders";
+    let url = new URL(normalize(join(config.infinityBaseUrl, endpoint)));
 
     if (params.side) {
       url.searchParams.append("side", params.side);
