@@ -34,6 +34,10 @@ import * as coinbaseSyncOffersRealtime from "./coinbase-sync/realtime-queue-offe
 
 import * as manifoldSyncListingsRealtime from "./manifold-sync/realtime-queue";
 
+import * as infinitySyncListingsBackfill from "./infinity-sync/queues/backfill-queue";
+import * as infinitySyncListingsRealtime from "./infinity-sync/queues/realtime-queue-listings";
+import * as infinitySyncOffersRealtime from "./infinity-sync/queues/realtime-queue-offers";
+
 export const allQueues = [
   looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
@@ -56,4 +60,7 @@ export const allQueues = [
   raribleSyncRealtime.realtimeQueue,
   raribleSyncBackfill.backfillQueue,
   manifoldSyncListingsRealtime.realtimeQueue,
+  infinitySyncListingsBackfill.backfillQueue,
+  infinitySyncListingsRealtime.realtimeQueue,
+  infinitySyncOffersRealtime.realtimeQueue,
 ];
