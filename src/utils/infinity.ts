@@ -33,7 +33,7 @@ export type InfinityOrder = {
 export class Infinity {
   public buildFetchOrderURL(params: FetchOrderParams) {
     const endpoint = "/v2/bulk/orders";
-    let url = new URL(normalize(join(config.infinityBaseUrl, endpoint)));
+    let url = new URL(normalize(join("https://sv.infinity.xyz", endpoint)));
 
     if (params.side) {
       url.searchParams.append("side", params.side);

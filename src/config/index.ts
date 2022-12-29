@@ -10,7 +10,6 @@ export const config = {
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   infinityApiKey: String(process.env.INFINITY_API_KEY),
-  infinityBaseUrl: String(process.env.INFINITY_BASE_URL) || "https://sv.infinity.xyz",
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
