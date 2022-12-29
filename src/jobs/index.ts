@@ -7,6 +7,7 @@ import "./element-sync";
 import "./coinbase-sync";
 import "./rarible-sync";
 import "./manifold-sync";
+import "./infinity-sync";
 
 import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
