@@ -131,9 +131,7 @@ export class Element {
           nftAmount: params.schema.toLowerCase() === "erc721" ? undefined : String(params.quantity),
         });
       }
-    } catch (e) {
-      logger.info("debug", e);
-      logger.info("debug", JSON.parse(params.exchangeData));
+    } catch {
       // Skip any errors
     }
   }

@@ -57,20 +57,24 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
             parsedOrders.push(parsedOrder);
           }
 
-          const id = keccak256(
-            defaultAbiCoder.encode(
-              ["bytes32", "uint256"],
-              [parsedOrder.hash(), parsedOrder.params.nonce]
-            )
-          );
-          values.push({
-            hash: id,
-            target: orderTarget.toLowerCase(),
-            maker: order.maker,
-            created_at: fromUnixTime(order.createTime),
-            data: order as any,
-            source: "element",
-          });
+          try {
+            const id = keccak256(
+              defaultAbiCoder.encode(
+                ["bytes32", "uint256"],
+                [parsedOrder.hash(), parsedOrder.params.nonce]
+              )
+            );
+            values.push({
+              hash: id,
+              target: orderTarget.toLowerCase(),
+              maker: order.maker,
+              created_at: fromUnixTime(order.createTime),
+              data: order as any,
+              source: "element",
+            });
+          } catch {
+            // Ignore errors
+          }
         }
       };
 
