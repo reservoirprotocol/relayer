@@ -3,12 +3,13 @@ import axios from "axios";
 import { fromUnixTime } from "date-fns";
 import _ from "lodash";
 import pLimit from "p-limit";
+import { keccak256, defaultAbiCoder } from "ethers/lib/utils";
 
 import { addToRelayOrdersQueue } from "../relay-orders";
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
-import { Element, ElementOrder } from "../../utils/element";
+import { Element, ElementOrder, SaleKind } from "../../utils/element";
 
 export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedBefore = 0) => {
   logger.info("fetch_orders_element", `listedAfter = ${listedAfter} Fetching orders from Element`);
@@ -44,21 +45,33 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
       const values: any[] = [];
 
       const handleOrder = async (order: ElementOrder) => {
-        const orderTarget = order.assetContract;
-        const parsed = await element.parseOrder(order);
+        const orderTarget = order.contractAddress;
+        const parsedOrder = await element.parseOrder(order);
 
-        if (parsed) {
-          parsedOrders.push(parsed);
+        if (parsedOrder) {
+          if (
+            order.saleKind === SaleKind.FixedPrice ||
+            order.saleKind === SaleKind.BatchSignedOrder ||
+            order.saleKind === SaleKind.ContractOffer
+          ) {
+            parsedOrders.push(parsedOrder);
+          }
+
+          const id = keccak256(
+            defaultAbiCoder.encode(
+              ["bytes32", "uint256"],
+              [parsedOrder.hash(), parsedOrder.params.nonce]
+            )
+          );
+          values.push({
+            hash: id,
+            target: orderTarget.toLowerCase(),
+            maker: order.maker,
+            created_at: fromUnixTime(order.createTime),
+            data: order as any,
+            source: "element",
+          });
         }
-
-        values.push({
-          hash: order.hash,
-          target: orderTarget.toLowerCase(),
-          maker: order.maker,
-          created_at: fromUnixTime(order.createTime),
-          data: order as any,
-          source: "element",
-        });
       };
 
       const plimit = pLimit(20);
