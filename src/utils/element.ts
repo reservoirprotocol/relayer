@@ -1,4 +1,5 @@
 import * as Sdk from "@reservoir0x/sdk";
+import { logger } from "ethers";
 
 import { config } from "../config";
 
@@ -131,7 +132,8 @@ export class Element {
         });
       }
     } catch (e) {
-      // console.log("error", e);
+      logger.info("debug", e);
+      logger.info("debug", JSON.parse(params.exchangeData));
       // Skip any errors
     }
   }
