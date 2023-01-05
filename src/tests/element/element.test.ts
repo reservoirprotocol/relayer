@@ -10,18 +10,18 @@ export const bn = (value: BigNumberish) => BigNumber.from(value);
 
 describe("Element", () => {
   let element: Element;
-
+  
   beforeEach(async () => {
     element = new Element();
   });
-
+  
   test("genUrl", async () => {
     const url = element.buildFetchOrdersURL({
       chain: "eth",
     });
     // console.log("url", url)
   });
-
+  
   test("parseOrder", async () => {
     const orders = ordersResult.data.orders.slice(0, 20);
     for (let index = 0; index < orders.length; index++) {
@@ -30,7 +30,7 @@ describe("Element", () => {
       if (parsedOrder) {
         // console.log(parsedOrder.getRaw())
         // hash check
-        expect(parsedOrder.hash()).toEqual(order.hash);
+        expect(parsedOrder.hash()).toEqual(order.orderHash.split("_")[0]);
         parsedOrder.checkSignature();
       }
     }
