@@ -9,6 +9,7 @@ export const config = {
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
+  infinityApiKey: String(process.env.INFINITY_API_KEY),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),

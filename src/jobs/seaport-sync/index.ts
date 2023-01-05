@@ -9,7 +9,6 @@ import { sub, getUnixTime, startOfHour, format } from "date-fns";
 
 import * as seaportSyncRealtimeListings from "./realtime-queue";
 import * as seaportSyncRealtimeOffers from "./realtime-queue-offers";
-import * as seaportSyncRealtimeCollectionOffers from "./realtime-queue-collection-offers";
 
 import * as seaportSyncBackfill from "./backfill-queue";
 
@@ -46,7 +45,7 @@ if (config.doRealtimeWork) {
     }
   });
 
-  if (_.indexOf([1, 5], config.chainId) !== -1) {
+  if (_.indexOf([1, 5, 137], config.chainId) !== -1) {
     cron.schedule(
       _.indexOf([1, 137], config.chainId) !== -1 ? "*/5 * * * * *" : "*/30 * * * * *",
       async () => {

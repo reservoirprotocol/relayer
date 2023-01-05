@@ -7,19 +7,21 @@ import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 
 if (config.doRealtimeWork) {
-  cron.schedule("*/5 * * * * *", async () => {
-    const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);
-    if (lockAcquired) {
-      const cacheKey = "rarible-sync-cursor";
-      const cursor = await redis.get(cacheKey);
+  if (_.indexOf([1, 5], config.chainId) !== -1) {
+    cron.schedule("*/5 * * * * *", async () => {
+      const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);
+      if (lockAcquired) {
+        const cacheKey = "rarible-sync-cursor";
+        const cursor = await redis.get(cacheKey);
 
-      // If key doesn't exist, set it to empty string which will trigger a sync from the beginning
-      if (_.isNull(cursor)) {
-        await redis.set(cacheKey, "");
+        // If key doesn't exist, set it to empty string which will trigger a sync from the beginning
+        if (_.isNull(cursor)) {
+          await redis.set(cacheKey, "");
+        }
+
+        await realtimeQueue.addToRealtimeQueue();
+        logger.info(realtimeQueue.realtimeQueue.name, `Start Rarible sync from cursor=(${cursor})`);
       }
-
-      await realtimeQueue.addToRealtimeQueue();
-      logger.info(realtimeQueue.realtimeQueue.name, `Start Rarible sync from cursor=(${cursor})`);
-    }
-  });
+    });
+  }
 }
