@@ -57,6 +57,8 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
             parsedOrders.push(parsedOrder);
           }
 
+          logger.info("debug", JSON.stringify(parsedOrder.params));
+
           const id = keccak256(
             defaultAbiCoder.encode(
               ["bytes32", "uint256"],
