@@ -48,6 +48,7 @@ if (config.doRealtimeWork) {
           REALTIME_QUEUE_NAME,
           `Element Sync failed attempts=${job.attemptsMade}, error=${error}`
         );
+        throw error;
       }
     },
     { connection: redis.duplicate(), concurrency: 2 }
