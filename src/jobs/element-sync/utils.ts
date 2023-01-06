@@ -48,11 +48,6 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
         const orderTarget = order.contractAddress;
         const parsedOrder = await element.parseOrder(order);
 
-        logger.info(
-          "debug",
-          `order: ${JSON.stringify(order)}, parsedOrder: ${JSON.stringify(parsedOrder)}`
-        );
-
         if (parsedOrder) {
           if (
             order.saleKind === SaleKind.FixedPrice ||
@@ -97,6 +92,8 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
           pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
         );
       }
+
+      logger.info("debug", JSON.stringify(parsedOrders));
 
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
