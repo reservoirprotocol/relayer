@@ -72,8 +72,9 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
               data: order as any,
               source: "element",
             });
-          } catch {
+          } catch (error) {
             // Ignore errors
+            logger.info("debug", JSON.stringify(error));
           }
         }
       };
