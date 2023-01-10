@@ -72,7 +72,7 @@ export class Infinity {
     try {
       return new Sdk.Infinity.Order(config.chainId, order.signedOrder);
     } catch (err) {
-      logger.error("parse-infinity-order", `Failed to parse order ${order.id} - ${err}`);
+      logger.error("parse-infinity-order", `Failed to parse order ${order} - ${err}`);
     }
   }
 }
