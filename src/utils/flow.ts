@@ -72,7 +72,7 @@ export class Flow {
     try {
       return new Sdk.Flow.Order(config.chainId, order.signedOrder);
     } catch (err) {
-      logger.error("parse-flkow-order", `Failed to parse order ${JSON.stringify(order)} - ${err}`);
+      logger.error("parse-flow-order", `Failed to parse order ${JSON.stringify(order)} - ${err}`);
     }
   }
 }
