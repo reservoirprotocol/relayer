@@ -15,25 +15,25 @@ type FetchOrderParams = {
   chainId: number;
 };
 
-export type InfinityBulkOrderResponseType = {
-  data: InfinityOrder[];
+export type FlowBulkOrderResponseType = {
+  data: FlowOrder[];
   cursor: string;
   hasMore: boolean;
 };
 
-export type InfinityOrder = {
+export type FlowOrder = {
   id: string;
   chainId: string;
   updatedAt: number;
   isSellOrder: boolean;
   createdAt: number;
-  signedOrder: Sdk.Infinity.Types.SignedOrder;
+  signedOrder: Sdk.Flow.Types.SignedOrder;
 };
 
-export class Infinity {
+export class Flow {
   public buildFetchOrderURL(params: FetchOrderParams) {
     const endpoint = "/v2/bulk/orders";
-    let url = new URL(normalize(join("https://sv.infinity.xyz", endpoint)));
+    let url = new URL(normalize(join("https://sv.flow.so", endpoint)));
 
     if (params.side) {
       url.searchParams.append("side", params.side);
@@ -68,14 +68,11 @@ export class Infinity {
     return decodeURI(url.toString());
   }
 
-  public async parseInfinityOrder(order: InfinityOrder) {
+  public async parseFlowOrder(order: FlowOrder) {
     try {
-      return new Sdk.Infinity.Order(config.chainId, order.signedOrder);
+      return new Sdk.Flow.Order(config.chainId, order.signedOrder);
     } catch (err) {
-      logger.error(
-        "parse-infinity-order",
-        `Failed to parse order ${JSON.stringify(order)} - ${err}`
-      );
+      logger.error("parse-flow-order", `Failed to parse order ${JSON.stringify(order)} - ${err}`);
     }
   }
 }
