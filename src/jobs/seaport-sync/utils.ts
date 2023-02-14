@@ -161,11 +161,6 @@ export const fetchAllOrders = async (
     formatToTimestamp = format(fromUnixTime(toTimestamp), "yyyy-MM-dd HH:mm:ss");
   }
 
-  logger.info(
-    "fetch_all_orders",
-    `Seaport Fetch all orders fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}`
-  );
-
   const seaport = new Seaport();
   let limit = 50;
 
@@ -191,6 +186,11 @@ export const fetchAllOrders = async (
 
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: Sdk.Seaport.Order[] = [];
+
+    logger.info(
+      "fetch_all_orders",
+      `Seaport Fetch all orders received ${orders.length} orders fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}`
+    );
 
     const values: any[] = [];
 
