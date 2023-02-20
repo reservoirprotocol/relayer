@@ -64,7 +64,7 @@ export class LooksRare {
     }
 
     if (pagination) {
-      searchParams.append("pagination[limit]", String(pagination.limit));
+      searchParams.append("pagination[first]", String(pagination.limit));
       searchParams.append("pagination[cursor]", pagination.cursor);
     }
 

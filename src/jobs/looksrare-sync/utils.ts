@@ -23,7 +23,7 @@ export const fetchOrders = async (
   );
 
   const looksRare = new LooksRare();
-  let limit = 20;
+  let limit = 150;
   let maxOrdersToFetch = 1000;
   let mostRecentCreatedHash: string = "";
 
