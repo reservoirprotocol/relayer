@@ -1,7 +1,8 @@
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
-import {logger} from "../common/logger";
+import { logger } from "../common/logger";
+import _ from "lodash";
 
 type FetchOrdersParams = {
   startTime?: number;
@@ -86,7 +87,7 @@ export class LooksRare {
         startTime: looksRareOrder.startTime,
         endTime: looksRareOrder.endTime,
         minPercentageToAsk: looksRareOrder.minPercentageToAsk,
-        params: looksRareOrder.params == "" ? "0x" : looksRareOrder.params,
+        params: _.isEmpty(looksRareOrder.params) ? "0x" : looksRareOrder.params,
         nonce: looksRareOrder.nonce,
         v: looksRareOrder.v,
         r: looksRareOrder.r,
@@ -101,7 +102,7 @@ export class LooksRare {
     } catch (error) {
       logger.error(
         "parse-looks-rare-order",
-        `Failed to parse order ${looksRareOrder.hash} - ${error}`
+        `Failed to parse order ${looksRareOrder} - ${error}`
       );
       // Skip any errors
     }
