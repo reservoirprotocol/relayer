@@ -1,6 +1,7 @@
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
+import {logger} from "../common/logger";
 
 type FetchOrdersParams = {
   startTime?: number;
@@ -97,7 +98,11 @@ export class LooksRare {
         order.checkSignature();
         return order;
       }
-    } catch {
+    } catch (error) {
+      logger.error(
+        "parse-looks-rare-order",
+        `Failed to parse order ${looksRareOrder.hash} - ${error}`
+      );
       // Skip any errors
     }
   }
