@@ -8,6 +8,7 @@ import { config } from "../../config";
 import { addToRelayOrdersQueue } from "../relay-orders";
 import { logger } from "../../common/logger";
 import { LooksRare, LooksRareOrder } from "../../utils/looksrare";
+import { fromUnixTime } from "date-fns";
 
 export const fetchOrders = async (
   lastSyncedHash: string = "",
@@ -22,7 +23,7 @@ export const fetchOrders = async (
   );
 
   const looksRare = new LooksRare();
-  let limit = 20;
+  let limit = 150;
   let maxOrdersToFetch = 1000;
   let mostRecentCreatedHash: string = "";
 
@@ -73,7 +74,7 @@ export const fetchOrders = async (
           hash: order.hash,
           target: orderTarget.toLowerCase(),
           maker: order.signer,
-          created_at: new Date(Number(order.startTime)),
+          created_at: fromUnixTime(order.startTime),
           data: order as any,
           source: "looksrare",
         });

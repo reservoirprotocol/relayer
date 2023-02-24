@@ -1,6 +1,8 @@
 import * as Sdk from "@reservoir0x/sdk";
 
 import { config } from "../config";
+import { logger } from "../common/logger";
+import _ from "lodash";
 
 type FetchOrdersParams = {
   startTime?: number;
@@ -62,7 +64,7 @@ export class LooksRare {
     }
 
     if (pagination) {
-      searchParams.append("pagination[limit]", String(pagination.limit));
+      searchParams.append("pagination[first]", String(pagination.limit));
       searchParams.append("pagination[cursor]", pagination.cursor);
     }
 
@@ -85,7 +87,7 @@ export class LooksRare {
         startTime: looksRareOrder.startTime,
         endTime: looksRareOrder.endTime,
         minPercentageToAsk: looksRareOrder.minPercentageToAsk,
-        params: looksRareOrder.params == "" ? "0x" : looksRareOrder.params,
+        params: _.isEmpty(looksRareOrder.params) ? "0x" : looksRareOrder.params,
         nonce: looksRareOrder.nonce,
         v: looksRareOrder.v,
         r: looksRareOrder.r,
@@ -97,7 +99,11 @@ export class LooksRare {
         order.checkSignature();
         return order;
       }
-    } catch {
+    } catch (error) {
+      logger.error(
+        "parse-looks-rare-order",
+        `Failed to parse order ${looksRareOrder} - ${error}`
+      );
       // Skip any errors
     }
   }

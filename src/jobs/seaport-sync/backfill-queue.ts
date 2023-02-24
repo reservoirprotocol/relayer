@@ -3,6 +3,7 @@ import { redis } from "../../common/redis";
 import { fetchAllOrders } from "./utils";
 import { logger } from "../../common/logger";
 import { config } from "../../config";
+import _ from "lodash";
 
 const BACKFILL_QUEUE_NAME = "backfill-seaport-sync";
 
@@ -77,10 +78,22 @@ export const createTimeFrameForBackfill = async (
   toTimestamp: number,
   delayMs: number = 0
 ) => {
+  let jobs = [];
+
   // Sync specific time frame
   for (let timestamp = fromTimestamp; timestamp <= toTimestamp; timestamp += 60) {
     // Add to the queue with extra seconds to each side
-    await addToSeaportBackfillQueue(timestamp - 1, timestamp + 61, null, 0, delayMs);
+    jobs.push({
+      fromTimestamp: timestamp - 1,
+      toTimestamp: timestamp + 61,
+      cursor: null,
+      priority: 0,
+      delayMs,
+    });
+  }
+
+  for (const job of (_.chunk(jobs, 500))) {
+    await addBulkToSeaportBackfillQueue(job);
   }
 };
 
@@ -95,5 +108,29 @@ export const addToSeaportBackfillQueue = async (
     BACKFILL_QUEUE_NAME,
     { fromTimestamp, toTimestamp, cursor },
     { delay: delayMs, priority }
+  );
+};
+
+export const addBulkToSeaportBackfillQueue = async (
+  jobsData: {
+    fromTimestamp: number | null;
+    toTimestamp: number | null;
+    cursor: string | null;
+    priority: number;
+    delayMs: number;
+  }[]
+) => {
+  await backfillQueue.addBulk(
+    _.map(jobsData, (data) => {
+      return {
+        name: BACKFILL_QUEUE_NAME,
+        data: {
+          fromTimestamp: data.fromTimestamp,
+          toTimestamp: data.toTimestamp,
+          cursor: data.cursor,
+        },
+        opts: { delay: data.delayMs, priority: data.priority },
+      };
+    })
   );
 };

@@ -49,35 +49,34 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       });
 
       const orders: SeaportOrder[] = response.data.orders;
-      const parsedOrders: Sdk.Seaport.Order[] = [];
+      const parsedOrders: {
+        kind: "seaport" | "seaport-v1.4";
+        order: Sdk.Seaport.Types.OrderComponents;
+      }[] = [];
       cursor = response.data.next;
       const values: any[] = [];
 
       total += orders.length;
 
       const handleOrder = async (order: SeaportOrder) => {
-        await tracer.trace(
-          "handleOrder",
-          { resource: order.order_hash.toLowerCase() },
-          async () => {
-            const parsed = await seaport.parseSeaportOrder(order);
+        const parsed = await seaport.parseSeaportOrder(order);
+        if (parsed) {
+          parsedOrders.push({
+            kind: parsed.kind,
+            order: parsed.order.params as any,
+          });
+        }
 
-            if (parsed) {
-              parsedOrders.push(parsed);
-            }
-
-            values.push({
-              hash: order.order_hash.toLowerCase(),
-              target:
-                parsed?.getInfo()?.contract.toLowerCase() ||
-                order.protocol_data.parameters.offer[0].token.toLowerCase(),
-              maker: order.maker.address.toLowerCase(),
-              created_at: new Date(order.created_date),
-              data: order.protocol_data as any,
-              source: "opensea",
-            });
-          }
-        );
+        values.push({
+          hash: order.order_hash.toLowerCase(),
+          target:
+            parsed?.order.getInfo()?.contract.toLowerCase() ||
+            order.protocol_data.parameters.offer[0].token.toLowerCase(),
+          maker: order.maker.address.toLowerCase(),
+          created_at: new Date(order.created_date),
+          data: order.protocol_data as any,
+          source: "opensea",
+        });
       };
 
       const plimit = pLimit(20);
@@ -109,13 +108,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       }
 
       if (parsedOrders.length) {
-        await addToRelayOrdersQueue(
-          parsedOrders.map((order) => ({
-            kind: "seaport",
-            data: order.params,
-          })),
-          true
-        );
+        await addToRelayOrdersQueue(parsedOrders, true);
       }
 
       logger.info(
@@ -169,11 +162,6 @@ export const fetchAllOrders = async (
     formatToTimestamp = format(fromUnixTime(toTimestamp), "yyyy-MM-dd HH:mm:ss");
   }
 
-  logger.info(
-    "fetch_all_orders",
-    `Seaport Fetch all orders fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}`
-  );
-
   const seaport = new Seaport();
   let limit = 50;
 
@@ -198,21 +186,31 @@ export const fetchAllOrders = async (
     });
 
     const orders: SeaportOrder[] = response.data.orders;
-    const parsedOrders: Sdk.Seaport.Order[] = [];
+    const parsedOrders: {
+      kind: "seaport" | "seaport-v1.4";
+      order: Sdk.Seaport.Types.OrderComponents;
+    }[] = [];
+
+    logger.info(
+      "fetch_all_orders",
+      `Seaport Fetch all orders received ${orders.length} orders fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}`
+    );
 
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
       const parsed = await seaport.parseSeaportOrder(order);
-
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          kind: parsed.kind,
+          order: parsed.order.params as any,
+        });
       }
 
       values.push({
         hash: order.order_hash,
         target: (
-          parsed?.getInfo()?.contract || order.protocol_data.parameters.offer[0].token
+          parsed?.order.getInfo()?.contract || order.protocol_data.parameters.offer[0].token
         ).toLowerCase(),
         maker: order.maker.address.toLowerCase(),
         created_at: new Date(order.created_date),
@@ -244,13 +242,7 @@ export const fetchAllOrders = async (
     }
 
     if (parsedOrders.length) {
-      await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
-          kind: "seaport",
-          data: order.params,
-        })),
-        true
-      );
+      await addToRelayOrdersQueue(parsedOrders, true);
     }
 
     logger.info(
@@ -284,20 +276,25 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     });
 
     const orders: SeaportOrder[] = response.data.seaport_offers;
-    const parsedOrders: Sdk.Seaport.Order[] = [];
+    const parsedOrders: {
+      kind: "seaport" | "seaport-v1.4";
+      order: Sdk.Seaport.Types.OrderComponents;
+    }[] = [];
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
       const parsed = await seaport.parseSeaportOrder(order);
-
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          kind: parsed.kind,
+          order: parsed.order.params as any,
+        });
       }
 
       values.push({
         hash: order.order_hash.toLowerCase(),
         target:
-          parsed?.getInfo()?.contract.toLowerCase() ||
+          parsed?.order.getInfo()?.contract.toLowerCase() ||
           order.protocol_data.parameters.offer[0].token.toLowerCase(),
         maker: order.maker.address.toLowerCase(),
         created_at: new Date(order.created_date),
@@ -333,13 +330,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     }
 
     if (parsedOrders.length) {
-      await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
-          kind: "seaport",
-          data: order.params,
-        })),
-        true
-      );
+      await addToRelayOrdersQueue(parsedOrders, true);
     }
 
     logger.info(
