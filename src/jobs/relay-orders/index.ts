@@ -65,7 +65,10 @@ if (config.doBackgroundWork) {
                 }
               )
               .catch((error) => {
-                logger.error("relay_orders", `Failed to relay orders to Indexer Lite: ${error}`);
+                logger.error(
+                  "relay_orders",
+                  `Failed to relay orders to Indexer Lite: ${error}, ${error.response?.data}`
+                );
                 throw error;
               })
           );
