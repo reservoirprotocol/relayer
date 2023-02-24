@@ -1,13 +1,13 @@
-// import "./looksrare-sync";
-// import "./relay-orders";
-// import "./seaport-sync";
-// import "./sync-token";
-// import "./x2y2-sync";
-// import "./element-sync";
-// import "./coinbase-sync";
-// import "./rarible-sync";
-// import "./manifold-sync";
-// import "./infinity-sync";
+import "./looksrare-sync";
+import "./relay-orders";
+import "./seaport-sync";
+import "./sync-token";
+import "./x2y2-sync";
+import "./element-sync";
+import "./coinbase-sync";
+import "./rarible-sync";
+import "./manifold-sync";
+import "./infinity-sync";
 import "./flow-sync";
 
 import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
