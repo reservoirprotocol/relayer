@@ -51,7 +51,7 @@ if (config.doBackgroundWork) {
 
         const parsedOrders: {
           kind: "seaport" | "seaport-v1.4";
-          order: Sdk.Seaport.Types.OrderComponents;
+          data: Sdk.Seaport.Types.OrderComponents;
         }[] = [];
         const insertQueries: any[] = [];
         const [contract, tokenId] = token.split(":");
@@ -96,7 +96,7 @@ if (config.doBackgroundWork) {
               if (parsed) {
                 parsedOrders.push({
                   kind: parsed.kind,
-                  order: parsed.order.params as any,
+                  data: parsed.order.params as any,
                 });
               }
 

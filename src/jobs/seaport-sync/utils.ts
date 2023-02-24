@@ -13,7 +13,6 @@ import {
   FetchOffersCollection,
   FetchOffersCollections,
 } from "../../models/fetch-offers-collections";
-import tracer from "../../common/tracer";
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
@@ -51,7 +50,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       const orders: SeaportOrder[] = response.data.orders;
       const parsedOrders: {
         kind: "seaport" | "seaport-v1.4";
-        order: Sdk.Seaport.Types.OrderComponents;
+        data: Sdk.Seaport.Types.OrderComponents;
       }[] = [];
       cursor = response.data.next;
       const values: any[] = [];
@@ -63,7 +62,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
         if (parsed) {
           parsedOrders.push({
             kind: parsed.kind,
-            order: parsed.order.params as any,
+            data: parsed.order.params as any,
           });
         }
 
@@ -188,7 +187,7 @@ export const fetchAllOrders = async (
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
       kind: "seaport" | "seaport-v1.4";
-      order: Sdk.Seaport.Types.OrderComponents;
+      data: Sdk.Seaport.Types.OrderComponents;
     }[] = [];
 
     logger.info(
@@ -203,7 +202,7 @@ export const fetchAllOrders = async (
       if (parsed) {
         parsedOrders.push({
           kind: parsed.kind,
-          order: parsed.order.params as any,
+          data: parsed.order.params as any,
         });
       }
 
@@ -278,7 +277,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     const orders: SeaportOrder[] = response.data.seaport_offers;
     const parsedOrders: {
       kind: "seaport" | "seaport-v1.4";
-      order: Sdk.Seaport.Types.OrderComponents;
+      data: Sdk.Seaport.Types.OrderComponents;
     }[] = [];
     const values: any[] = [];
 
@@ -287,7 +286,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       if (parsed) {
         parsedOrders.push({
           kind: parsed.kind,
-          order: parsed.order.params as any,
+          data: parsed.order.params as any,
         });
       }
 
