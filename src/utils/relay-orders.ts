@@ -50,21 +50,21 @@ export const relayOrdersByContract = async (contract: string) => {
       data.max_created_at = Number(orders[orders.length - 1].created_at) - 1;
     }
 
-    const validOrders: Sdk.Seaport.Order[] = [];
+    const parsedOrders: {
+      kind: "seaport" | "seaport-v1.4";
+      order: Sdk.Seaport.Types.OrderComponents;
+    }[] = [];
     for (const { data } of orders) {
       const parsed = await new Seaport().parseSeaportOrder(data);
       if (parsed) {
-        validOrders.push(parsed);
+        parsedOrders.push({
+          kind: parsed.kind,
+          order: parsed.order.params as any,
+        });
       }
     }
 
-    await addToRelayOrdersQueue(
-      validOrders.map((order) => ({
-        // TODO: Add support for LooksRare and X2Y2 orders as well
-        kind: "seaport",
-        data: order.params,
-      }))
-    );
+    await addToRelayOrdersQueue(parsedOrders);
   }
 
   logger.info("relay_orders_by_contract", `(${contract}) Done relaying orders`);
@@ -97,21 +97,21 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
         belowTimestamp = Number(orders[orders.length - 1].created_at);
       }
 
-      const validOrders: Sdk.Seaport.Order[] = [];
+      const parsedOrders: {
+        kind: "seaport" | "seaport-v1.4";
+        order: Sdk.Seaport.Types.OrderComponents;
+      }[] = [];
       for (const { data } of orders) {
         const parsed = await new Seaport().parseSeaportOrder(data);
         if (parsed) {
-          validOrders.push(parsed);
+          parsedOrders.push({
+            kind: parsed.kind,
+            order: parsed.order.params as any,
+          });
         }
       }
 
-      await addToRelayOrdersQueue(
-        validOrders.map((order) => ({
-          // TODO: Add support for LooksRare and X2Y2 orders as well
-          kind: "seaport",
-          data: order.params,
-        }))
-      );
+      await addToRelayOrdersQueue(parsedOrders);
     }
 
     logger.info("relay_orders_by_timestamp", "Done relaying orders");

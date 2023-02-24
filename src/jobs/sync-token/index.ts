@@ -44,12 +44,15 @@ if (config.doBackgroundWork) {
   const worker = new Worker(
     QUEUE_NAME,
     async (job: Job) => {
-      const { token, limit } = job.data;
+      const { token } = job.data;
 
       if (token) {
         logger.info("fast_sync_token", `Fast syncing token ${token} from OpenSea`);
 
-        const validOrders: Sdk.Seaport.Order[] = [];
+        const parsedOrders: {
+          kind: "seaport" | "seaport-v1.4";
+          order: Sdk.Seaport.Types.OrderComponents;
+        }[] = [];
         const insertQueries: any[] = [];
         const [contract, tokenId] = token.split(":");
         let totalOrders = 0;
@@ -91,7 +94,10 @@ if (config.doBackgroundWork) {
             for (const order of response.data.orders) {
               const parsed = await new Seaport().parseSeaportOrder(order);
               if (parsed) {
-                validOrders.push(parsed);
+                parsedOrders.push({
+                  kind: parsed.kind,
+                  order: parsed.order.params as any,
+                });
               }
 
               // Skip saving any irrelevant information
@@ -131,17 +137,11 @@ if (config.doBackgroundWork) {
           await db.none(pgp.helpers.concat(insertQueries));
         }
 
-        await addToRelayOrdersQueue(
-          validOrders.map((order) => ({
-            kind: "seaport",
-            data: order.params,
-          })),
-          true
-        );
+        await addToRelayOrdersQueue(parsedOrders, true);
 
         logger.info(
           "fast_sync_token",
-          `Got total ${totalOrders} valid ${validOrders.length} orders for token ${token}`
+          `Got total ${totalOrders} valid ${parsedOrders.length} orders for token ${token}`
         );
       }
     },
