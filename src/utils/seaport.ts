@@ -98,22 +98,51 @@ export class Seaport {
 
   public async parseSeaportOrder(
     seaportOrder: SeaportOrder
-  ): Promise<Sdk.Seaport.Order | undefined> {
+  ): Promise<
+    | { kind: "seaport"; order: Sdk.Seaport.Order }
+    | { kind: "seaport-v1.4"; order: Sdk.SeaportV14.Order }
+    | undefined
+  > {
     try {
-      return new Sdk.Seaport.Order(config.chainId, {
-        endTime: seaportOrder.protocol_data.parameters.endTime,
-        startTime: seaportOrder.protocol_data.parameters.startTime,
-        consideration: seaportOrder.protocol_data.parameters.consideration,
-        offer: seaportOrder.protocol_data.parameters.offer,
-        conduitKey: seaportOrder.protocol_data.parameters.conduitKey,
-        salt: seaportOrder.protocol_data.parameters.salt,
-        zone: seaportOrder.protocol_data.parameters.zone,
-        zoneHash: seaportOrder.protocol_data.parameters.zoneHash,
-        offerer: seaportOrder.protocol_data.parameters.offerer,
-        counter: `${seaportOrder.protocol_data.parameters.counter}`,
-        orderType: seaportOrder.protocol_data.parameters.orderType,
-        signature: seaportOrder.protocol_data.signature,
-      });
+      if (seaportOrder.protocol_address === Sdk.Seaport.Addresses.Exchange[config.chainId]) {
+        return {
+          kind: "seaport",
+          order: new Sdk.Seaport.Order(config.chainId, {
+            endTime: seaportOrder.protocol_data.parameters.endTime,
+            startTime: seaportOrder.protocol_data.parameters.startTime,
+            consideration: seaportOrder.protocol_data.parameters.consideration,
+            offer: seaportOrder.protocol_data.parameters.offer,
+            conduitKey: seaportOrder.protocol_data.parameters.conduitKey,
+            salt: seaportOrder.protocol_data.parameters.salt,
+            zone: seaportOrder.protocol_data.parameters.zone,
+            zoneHash: seaportOrder.protocol_data.parameters.zoneHash,
+            offerer: seaportOrder.protocol_data.parameters.offerer,
+            counter: `${seaportOrder.protocol_data.parameters.counter}`,
+            orderType: seaportOrder.protocol_data.parameters.orderType,
+            signature: seaportOrder.protocol_data.signature,
+          }),
+        };
+      } else if (
+        seaportOrder.protocol_address === Sdk.SeaportV14.Addresses.Exchange[config.chainId]
+      ) {
+        return {
+          kind: "seaport-v1.4",
+          order: new Sdk.SeaportV14.Order(config.chainId, {
+            endTime: seaportOrder.protocol_data.parameters.endTime,
+            startTime: seaportOrder.protocol_data.parameters.startTime,
+            consideration: seaportOrder.protocol_data.parameters.consideration,
+            offer: seaportOrder.protocol_data.parameters.offer,
+            conduitKey: seaportOrder.protocol_data.parameters.conduitKey,
+            salt: seaportOrder.protocol_data.parameters.salt,
+            zone: seaportOrder.protocol_data.parameters.zone,
+            zoneHash: seaportOrder.protocol_data.parameters.zoneHash,
+            offerer: seaportOrder.protocol_data.parameters.offerer,
+            counter: `${seaportOrder.protocol_data.parameters.counter}`,
+            orderType: seaportOrder.protocol_data.parameters.orderType,
+            signature: seaportOrder.protocol_data.signature,
+          }),
+        };
+      }
     } catch (error) {
       logger.error(
         "parse-seaport-order",

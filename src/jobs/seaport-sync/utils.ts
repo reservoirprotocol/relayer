@@ -47,7 +47,10 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       });
 
       const orders: SeaportOrder[] = response.data.orders;
-      const parsedOrders: Sdk.Seaport.Order[] = [];
+      const parsedOrders: {
+        kind: "seaport" | "seaport-v1.4";
+        order: Sdk.Seaport.Types.OrderComponents;
+      }[] = [];
       cursor = response.data.next;
       const values: any[] = [];
 
@@ -55,15 +58,17 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
 
       const handleOrder = async (order: SeaportOrder) => {
         const parsed = await seaport.parseSeaportOrder(order);
-
         if (parsed) {
-          parsedOrders.push(parsed);
+          parsedOrders.push({
+            kind: parsed.kind,
+            order: parsed.order.params as any,
+          });
         }
 
         values.push({
           hash: order.order_hash.toLowerCase(),
           target:
-            parsed?.getInfo()?.contract.toLowerCase() ||
+            parsed?.order.getInfo()?.contract.toLowerCase() ||
             order.protocol_data.parameters.offer[0].token.toLowerCase(),
           maker: order.maker.address.toLowerCase(),
           created_at: new Date(order.created_date),
@@ -101,13 +106,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
       }
 
       if (parsedOrders.length) {
-        await addToRelayOrdersQueue(
-          parsedOrders.map((order) => ({
-            kind: "seaport",
-            data: order.params,
-          })),
-          true
-        );
+        await addToRelayOrdersQueue(parsedOrders, true);
       }
 
       logger.info(
@@ -185,7 +184,10 @@ export const fetchAllOrders = async (
     });
 
     const orders: SeaportOrder[] = response.data.orders;
-    const parsedOrders: Sdk.Seaport.Order[] = [];
+    const parsedOrders: {
+      kind: "seaport" | "seaport-v1.4";
+      order: Sdk.Seaport.Types.OrderComponents;
+    }[] = [];
 
     logger.info(
       "fetch_all_orders",
@@ -196,15 +198,17 @@ export const fetchAllOrders = async (
 
     const handleOrder = async (order: SeaportOrder) => {
       const parsed = await seaport.parseSeaportOrder(order);
-
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          kind: parsed.kind,
+          order: parsed.order.params as any,
+        });
       }
 
       values.push({
         hash: order.order_hash,
         target: (
-          parsed?.getInfo()?.contract || order.protocol_data.parameters.offer[0].token
+          parsed?.order.getInfo()?.contract || order.protocol_data.parameters.offer[0].token
         ).toLowerCase(),
         maker: order.maker.address.toLowerCase(),
         created_at: new Date(order.created_date),
@@ -236,13 +240,7 @@ export const fetchAllOrders = async (
     }
 
     if (parsedOrders.length) {
-      await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
-          kind: "seaport",
-          data: order.params,
-        })),
-        true
-      );
+      await addToRelayOrdersQueue(parsedOrders, true);
     }
 
     logger.info(
@@ -276,20 +274,25 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     });
 
     const orders: SeaportOrder[] = response.data.seaport_offers;
-    const parsedOrders: Sdk.Seaport.Order[] = [];
+    const parsedOrders: {
+      kind: "seaport" | "seaport-v1.4";
+      order: Sdk.Seaport.Types.OrderComponents;
+    }[] = [];
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
       const parsed = await seaport.parseSeaportOrder(order);
-
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          kind: parsed.kind,
+          order: parsed.order.params as any,
+        });
       }
 
       values.push({
         hash: order.order_hash.toLowerCase(),
         target:
-          parsed?.getInfo()?.contract.toLowerCase() ||
+          parsed?.order.getInfo()?.contract.toLowerCase() ||
           order.protocol_data.parameters.offer[0].token.toLowerCase(),
         maker: order.maker.address.toLowerCase(),
         created_at: new Date(order.created_date),
@@ -325,13 +328,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     }
 
     if (parsedOrders.length) {
-      await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
-          kind: "seaport",
-          data: order.params,
-        })),
-        true
-      );
+      await addToRelayOrdersQueue(parsedOrders, true);
     }
 
     logger.info(
