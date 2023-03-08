@@ -100,10 +100,7 @@ export class LooksRare {
         return order;
       }
     } catch (error) {
-      logger.error(
-        "parse-looks-rare-order",
-        `Failed to parse order ${looksRareOrder} - ${error}`
-      );
+      logger.error("parse-looks-rare-order", `Failed to parse order ${looksRareOrder} - ${error}`);
       // Skip any errors
     }
   }

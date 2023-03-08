@@ -107,7 +107,7 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
 };
 
 export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string = "") => {
-  logger.info("fetch_orders_x2y2", `cursor = ${cursor} Fetching orders from X2Y2`);
+  logger.info("fetch_orders_x2y2", `side = ${side} cursor = ${cursor} Fetching orders from X2Y2`);
 
   const x2y2 = new X2Y2();
   let limit = 50;
@@ -191,7 +191,7 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
 
   logger.info(
     "fetch_orders_x2y2",
-    `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}, url ${url}`
+    `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}, side = ${side}, url ${url}`
   );
 
   return newCursor;

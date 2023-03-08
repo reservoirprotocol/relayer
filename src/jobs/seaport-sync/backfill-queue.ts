@@ -92,7 +92,7 @@ export const createTimeFrameForBackfill = async (
     });
   }
 
-  for (const job of (_.chunk(jobs, 500))) {
+  for (const job of _.chunk(jobs, 500)) {
     await addBulkToSeaportBackfillQueue(job);
   }
 };
