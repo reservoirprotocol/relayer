@@ -191,7 +191,7 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
 
   logger.info(
     "fetch_orders_x2y2",
-    `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}`
+    `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}, url ${url}`
   );
 
   return newCursor;
