@@ -118,7 +118,7 @@ export class Seaport {
             offerer: seaportOrder.protocol_data.parameters.offerer,
             counter: `${seaportOrder.protocol_data.parameters.counter}`,
             orderType: seaportOrder.protocol_data.parameters.orderType,
-            signature: seaportOrder.protocol_data.signature,
+            signature: seaportOrder.protocol_data.signature || undefined,
           }),
         };
       } else if (
@@ -138,7 +138,7 @@ export class Seaport {
             offerer: seaportOrder.protocol_data.parameters.offerer,
             counter: `${seaportOrder.protocol_data.parameters.counter}`,
             orderType: seaportOrder.protocol_data.parameters.orderType,
-            signature: seaportOrder.protocol_data.signature,
+            signature: seaportOrder.protocol_data.signature || undefined,
           }),
         };
       }
