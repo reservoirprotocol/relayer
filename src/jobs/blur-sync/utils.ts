@@ -44,10 +44,8 @@ export const fetchOrders = async (
       pageSize,
       cursor: cursor || "1",
       // A single contract for now
-      contractAddress: "0xdb68d7af91d4189e772f85b27752344ad3fc1958",
+      contractAddress: "0x3f90d9f9dd20d751fae0fdd8f111942778b5dbca",
     });
-
-    console.log(url);
 
     try {
       const orders = await axios
