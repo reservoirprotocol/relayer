@@ -11,6 +11,8 @@ export const config = {
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   infinityApiKey: String(process.env.INFINITY_API_KEY),
   flowApiKey: String(process.env.FLOW_API_KEY),
+  blurApiKey: String(process.env.BLUR_API_KEY),
+  blurUrl: String(process.env.BLUR_URL),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),

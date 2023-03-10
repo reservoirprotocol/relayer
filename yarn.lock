@@ -1409,10 +1409,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@0.0.323":
-  version "0.0.323"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.323.tgz#44440b935c907e0035a7c3394dad53cf45008fd4"
-  integrity sha512-86Zcsd083pqe/zLJSOrvonciNQXsCR1Nz6bfXuZK8isZXCihmPO71yOzGwmE3irRqVqF2PZZlS9L/cHRoQ5ILg==
+"@reservoir0x/sdk@0.0.325":
+  version "0.0.325"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.325.tgz#2616710469775e196f3f2ef4944be606b9d72819"
+  integrity sha512-kY3nYQ94BFq9ZJ2IYfC1eQoCThuLWh0NLTcrH9c4a2XZirOoshkhFQq6c0/aIVKA9qHjzNMeMb4QHyVPdOusFg==
   dependencies:
     "@uniswap/permit2-sdk" "^1.2.0"
     "@uniswap/smart-order-router" "^3.0.4"

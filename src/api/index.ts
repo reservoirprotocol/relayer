@@ -20,6 +20,7 @@ import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-
 import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 import { addToInfinityBackfillQueue } from "../jobs/infinity-sync/queues/backfill-queue";
 import { addToFlowBackfillQueue } from "../jobs/flow-sync/queues/backfill-queue";
+import { addToBlurBackfillQueue } from "../jobs/blur-sync/queues/backfill-queue";
 
 export const start = async () => {
   const app = express();
@@ -135,6 +136,7 @@ export const start = async () => {
       }
     })
   );
+
   app.post(
     "/backfill/seaport",
     asyncHandler(async (req, res) => {
@@ -176,6 +178,17 @@ export const start = async () => {
       const endTime = Number(req.body.toTimestamp);
 
       await addToFlowBackfillQueue(startTime, endTime, side);
+    })
+  );
+
+  app.post(
+    "/backfill/blur",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      const endTime = Number(req.body.toTimestamp);
+
+      await addToBlurBackfillQueue("", endTime);
     })
   );
 

@@ -135,7 +135,10 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
     });
 
     const orders: X2Y2Order[] = response.data.data;
-    const parsedOrders: Sdk.X2Y2.Order[] = [];
+    const parsedOrders: {
+      order: Sdk.X2Y2.Order;
+      originatedAt: string;
+    }[] = [];
 
     const values: any[] = [];
 
@@ -144,7 +147,10 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
       const parsed = await x2y2.parseX2Y2Order(order);
 
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          order: parsed,
+          originatedAt: new Date(order.created_at).toISOString(),
+        });
       }
 
       values.push({
@@ -175,9 +181,10 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
 
     if (parsedOrders.length) {
       await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
+        parsedOrders.map(({ order, originatedAt }) => ({
           kind: "x2y2",
           data: order.params,
+          originatedAt,
         })),
         true
       );
