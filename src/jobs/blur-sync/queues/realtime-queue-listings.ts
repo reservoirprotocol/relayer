@@ -31,13 +31,7 @@ if (config.doRealtimeWork) {
         let cursor = await redis.get(cacheKey);
 
         const { cursor: newCursor } = await fetchOrders(cursor || "");
-
-        if (newCursor === cursor) {
-          logger.info(
-            REALTIME_QUEUE_NAME,
-            `Blur cursor didn't change - oldCursor=${cursor} newCursor=${newCursor}`
-          );
-        }
+        logger.info(REALTIME_QUEUE_NAME, `Blur cursor - newCursor=${newCursor}`);
 
         // Set the new cursor for the next job
         if (newCursor) {
