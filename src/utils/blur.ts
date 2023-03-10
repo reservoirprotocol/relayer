@@ -39,11 +39,11 @@ export type FetchedOrder = {
   };
 };
 
-export const blurUrl = new URL(config.blurUrl);
+export const blurUrl = config.blurUrl;
 
 export class Blur {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    const endpoint = blurUrl;
+    const endpoint = new URL(blurUrl);
 
     if (params.cursor) {
       endpoint.searchParams.append("afterID", params.cursor);

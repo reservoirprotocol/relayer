@@ -54,7 +54,7 @@ export const fetchOrders = async (
         .get(url, {
           headers: {
             "X-RapidAPI-Key": config.blurApiKey,
-            "X-RapidAPI-Host": blurUrl.host,
+            "X-RapidAPI-Host": new URL(blurUrl).host,
           },
           timeout: 20_000,
         })
