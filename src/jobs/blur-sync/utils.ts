@@ -31,7 +31,7 @@ export const fetchOrders = async (
 ): Promise<{ cursor: string; lastCreatedAt: number }> => {
   const COMPONENT = "fetch_blur_orders";
 
-  logger.info(COMPONENT, `Fetching orders from Blur - cursor =${cursor}`);
+  logger.info(COMPONENT, `Fetching orders from Blur - cursor=${cursor}`);
 
   let done = false;
   let totalOrders = 0;
@@ -39,7 +39,7 @@ export const fetchOrders = async (
 
   const blur = new Blur();
   while (!done) {
-    const pageSize = 20;
+    const pageSize = 50;
     const url = blur.buildFetchOrdersURL({
       pageSize,
       cursor: cursor || "1",
