@@ -43,8 +43,6 @@ export const fetchOrders = async (
     const url = blur.buildFetchOrdersURL({
       pageSize,
       cursor: cursor || "1",
-      // A single contract for now
-      contractAddress: "0x3f90d9f9dd20d751fae0fdd8f111942778b5dbca",
     });
 
     try {
