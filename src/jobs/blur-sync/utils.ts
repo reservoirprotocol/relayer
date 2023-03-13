@@ -27,7 +27,8 @@ export const lockNames = {
 };
 
 export const fetchOrders = async (
-  cursor = ""
+  cursor = "",
+  maxIterations?: number
 ): Promise<{ cursor: string; lastCreatedAt: number }> => {
   const COMPONENT = "fetch_blur_orders";
 
@@ -38,7 +39,8 @@ export const fetchOrders = async (
   let lastCreatedAt = 0;
 
   const blur = new Blur();
-  while (!done) {
+  let numIterations = 0;
+  while (!done && (maxIterations ? numIterations < maxIterations : true)) {
     const pageSize = 50;
     const url = blur.buildFetchOrdersURL({
       pageSize,
@@ -140,6 +142,8 @@ export const fetchOrders = async (
 
       throw error;
     }
+
+    numIterations++;
   }
 
   logger.info(COMPONENT, `Blur sync done - total=${totalOrders}`);

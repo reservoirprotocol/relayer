@@ -32,9 +32,13 @@ if (config.doBackfillWork) {
       };
 
       try {
-        await fetchOrders(cursor);
+        const { cursor: newCursor, lastCreatedAt } = await fetchOrders(cursor, 2);
+        if (lastCreatedAt < endTime) {
+          await new Promise((resolve) => setTimeout(resolve, 5000));
+          await addToBlurBackfillQueue(newCursor, endTime);
+        }
 
-        logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled to endTime=${endTime}`);
+        logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled from cursor=${cursor}`);
       } catch (error) {
         logger.error(
           BACKFILL_QUEUE_NAME,
