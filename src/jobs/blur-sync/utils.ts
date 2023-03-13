@@ -28,7 +28,8 @@ export const lockNames = {
 
 export const fetchOrders = async (
   cursor = "",
-  maxIterations?: number
+  maxIterations?: number,
+  direction?: "asc" | "desc"
 ): Promise<{ cursor: string; lastCreatedAt: number }> => {
   const COMPONENT = "fetch_blur_orders";
 
@@ -45,6 +46,7 @@ export const fetchOrders = async (
     const url = blur.buildFetchOrdersURL({
       pageSize,
       cursor: cursor || "1",
+      direction,
     });
 
     try {

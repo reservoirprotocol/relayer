@@ -5,8 +5,9 @@ import { config } from "../config";
 
 type FetchOrdersParams = {
   pageSize: number;
-  cursor?: string;
+  cursor: string;
   contractAddress?: string;
+  direction?: "asc" | "desc";
 };
 
 export type FetchedOrder = {
@@ -45,8 +46,10 @@ export class Blur {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     const endpoint = new URL(blurUrl);
 
-    if (params.cursor) {
+    if (!params.direction || params.direction === "asc") {
       endpoint.searchParams.append("afterID", params.cursor);
+    } else {
+      endpoint.searchParams.append("beforeID", params.cursor);
     }
 
     if (params.contractAddress) {

@@ -186,9 +186,10 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      const endTime = Number(req.body.toTimestamp);
+      const cursor = String(req.body.cursor);
+      const startTime = Number(req.body.fromTimestamp);
 
-      await addToBlurBackfillQueue("", endTime);
+      await addToBlurBackfillQueue(cursor, startTime);
     })
   );
 
