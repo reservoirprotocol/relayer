@@ -75,7 +75,7 @@ export const fetchOrders = async (
 
         if (order.marketplace === "BLUR" && order.order) {
           values.push({
-            hash: order.order.orderHash,
+            hash: order.order.orderHash ?? parsed?.hash(),
             target: order.order.collection,
             maker: order.order.trader,
             created_at: new Date(order.data.createdAt),
