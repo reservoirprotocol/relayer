@@ -58,36 +58,38 @@ export class Blur {
     return endpoint.toString();
   }
 
-  public parseFetchedOrder({ order }: FetchedOrder) {
-    try {
-      if (order) {
-        return new Sdk.Blur.Order(config.chainId, {
-          trader: order.trader,
-          side: order.side,
-          matchingPolicy: order.matchingPolicy,
-          collection: order.collection,
-          tokenId: order.tokenId,
-          amount: order.amount,
-          paymentToken: order.paymentToken,
-          price: order.price,
-          listingTime: order.listingTime,
-          expirationTime: order.expirationTime,
-          fees: order.fees.map(([rate, recipient]) => ({ rate, recipient })),
-          salt: order.salt,
-          nonce: order.nonce,
-          extraParams: order.extraParams,
-          v: order.v,
-          r: order.r,
-          s: order.s,
-          extraSignature: order.extraSignature,
-          signatureVersion: order.signatureVersion,
-        });
+  public parseFetchedOrder({ marketplace, order }: FetchedOrder) {
+    if (marketplace === "BLUR") {
+      try {
+        if (order) {
+          return new Sdk.Blur.Order(config.chainId, {
+            trader: order.trader,
+            side: order.side,
+            matchingPolicy: order.matchingPolicy,
+            collection: order.collection,
+            tokenId: order.tokenId,
+            amount: order.amount,
+            paymentToken: order.paymentToken,
+            price: order.price,
+            listingTime: order.listingTime,
+            expirationTime: order.expirationTime,
+            fees: order.fees.map(([rate, recipient]) => ({ rate, recipient })),
+            salt: order.salt,
+            nonce: order.nonce,
+            extraParams: order.extraParams,
+            v: order.v,
+            r: order.r,
+            s: order.s,
+            extraSignature: order.extraSignature,
+            signatureVersion: order.signatureVersion,
+          });
+        }
+      } catch (error) {
+        logger.error(
+          "parse-fetched-blur-order",
+          `Failed to parse fetched Blur order ${JSON.stringify(order)}: ${error}`
+        );
       }
-    } catch (error) {
-      logger.error(
-        "parse-fetched-blur-order",
-        `Failed to parse fetched Blur order ${JSON.stringify(order)}: ${error}`
-      );
     }
   }
 }
