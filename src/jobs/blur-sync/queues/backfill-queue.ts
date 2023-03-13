@@ -34,7 +34,7 @@ if (config.doBackfillWork) {
       try {
         const { cursor: newCursor, lastCreatedAt } = await fetchOrders(cursor, 2);
         if (lastCreatedAt < endTime) {
-          await new Promise((resolve) => setTimeout(resolve, 5000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           await addToBlurBackfillQueue(newCursor, endTime);
         }
 
