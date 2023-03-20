@@ -125,7 +125,7 @@ export const fetchOrders = async (
       }
 
       logger.info(COMPONENT, `Blur sync batch done - cursor=${cursor} numOrders=${orders.length}`);
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         if (status === 429) {
@@ -139,7 +139,10 @@ export const fetchOrders = async (
           logger.error(COMPONENT, `Blur sync error - cursor=${cursor} error=${error}`);
         }
       } else {
-        logger.error(COMPONENT, `Blur sync error - cursor=${cursor} error=${error}`);
+        logger.error(
+          COMPONENT,
+          `Blur sync error - cursor=${cursor} error=${error} stack=${error.stack}`
+        );
       }
 
       throw error;
