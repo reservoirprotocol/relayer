@@ -78,14 +78,25 @@ export const fetchOrders = async (
         }
 
         if (order.marketplace === "BLUR" && order.order) {
-          values.push({
-            hash: order.order.orderHash ?? parsed?.hash(),
-            target: order.order.collection,
-            maker: order.order.trader,
-            created_at: new Date(order.data.createdAt),
-            data: order.order,
-            source: "blur",
-          });
+          let orderHash: string | undefined = order.order.orderHash;
+          if (!orderHash) {
+            try {
+              orderHash = parsed?.hash();
+            } catch {
+              logger.info(COMPONENT, `Blur order missing hash: ${order.order}`);
+            }
+          }
+
+          if (orderHash) {
+            values.push({
+              hash: orderHash,
+              target: order.order.collection,
+              maker: order.order.trader,
+              created_at: new Date(order.data.createdAt),
+              data: order.order,
+              source: "blur",
+            });
+          }
         }
       };
 
@@ -125,7 +136,7 @@ export const fetchOrders = async (
       }
 
       logger.info(COMPONENT, `Blur sync batch done - cursor=${cursor} numOrders=${orders.length}`);
-    } catch (error: any) {
+    } catch (error) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
         if (status === 429) {
@@ -139,10 +150,7 @@ export const fetchOrders = async (
           logger.error(COMPONENT, `Blur sync error - cursor=${cursor} error=${error}`);
         }
       } else {
-        logger.error(
-          COMPONENT,
-          `Blur sync error - cursor=${cursor} error=${error} stack=${error.stack}`
-        );
+        logger.error(COMPONENT, `Blur sync error - cursor=${cursor} error=${error}`);
       }
 
       throw error;
