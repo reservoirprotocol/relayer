@@ -58,7 +58,7 @@ if (config.doBackfillWork) {
         job.opts.priority
       );
     } else {
-      if (!_.isUndefined(job.data.retry)) {
+      if (_.isUndefined(job.data.retry)) {
         logger.info(
           "fetch_all_orders",
           `Seaport - COMPLETED - fromTimestamp=${job.data.fromTimestamp}, toTimestamp=${job.data.toTimestamp}`
