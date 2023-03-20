@@ -58,6 +58,10 @@ export class Seaport {
         network = "matic";
         break;
 
+      case 42161:
+        network = "arbitrum";
+        break;
+
       default:
         throw new Error("Unsupported chain");
     }

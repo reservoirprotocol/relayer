@@ -10,7 +10,7 @@ import { config } from "../../config";
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
     // Element only supports mainnet
-    if (config.chainId === 1) {
+    if (_.indexOf([1], config.chainId) !== -1) {
       const lockAcquired = await acquireLock("element-sync-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "element-sync-cursor";
@@ -32,7 +32,7 @@ if (config.doRealtimeWork) {
 
   cron.schedule("*/5 * * * * *", async () => {
     // Element only supports mainnet
-    if (config.chainId === 1) {
+    if (_.indexOf([1], config.chainId) !== -1) {
       const lockAcquired = await acquireLock("element-sync-offers-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "element-sync-offers-cursor";

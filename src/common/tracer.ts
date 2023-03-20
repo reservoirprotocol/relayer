@@ -16,6 +16,10 @@ if (process.env.DATADOG_AGENT_URL) {
     case 137:
       network = "polygon";
       break;
+
+    case 42161:
+      network = "arbitrum";
+      break;
   }
 
   const service = `relayer-${network}`;

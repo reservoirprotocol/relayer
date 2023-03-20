@@ -10,7 +10,7 @@ import * as RealtimeOffersQueue from "./queues/realtime-queue-offers";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    if (config.chainId === 1 || config.chainId === 5) {
+    if (_.indexOf([1, 5], config.chainId) !== -1) {
       const lockAcquired = await acquireLock(lockNames.syncListingsLock, 60 * 5);
       if (lockAcquired) {
         const cacheKey = cacheKeys.syncListingsCursor;
@@ -27,7 +27,7 @@ if (config.doRealtimeWork) {
   });
 
   cron.schedule("*/5 * * * * *", async () => {
-    if (config.chainId === 1 || config.chainId === 5) {
+    if (_.indexOf([1, 5], config.chainId) !== -1) {
       const lockAcquired = await acquireLock(lockNames.syncOffersLock, 60 * 5);
       if (lockAcquired) {
         const cacheKey = cacheKeys.syncOffersCursor;

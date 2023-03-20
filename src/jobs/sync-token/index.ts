@@ -68,6 +68,10 @@ if (config.doBackgroundWork) {
           case 137:
             network = "matic";
             break;
+
+          case 42161:
+            network = "arbitrum";
+            break;
         }
 
         // Fetch recent listings
