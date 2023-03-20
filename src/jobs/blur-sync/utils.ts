@@ -83,7 +83,7 @@ export const fetchOrders = async (
             try {
               orderHash = parsed?.hash();
             } catch {
-              logger.info(COMPONENT, `Blur order missing hash: ${order.order}`);
+              logger.info(COMPONENT, `Blur order missing hash: ${JSON.stringify(order.order)}`);
             }
           }
 
