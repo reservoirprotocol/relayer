@@ -35,6 +35,7 @@ if (config.doBackfillWork) {
 
         if (error.response?.status === 429) {
           // Wait to avoid rate-limiting
+          job.data.retry = true;
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
@@ -57,10 +58,12 @@ if (config.doBackfillWork) {
         job.opts.priority
       );
     } else {
-      logger.info(
-        "fetch_all_orders",
-        `Seaport - COMPLETED - fromTimestamp=${job.data.fromTimestamp}, toTimestamp=${job.data.toTimestamp}`
-      );
+      if (!_.isUndefined(job.data.retry)) {
+        logger.info(
+          "fetch_all_orders",
+          `Seaport - COMPLETED - fromTimestamp=${job.data.fromTimestamp}, toTimestamp=${job.data.toTimestamp}`
+        );
+      }
     }
 
     if (job.attemptsMade > 0) {
