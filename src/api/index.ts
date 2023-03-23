@@ -188,8 +188,9 @@ export const start = async () => {
 
       const cursor = String(req.body.cursor);
       const startTime = Number(req.body.fromTimestamp);
+      const contract = req.body.contract;
 
-      await addToBlurBackfillQueue(cursor, startTime);
+      await addToBlurBackfillQueue(cursor, startTime, 0, contract);
     })
   );
 

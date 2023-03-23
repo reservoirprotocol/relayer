@@ -26,14 +26,15 @@ if (config.doBackfillWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
-      const { cursor, startTime } = job.data as {
+      const { cursor, startTime, contract } = job.data as {
         cursor: string;
         startTime: number;
+        contract?: string;
       };
 
       try {
-        const { cursor: newCursor } = await fetchOrders(cursor, 2, "desc");
-        await addToBlurBackfillQueue(newCursor, startTime);
+        const { cursor: newCursor } = await fetchOrders(cursor, 2, "desc", contract);
+        await addToBlurBackfillQueue(newCursor, startTime, 0, contract);
 
         logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled from cursor=${cursor}`);
       } catch (error) {
@@ -54,7 +55,8 @@ if (config.doBackfillWork) {
 export const addToBlurBackfillQueue = async (
   cursor: string,
   startTime: number,
-  delayMs: number = 0
+  delayMs: number = 0,
+  contract?: string
 ) => {
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { cursor, startTime }, { delay: delayMs });
+  await backfillQueue.add(BACKFILL_QUEUE_NAME, { cursor, startTime, contract }, { delay: delayMs });
 };
