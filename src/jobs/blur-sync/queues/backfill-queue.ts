@@ -34,7 +34,9 @@ if (config.doBackfillWork) {
 
       try {
         const { cursor: newCursor } = await fetchOrders(cursor, 2, "desc", contract);
-        await addToBlurBackfillQueue(newCursor, startTime, 0, contract);
+        if (cursor !== newCursor) {
+          await addToBlurBackfillQueue(newCursor, startTime, 0, contract);
+        }
 
         logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled from cursor=${cursor}`);
       } catch (error) {
