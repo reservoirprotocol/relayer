@@ -65,6 +65,10 @@ if (config.doBackgroundWork) {
             network = "rinkeby";
             break;
 
+          case 10:
+            network = "optimism";
+            break;
+
           case 137:
             network = "matic";
             break;
