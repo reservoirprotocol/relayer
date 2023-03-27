@@ -13,6 +13,10 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
       network = "goerli";
       break;
 
+    case 10:
+      network = "optimism";
+      break;
+
     case 137:
       network = "polygon";
       break;
