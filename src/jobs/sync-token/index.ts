@@ -79,7 +79,7 @@ if (config.doBackgroundWork) {
         }
 
         // Fetch recent listings
-        const url = `https://${hostname}/v2/orders/${network}/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}`;
+        const url = `https://${hostname}/v2/orders/${network}/seaport/listings?asset_contract_address=${contract}&token_ids=${tokenId}&order_by=eth_price&order_direction=desc`;
 
         await axios
           .get(
