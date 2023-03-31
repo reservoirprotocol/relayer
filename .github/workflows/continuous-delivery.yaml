@@ -98,6 +98,10 @@ jobs:
             ${{ github.sha }} \
             relayer
           ./utils/version_update.sh \
-            ./dev/platform/relayer-realtime.yaml \
+            ./prod/platform/relayer-arbitrum.yaml \
+            ${{ github.sha }} \
+            relayer-arbitrum
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-realtime.yaml \
             ${{ github.sha }} \
             relayer-realtime
