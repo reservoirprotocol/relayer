@@ -72,6 +72,7 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
       component,
       version: process.env.npm_package_version,
       networkInterfaces: results,
+      railwaySnapshotId: process.env.RAILWAY_SNAPSHOT_ID,
     });
 };
 
