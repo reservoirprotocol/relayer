@@ -102,6 +102,10 @@ jobs:
             ${{ github.sha }} \
             relayer-arbitrum
           ./utils/version_update.sh \
+            ./prod/platform/relayer-polygon.yaml \
+            ${{ github.sha }} \
+            relayer-polygon
+          ./utils/version_update.sh \
             ./prod/platform/relayer-realtime.yaml \
             ${{ github.sha }} \
             relayer-realtime
