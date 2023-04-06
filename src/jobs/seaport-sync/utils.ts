@@ -16,7 +16,7 @@ import {
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
-export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
+export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBaseUrl?: string) => {
   logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
@@ -29,6 +29,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
     logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
 
     const url = seaport.buildFetchOrdersURL({
+      overrideBaseUrl,
       side,
       orderBy: "created_date",
       orderDirection: "desc",
@@ -41,7 +42,8 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "") => {
         headers:
           _.indexOf([1, 10, 137, 42161], config.chainId) !== -1
             ? {
-                "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+                [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
+                  apiKey || config.realtimeOpenseaApiKey,
               }
             : {},
         timeout: 20000,
