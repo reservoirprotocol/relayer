@@ -143,7 +143,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
       throw error;
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   logger.info("fetch_orders_seaport", `Seaport - Done. side=${side}, total=${total}`);
