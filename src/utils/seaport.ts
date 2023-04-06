@@ -4,6 +4,7 @@ import { logger } from "../common/logger";
 import { config } from "../config";
 
 type FetchOrdersParams = {
+  overrideBaseUrl?: string;
   side: "sell" | "buy";
   orderBy?: "created_date";
   orderDirection?: "asc" | "desc";
@@ -70,7 +71,8 @@ export class Seaport {
         throw new Error("Unsupported chain");
     }
 
-    baseApiUrl = `https://${hostname}/v2/orders/${network}/seaport/${
+    const baseUrl = params.overrideBaseUrl ?? `https://${hostname}`;
+    baseApiUrl = `${baseUrl}/v2/orders/${network}/seaport/${
       params.side === "sell" ? "listings" : "offers"
     }`;
 
