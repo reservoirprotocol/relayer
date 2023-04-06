@@ -106,6 +106,13 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
 
           done = true;
         }
+
+        if (orders.length) {
+          logger.info(
+            "fetch_orders_seaport",
+            `Seaport synced up to ${orders[orders.length - 1].created_date}`
+          );
+        }
       }
 
       if (parsedOrders.length) {
@@ -142,8 +149,6 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
 
       throw error;
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   logger.info("fetch_orders_seaport", `Seaport - Done. side=${side}, total=${total}`);
