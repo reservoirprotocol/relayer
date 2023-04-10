@@ -52,7 +52,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
       const orders: SeaportOrder[] = response.data.orders;
       const parsedOrders: {
         kind: "seaport" | "seaport-v1.4";
-        data: Sdk.Seaport.Types.OrderComponents;
+        data: Sdk.SeaportBase.Types.OrderComponents;
       }[] = [];
       cursor = response.data.next;
       const values: any[] = [];
@@ -196,7 +196,7 @@ export const fetchAllOrders = async (
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
       kind: "seaport" | "seaport-v1.4";
-      data: Sdk.Seaport.Types.OrderComponents;
+      data: Sdk.SeaportBase.Types.OrderComponents;
     }[] = [];
 
     logger.info(
@@ -286,7 +286,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     const orders: SeaportOrder[] = response.data.seaport_offers;
     const parsedOrders: {
       kind: "seaport" | "seaport-v1.4";
-      data: Sdk.Seaport.Types.OrderComponents;
+      data: Sdk.SeaportBase.Types.OrderComponents;
     }[] = [];
     const values: any[] = [];
 

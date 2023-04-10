@@ -52,7 +52,7 @@ export const relayOrdersByContract = async (contract: string) => {
 
     const parsedOrders: {
       kind: "seaport" | "seaport-v1.4";
-      order: Sdk.Seaport.Types.OrderComponents;
+      order: Sdk.SeaportBase.Types.OrderComponents;
     }[] = [];
     for (const { data } of orders) {
       const parsed = await new Seaport().parseSeaportOrder(data);
@@ -99,7 +99,7 @@ export const relayOrdersByTimestamp = async (fromTimestamp: number, toTimestamp:
 
       const parsedOrders: {
         kind: "seaport" | "seaport-v1.4";
-        order: Sdk.Seaport.Types.OrderComponents;
+        order: Sdk.SeaportBase.Types.OrderComponents;
       }[] = [];
       for (const { data } of orders) {
         const parsed = await new Seaport().parseSeaportOrder(data);

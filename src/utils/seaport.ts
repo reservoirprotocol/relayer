@@ -28,8 +28,8 @@ export type SeaportOrder = {
       zoneHash: string;
       conduitKey: string;
       salt: string;
-      consideration: Sdk.Seaport.Types.ConsiderationItem[];
-      offer: Sdk.Seaport.Types.OfferItem[];
+      consideration: Sdk.SeaportBase.Types.ConsiderationItem[];
+      offer: Sdk.SeaportBase.Types.OfferItem[];
       counter: number;
       orderType: number;
       startTime: number;
@@ -108,15 +108,15 @@ export class Seaport {
   public async parseSeaportOrder(
     seaportOrder: SeaportOrder
   ): Promise<
-    | { kind: "seaport"; order: Sdk.Seaport.Order }
+    | { kind: "seaport"; order: Sdk.SeaportV11.Order }
     | { kind: "seaport-v1.4"; order: Sdk.SeaportV14.Order }
     | undefined
   > {
     try {
-      if (seaportOrder.protocol_address === Sdk.Seaport.Addresses.Exchange[config.chainId]) {
+      if (seaportOrder.protocol_address === Sdk.SeaportV11.Addresses.Exchange[config.chainId]) {
         return {
           kind: "seaport",
-          order: new Sdk.Seaport.Order(config.chainId, {
+          order: new Sdk.SeaportV11.Order(config.chainId, {
             endTime: seaportOrder.protocol_data.parameters.endTime,
             startTime: seaportOrder.protocol_data.parameters.startTime,
             consideration: seaportOrder.protocol_data.parameters.consideration,
