@@ -9,7 +9,6 @@ export const config = {
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
-  infinityApiKey: String(process.env.INFINITY_API_KEY),
   flowApiKey: String(process.env.FLOW_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
   blurUrl: String(process.env.BLUR_URL),
