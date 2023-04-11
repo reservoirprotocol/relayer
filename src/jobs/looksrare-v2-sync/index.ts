@@ -24,7 +24,7 @@ if (config.doRealtimeWork) {
 
         await looksrareSyncRealtime.addToRealtimeQueue();
 
-        logger.info(realtimeQueue.name, `Start LookRare sync from lastSynced=(${lastSynced})`);
+        logger.info(realtimeQueue.name, `Start LookRareV2 sync from lastSynced=(${lastSynced})`);
       }
     }
   });

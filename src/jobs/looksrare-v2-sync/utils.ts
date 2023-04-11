@@ -43,7 +43,6 @@ export const fetchOrders = async (
     );
 
     try {
-
       const response = await axios.get(
         url,
         config.chainId === 1
@@ -125,7 +124,7 @@ export const fetchOrders = async (
       numOrders += orders.length;
 
       // Check if we reached the last synced order
-      const lastSyncedOrder = _.filter(orders, (order) => order.id === lastSyncedHash);
+      const lastSyncedOrder = _.filter(orders, (order) => order.hash === lastSyncedHash);
 
       if (!_.isEmpty(orders) && _.isEmpty(lastSyncedOrder)) {
         // Last synced order wasn't found
