@@ -7,7 +7,6 @@ import "./element-sync";
 import "./coinbase-sync";
 import "./rarible-sync";
 import "./manifold-sync";
-import "./infinity-sync";
 import "./flow-sync";
 import "./blur-sync";
 import "./looksrare-v2-sync";
@@ -39,10 +38,6 @@ import * as coinbaseSyncOffersRealtime from "./coinbase-sync/realtime-queue-offe
 
 import * as manifoldSyncListingsRealtime from "./manifold-sync/realtime-queue";
 
-import * as infinitySyncListingsBackfill from "./infinity-sync/queues/backfill-queue";
-import * as infinitySyncListingsRealtime from "./infinity-sync/queues/realtime-queue-listings";
-import * as infinitySyncOffersRealtime from "./infinity-sync/queues/realtime-queue-offers";
-
 import * as flowSyncListingsBackfill from "./flow-sync/queues/backfill-queue";
 import * as flowSyncListingsRealtime from "./flow-sync/queues/realtime-queue-listings";
 import * as flowSyncOffersRealtime from "./flow-sync/queues/realtime-queue-offers";
@@ -73,9 +68,6 @@ export const allQueues = [
   raribleSyncRealtime.realtimeQueue,
   raribleSyncBackfill.backfillQueue,
   manifoldSyncListingsRealtime.realtimeQueue,
-  infinitySyncListingsBackfill.backfillQueue,
-  infinitySyncListingsRealtime.realtimeQueue,
-  infinitySyncOffersRealtime.realtimeQueue,
   flowSyncListingsBackfill.backfillQueue,
   flowSyncListingsRealtime.realtimeQueue,
   flowSyncOffersRealtime.realtimeQueue,
