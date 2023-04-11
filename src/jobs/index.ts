@@ -10,7 +10,9 @@ import "./manifold-sync";
 import "./infinity-sync";
 import "./flow-sync";
 import "./blur-sync";
+import "./looksrare-v2-sync";
 
+import * as looksRareV2SyncRealtime from "./looksrare-v2-sync/realtime-queue";
 import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
 import * as seaportSyncListingsRealtime from "./seaport-sync/realtime-queue";
@@ -49,6 +51,7 @@ import * as blurSyncListingsBackfill from "./blur-sync/queues/backfill-queue";
 import * as blurSyncListingsRealtime from "./blur-sync/queues/realtime-queue-listings";
 
 export const allQueues = [
+  looksRareV2SyncRealtime.realtimeQueue,
   looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
   seaportSyncListingsRealtime.realtimeQueue,

@@ -51,7 +51,7 @@ if (config.doBackgroundWork) {
 
         const parsedOrders: {
           kind: "seaport" | "seaport-v1.4";
-          data: Sdk.Seaport.Types.OrderComponents;
+          data: Sdk.SeaportBase.Types.OrderComponents;
         }[] = [];
         const insertQueries: any[] = [];
         const [contract, tokenId] = token.split(":");
