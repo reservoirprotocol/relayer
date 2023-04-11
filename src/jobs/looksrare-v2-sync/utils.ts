@@ -71,7 +71,7 @@ export const fetchOrders = async (
         }
 
         values.push({
-          hash: order.id,
+          hash: order.hash,
           target: orderTarget.toLowerCase(),
           maker: order.signer,
           created_at: fromUnixTime(order.startTime),
@@ -97,10 +97,10 @@ export const fetchOrders = async (
         if (cursor != "" && _.isEmpty(result)) {
           logger.info(
             "fetch_orders_looksrare_v2",
-            `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].id}`
+            `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].hash}`
           );
 
-          return [orders[0].id, ""];
+          return [orders[0].hash, ""];
         }
 
         if (backfill && result.length) {
@@ -148,7 +148,7 @@ export const fetchOrders = async (
       }
 
       if (mostRecentCreatedHash === "" && orders.length) {
-        mostRecentCreatedHash = orders[0].id;
+        mostRecentCreatedHash = orders[0].hash;
       }
 
       // Wait to avoid rate-limiting
