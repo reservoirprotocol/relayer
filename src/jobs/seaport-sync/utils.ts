@@ -184,15 +184,17 @@ export const fetchAllOrders = async (
     listedBefore: toTimestamp,
   });
 
+  const options: AxiosRequestConfig = {
+    method: "GET",
+    url: config.proxyUrl ?? url,
+    headers: {
+      url,
+      "x-api-key": config.backfillOpenseaApiKey,
+    },
+  };
+
   try {
-    const response = await axios.get(url, {
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
-        "x-api-key": config.backfillOpenseaApiKey,
-      },
-      timeout: 20000,
-    });
+    const response = await axios.request(options);
 
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
