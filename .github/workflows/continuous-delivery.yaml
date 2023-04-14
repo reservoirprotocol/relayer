@@ -109,3 +109,7 @@ jobs:
             ./prod/platform/relayer-realtime.yaml \
             ${{ github.sha }} \
             relayer-realtime
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-optimism.yaml \
+            ${{ github.sha }} \
+            relayer-optimism
