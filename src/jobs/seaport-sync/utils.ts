@@ -39,7 +39,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
 
     const options: AxiosRequestConfig = {
       method: "GET",
-      url: config.proxyUrl || url,
+      url: config.openseaApiUrl || url,
       headers: {
         url,
         [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
@@ -186,7 +186,7 @@ export const fetchAllOrders = async (
 
   const options: AxiosRequestConfig = {
     method: "GET",
-    url: config.proxyUrl || url,
+    url: config.openseaApiUrl || url,
     headers: {
       url,
       "x-api-key": config.backfillOpenseaApiKey,
