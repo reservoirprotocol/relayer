@@ -12,6 +12,7 @@ export const config = {
   flowApiKey: String(process.env.FLOW_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
   blurUrl: String(process.env.BLUR_URL),
+  proxyUrl: String(process.env.PROXY_URL),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),

@@ -1,5 +1,5 @@
 import * as Sdk from "@reservoir0x/sdk";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import pLimit from "p-limit";
 
 import { db, pgp } from "../../common/db";
@@ -37,17 +37,18 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
       cursor,
     });
 
+    const options: AxiosRequestConfig = {
+      method: "GET",
+      url: config.proxyUrl ?? url,
+      headers: {
+        url,
+        [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
+          config.chainId !== 5 ? apiKey || config.realtimeOpenseaApiKey : undefined,
+      },
+    };
+
     try {
-      const response = await axios.get(url, {
-        headers:
-          _.indexOf([1, 10, 137, 42161], config.chainId) !== -1
-            ? {
-                [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
-                  apiKey || config.realtimeOpenseaApiKey,
-              }
-            : {},
-        timeout: 20000,
-      });
+      const response = await axios.request(options);
 
       const orders: SeaportOrder[] = response.data.orders;
       const parsedOrders: {

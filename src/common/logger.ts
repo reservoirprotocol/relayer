@@ -58,12 +58,12 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     transports: [
       process.env.DATADOG_API_KEY
         ? new transports.Http({
-          host: "http-intake.logs.datadoghq.com",
-          path: `/api/v2/logs?dd-api-key=${process.env.DATADOG_API_KEY}&ddsource=nodejs&service=${service}`,
-          ssl: true,
-        })
+            host: "http-intake.logs.datadoghq.com",
+            path: `/api/v2/logs?dd-api-key=${process.env.DATADOG_API_KEY}&ddsource=nodejs&service=${service}`,
+            ssl: true,
+          })
         : // Fallback to logging to standard output
-        new transports.Console(),
+          new transports.Console(),
     ],
   });
 

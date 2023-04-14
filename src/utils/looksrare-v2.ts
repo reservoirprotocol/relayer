@@ -29,7 +29,7 @@ export type LooksRareOrderV2 = {
   startTime: number;
   endTime: number;
   price: string;
-  additionalParameters:string;
+  additionalParameters: string;
   signature: string;
   createdAt: string;
   merkleRoot: null | string;
@@ -78,15 +78,17 @@ export class LooksRareV2 {
     looksRareOrder: LooksRareOrderV2
   ): Promise<Sdk.LooksRareV2.Order | undefined> {
     try {
-
-      const  merkleTree = looksRareOrder.merkleRoot && looksRareOrder.merkleProof ? {
-        root: looksRareOrder.merkleRoot,
-        proof: looksRareOrder.merkleProof
-      } : undefined;
+      const merkleTree =
+        looksRareOrder.merkleRoot && looksRareOrder.merkleProof
+          ? {
+              root: looksRareOrder.merkleRoot,
+              proof: looksRareOrder.merkleProof,
+            }
+          : undefined;
 
       const order = new Sdk.LooksRareV2.Order(config.chainId, {
         ...looksRareOrder,
-       merkleTree
+        merkleTree,
       });
 
       if (order.hash() === looksRareOrder.hash) {
