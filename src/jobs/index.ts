@@ -1,4 +1,3 @@
-import "./looksrare-sync";
 import "./relay-orders";
 import "./seaport-sync";
 import "./sync-token";
@@ -12,7 +11,6 @@ import "./blur-sync";
 import "./looksrare-v2-sync";
 
 import * as looksRareV2SyncRealtime from "./looksrare-v2-sync/realtime-queue";
-import * as looksRareSyncRealtime from "./looksrare-sync/realtime-queue";
 import * as relayOrders from "./relay-orders";
 import * as seaportSyncListingsRealtime from "./seaport-sync/realtime-queue";
 import * as seaportSyncOffersRealtime from "./seaport-sync/realtime-queue-offers";
@@ -47,7 +45,6 @@ import * as blurSyncListingsRealtime from "./blur-sync/queues/realtime-queue-lis
 
 export const allQueues = [
   looksRareV2SyncRealtime.realtimeQueue,
-  looksRareSyncRealtime.realtimeQueue,
   relayOrders.queue,
   seaportSyncListingsRealtime.realtimeQueue,
   seaportSyncOffersRealtime.realtimeQueue,
