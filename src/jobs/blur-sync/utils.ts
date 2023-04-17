@@ -31,14 +31,13 @@ export const fetchOrders = async (
   maxIterations?: number,
   direction?: "asc" | "desc",
   contract?: string
-): Promise<{ cursor: string; lastCreatedAt: number }> => {
+): Promise<{ cursor: string }> => {
   const COMPONENT = "fetch_blur_orders";
 
   logger.info(COMPONENT, `Fetching orders from Blur - cursor=${cursor}`);
 
   let done = false;
   let totalOrders = 0;
-  let lastCreatedAt = 0;
 
   const blur = new Blur();
   let numIterations = 0;
@@ -69,17 +68,13 @@ export const fetchOrders = async (
       const values: OrderSchema[] = [];
 
       const handleOrder = async (order: FetchedOrder) => {
-        if ((order as any).buyError) {
-          return;
-        }
-
         totalOrders += 1;
 
         const parsed = blur.parseFetchedOrder(order);
         if (parsed) {
           parsedOrders.push({
             order: parsed,
-            originatedAt: order.data?.createdAt || new Date().toISOString(),
+            originatedAt: order.data.createdAt,
           });
         }
 
@@ -132,7 +127,6 @@ export const fetchOrders = async (
       if (orders.length) {
         // API returns orders in descending order
         const lastOrder = _.last(orders)!;
-        lastCreatedAt = Math.floor(new Date(lastOrder.data.createdAt).getTime() / 1000);
         cursor = lastOrder.id.toString();
       }
 
@@ -167,5 +161,5 @@ export const fetchOrders = async (
 
   logger.info(COMPONENT, `Blur sync done - total=${totalOrders}`);
 
-  return { cursor, lastCreatedAt };
+  return { cursor };
 };
