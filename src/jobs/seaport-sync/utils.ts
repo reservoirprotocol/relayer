@@ -43,7 +43,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
       headers: {
         url,
         [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
-          config.chainId !== 5 ? apiKey || config.realtimeOpenseaApiKey : undefined,
+          config.chainId !== 5 ? apiKey || config.realtimeOpenseaApiKey : "",
       },
     };
 
@@ -189,7 +189,7 @@ export const fetchAllOrders = async (
     url: config.openseaApiUrl || url,
     headers: {
       url,
-      "x-api-key": config.backfillOpenseaApiKey,
+      "x-api-key": config.backfillOpenseaApiKey || "",
     },
   };
 
