@@ -1,6 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
-import _ from "lodash";
+import _, { now } from "lodash";
 import pLimit from "p-limit";
 
 import { db, pgp } from "../../common/db";
@@ -75,7 +75,7 @@ export const fetchOrders = async (
         if (parsed) {
           parsedOrders.push({
             order: parsed,
-            originatedAt: order.data.createdAt,
+            originatedAt: order.data?.createdAt || new Date().toISOString(),
           });
         }
 
