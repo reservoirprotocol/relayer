@@ -70,10 +70,6 @@ jobs:
             ./dev/platform/relayer-goerli.yaml \
             ${{ github.sha }} \
             relayer-goerli
-          ./utils/version_update.sh \
-            ./dev/platform/relayer-realtime-goerli.yaml \
-            ${{ github.sha }} \
-            relayer-realtime-goerli
 
   deploy-prod:
     name: Deploy to Production
