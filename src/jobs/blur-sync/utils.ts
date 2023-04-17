@@ -69,6 +69,10 @@ export const fetchOrders = async (
       const values: OrderSchema[] = [];
 
       const handleOrder = async (order: FetchedOrder) => {
+        if ((order as any).buyError) {
+          return;
+        }
+
         totalOrders += 1;
 
         const parsed = blur.parseFetchedOrder(order);
