@@ -55,7 +55,7 @@ if (config.doRealtimeWork) {
             message: 'sync failed',
             error,
             attempts: job.attemptsMade,
-            syncSource: 'Flow',
+            syncSource: 'Looksrare',
             lastSyncedHashCache: job.data.lastSyncedHashCache,
           })          
         );
