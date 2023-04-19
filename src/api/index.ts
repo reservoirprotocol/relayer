@@ -6,6 +6,8 @@ import asyncHandler from "express-async-handler";
 
 import { logger } from "../common/logger";
 import { config } from "../config";
+import { fastSyncContract } from "../utils/fast-sync-contract";
+
 import { allQueues } from "../jobs";
 import { addToRaribleBackfillQueue } from "../jobs/rarible-sync/queues/backfill-queue";
 import {
@@ -14,8 +16,6 @@ import {
 } from "../jobs/seaport-sync/backfill-queue";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
-import { fastSyncContract } from "../utils/fast-sync-contract";
-import { relayOrdersByContract, relayOrdersByTimestamp } from "../utils/relay-orders";
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
 import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 import { addToFlowBackfillQueue } from "../jobs/flow-sync/queues/backfill-queue";
@@ -46,11 +46,8 @@ export const start = async () => {
     "/fast-contract-sync",
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
-      const totalRecords = req.body.totalRecords || 300;
-      const limit = req.body.limit || 50;
-      const cursor = req.body.cursor || "";
 
-      await fastSyncContract(req.body.contract, totalRecords, limit, cursor);
+      await fastSyncContract(req.body.contract);
     })
   );
 
@@ -60,24 +57,6 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await addToSyncTokenQueue(req.body.token, req.body.limit || 20);
-    })
-  );
-
-  app.post(
-    "/relay-orders-by-contract",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      await relayOrdersByContract(req.body.contract);
-    })
-  );
-
-  app.post(
-    "/relay-orders-by-timestamp",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      await relayOrdersByTimestamp(req.body.fromTimestamp, req.body.toTimestamp);
     })
   );
 

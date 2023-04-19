@@ -16,20 +16,30 @@ import {
 
 const MAX_FETCH_OFFERS_COLLECTIONS = 1000;
 
-export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBaseUrl?: string) => {
+export const fetchOrders = async (
+  side: "sell" | "buy",
+  details?: {
+    apiKey?: string;
+    overrideBaseUrl?: string;
+    contract?: string;
+    maxOrders?: number;
+  }
+) => {
   logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
+
   let cursor = null;
   let limit = 50;
-  let done = false;
   let total = 0;
 
-  while (!done) {
+  let done = false;
+  while (!done && (details?.maxOrders ? total < details.maxOrders : true)) {
     logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
 
     const url = seaport.buildFetchOrdersURL({
-      overrideBaseUrl,
+      overrideBaseUrl: details?.overrideBaseUrl,
+      contract: details?.contract,
       side,
       orderBy: "created_date",
       orderDirection: "desc",
@@ -43,23 +53,23 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
       headers: {
         url,
         [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
-          config.chainId !== 5 ? apiKey || config.realtimeOpenseaApiKey : "",
+          config.chainId !== 5 ? details?.apiKey || config.realtimeOpenseaApiKey : "",
       },
     };
 
     try {
       const response = await axios.request(options);
+      cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
+      total += orders.length;
+
       const parsedOrders: {
         kind: "seaport" | "seaport-v1.4";
         data: Sdk.SeaportBase.Types.OrderComponents;
       }[] = [];
-      cursor = response.data.next;
+
       const values: any[] = [];
-
-      total += orders.length;
-
       const handleOrder = async (order: SeaportOrder) => {
         const parsed = await seaport.parseSeaportOrder(order);
         if (parsed) {
@@ -127,7 +137,7 @@ export const fetchOrders = async (side: "sell" | "buy", apiKey = "", overrideBas
     } catch (error: any) {
       logger.error(
         "fetch_orders_seaport",
-        `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
+        `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
       );
 
       if (error.response?.status === 429) {

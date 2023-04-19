@@ -25,7 +25,7 @@ if (config.doRealtimeWork && config.offersOpenseaApiKey !== "") {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        await fetchOrders("buy", config.offersOpenseaApiKey);
+        await fetchOrders("buy", { apiKey: config.offersOpenseaApiKey });
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,

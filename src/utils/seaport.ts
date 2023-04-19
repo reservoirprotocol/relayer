@@ -8,6 +8,7 @@ type FetchOrdersParams = {
   side: "sell" | "buy";
   orderBy?: "created_date";
   orderDirection?: "asc" | "desc";
+  contract?: string;
   limit?: number;
   cursor?: string | null;
   listedBefore?: number | null;
@@ -100,6 +101,10 @@ export class Seaport {
 
     if (params.listedAfter) {
       queryParams.append("listed_after", String(params.listedAfter));
+    }
+
+    if (params.contract) {
+      queryParams.append("asset_contract_address", params.contract);
     }
 
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);

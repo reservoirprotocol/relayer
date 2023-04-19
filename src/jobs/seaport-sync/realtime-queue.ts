@@ -25,7 +25,7 @@ if (config.doRealtimeWork) {
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        await fetchOrders("sell", undefined, process.env.OPENSEA_BASE_URL);
+        await fetchOrders("sell", { overrideBaseUrl: process.env.OPENSEA_BASE_URL });
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
