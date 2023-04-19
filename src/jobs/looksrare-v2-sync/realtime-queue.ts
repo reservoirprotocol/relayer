@@ -51,7 +51,13 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Sync failed lastSyncedHashCache=(${job.data.lastSyncedHashCache}), attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: 'sync failed',
+            error,
+            attempts: job.attemptsMade,
+            syncSource: 'Flow',
+            lastSyncedHashCache: job.data.lastSyncedHashCache,
+          })          
         );
       }
     },

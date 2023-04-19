@@ -29,7 +29,12 @@ if (config.doRealtimeWork && config.offersOpenseaApiKey !== "") {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `SeaPort Sync Offers failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: 'sync failed',
+            error,
+            attempts: job.attemptsMade,
+            syncSource: 'Seaport',
+          })
         );
       }
     },

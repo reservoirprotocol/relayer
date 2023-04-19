@@ -54,7 +54,13 @@ if (config.doRealtimeWork && config.collectionsOffersOpenseaApiKey !== "") {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `SeaPort Sync collection offers failed. job=${job.name}, error=${error}`
+          JSON.stringify({
+            message: 'sync failed',
+            error,
+            attempts: job.attemptsMade,
+            syncSource: 'Seaport',
+            job: job.name,
+          })
         );
       }
     },

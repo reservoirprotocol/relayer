@@ -45,7 +45,12 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Element Sync offers failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: 'sync failed',
+            error,
+            attempts: job.attemptsMade,
+            syncSource: 'Element',
+          })
         );
         throw error;
       }
