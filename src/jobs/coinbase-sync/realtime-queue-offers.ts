@@ -56,10 +56,10 @@ if (config.doRealtimeWork) {
         logger.error(
           REALTIME_QUEUE_NAME,
           JSON.stringify({
-            message: 'sync failed',
+            message: `Coinbase offers sync failed attempts=${job.attemptsMade}, error=${error}`,
             error,
             attempts: job.attemptsMade,
-            syncSource: 'Coinbase',
+            syncSource: "Coinbase",
           })
         );
       }

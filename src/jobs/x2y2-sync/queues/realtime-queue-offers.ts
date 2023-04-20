@@ -47,10 +47,10 @@ if (config.doRealtimeWork) {
         logger.error(
           REALTIME_QUEUE_NAME,
           JSON.stringify({
-            message: 'sync failed',
+            message: `X2Y2 offers sync failed attempts=${job.attemptsMade}, error=${error}`,
             error,
             attempts: job.attemptsMade,
-            syncSource: 'X2Y2',
+            syncSource: "X2Y2",
           })
         );
       }

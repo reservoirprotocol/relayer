@@ -30,10 +30,10 @@ if (config.doRealtimeWork) {
         logger.error(
           REALTIME_QUEUE_NAME,
           JSON.stringify({
-            message: 'sync failed',
+            message: `SeaPort sync failed attempts=${job.attemptsMade}, error=${error}`,
             error,
             attempts: job.attemptsMade,
-            syncSource: 'Seaport',
+            syncSource: "Seaport",
           })
         );
       }
