@@ -45,7 +45,12 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Rarible Sync failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: `Rarible sync failed attempts=${job.attemptsMade}, error=${error}`,
+            error,
+            attempts: job.attemptsMade,
+            syncSource: "Rarible",
+          })
         );
       }
     },

@@ -46,7 +46,12 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `X2Y2 Sync offers failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: `X2Y2 offers sync failed attempts=${job.attemptsMade}, error=${error}`,
+            error,
+            attempts: job.attemptsMade,
+            syncSource: "X2Y2",
+          })
         );
       }
     },

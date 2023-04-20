@@ -29,7 +29,12 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `SeaPort Sync failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: `SeaPort sync failed attempts=${job.attemptsMade}, error=${error}`,
+            error,
+            attempts: job.attemptsMade,
+            syncSource: "Seaport",
+          })
         );
       }
     },
