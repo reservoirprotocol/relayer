@@ -46,7 +46,12 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Flow Sync failed attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: `Flow offers sync failed attempts=${job.attemptsMade}, error=${error}`,
+            error,
+            attempts: job.attemptsMade,
+            syncSource: "Flow",
+          })
         );
       }
     },

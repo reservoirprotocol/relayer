@@ -51,7 +51,13 @@ if (config.doRealtimeWork) {
       } catch (error) {
         logger.error(
           REALTIME_QUEUE_NAME,
-          `Sync failed lastSyncedHashCache=(${job.data.lastSyncedHashCache}), attempts=${job.attemptsMade}, error=${error}`
+          JSON.stringify({
+            message: `Looksrare sync failed lastSyncedHashCache=(${job.data.lastSyncedHashCache}), attempts=${job.attemptsMade}, error=${error}`,
+            error,
+            attempts: job.attemptsMade,
+            syncSource: "Looksrare",
+            lastSyncedHashCache: job.data.lastSyncedHashCache,
+          })
         );
       }
     },
