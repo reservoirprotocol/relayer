@@ -36,6 +36,10 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
       network = "optimism";
       break;
 
+    case 56:
+      network = "bsc";
+      break;
+
     case 137:
       network = "polygon";
       break;

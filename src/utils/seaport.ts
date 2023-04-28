@@ -60,6 +60,10 @@ export class Seaport {
         network = "optimism";
         break;
 
+      case 56:
+        network = "bsc";
+        break;
+
       case 137:
         network = "matic";
         break;

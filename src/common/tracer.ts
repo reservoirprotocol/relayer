@@ -17,6 +17,10 @@ if (process.env.DATADOG_AGENT_URL) {
       network = "optimism";
       break;
 
+    case 56:
+      network = "bsc";
+      break;
+
     case 137:
       network = "polygon";
       break;
