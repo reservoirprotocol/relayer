@@ -54,6 +54,10 @@ if (config.doBackgroundWork) {
             (headers as any)["X-Api-Key"] = process.env.INDEXER_API_KEY;
           }
 
+          if (config.chainId === 10) {
+            logger.info("debug", JSON.stringify(orders));
+          }
+
           requests.push(
             axios
               .post(
