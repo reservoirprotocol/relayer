@@ -62,6 +62,9 @@ export const fetchOrders = async (
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
+      if (config.chainId === 10) {
+        logger.info("debug", JSON.stringify(orders));
+      }
       total += orders.length;
 
       const parsedOrders: {
