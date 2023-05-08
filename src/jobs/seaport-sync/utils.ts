@@ -294,7 +294,7 @@ export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
         config.chainId === 5
           ? {}
           : {
-              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
             },
       timeout: 20000,
     });
@@ -380,7 +380,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       headers:
         _.indexOf([1, 137], config.chainId) !== -1
           ? {
-              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
             }
           : {},
       timeout: 20000,
