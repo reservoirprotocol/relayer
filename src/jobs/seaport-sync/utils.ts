@@ -280,6 +280,92 @@ export const fetchAllOrders = async (
   }
 };
 
+export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
+  const seaport = new Seaport();
+
+  const url =
+    config.chainId === 1
+      ? `https://api.opensea.io/api/v1/listings/collection/${slug}/all`
+      : `https://testnets-api.opensea.io/api/v1/listings/collection/${slug}/all`;
+
+  try {
+    const response = await axios.get(url, {
+      headers:
+        _.indexOf([1, 137], config.chainId) !== -1
+          ? {
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+            }
+          : {},
+      timeout: 20000,
+    });
+
+    const orders: SeaportOrder[] = response.data.listings;
+    const parsedOrders: {
+      kind: "seaport-v1.4" | "seaport-v1.5";
+      data: Sdk.SeaportBase.Types.OrderComponents;
+    }[] = [];
+    const values: any[] = [];
+
+    const handleOrder = async (order: SeaportOrder) => {
+      const parsed = await seaport.parseSeaportOrder(order);
+      if (parsed) {
+        parsedOrders.push({
+          kind: parsed.kind,
+          data: parsed.order.params as any,
+        });
+      }
+
+      values.push({
+        hash: order.order_hash.toLowerCase(),
+        target:
+          parsed?.order.getInfo()?.contract.toLowerCase() ||
+          order.protocol_data.parameters.offer[0].token.toLowerCase(),
+        maker: order.maker.address.toLowerCase(),
+        created_at: new Date(order.created_date),
+        data: order.protocol_data as any,
+        source: "opensea",
+      });
+    };
+
+    const plimit = pLimit(20);
+    await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+
+    if (values.length) {
+      const columns = new pgp.helpers.ColumnSet(
+        ["hash", "target", "maker", "created_at", "data", "source"],
+        { table: "orders_v23" }
+      );
+
+      const result = await db.manyOrNone(
+        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+      );
+
+      // If result is empty all orders already exists
+      if (_.isEmpty(result)) {
+        const lastOrder = _.last(orders);
+
+        if (lastOrder) {
+          logger.info(
+            "fetch_listings_by_slug",
+            `Seaport empty result. reached to=${lastOrder.created_date}`
+          );
+        }
+      }
+    }
+
+    if (parsedOrders.length) {
+      await addToRelayOrdersQueue(parsedOrders, true);
+    }
+
+    logger.info(
+      "fetch_listings_by_slug",
+      `Seaport - Success. slug:${slug}, orders:${orders.length}`
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const fetchCollectionOffers = async (contract: string, tokenId: string, apiKey = "") => {
   const seaport = new Seaport();
 
