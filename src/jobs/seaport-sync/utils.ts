@@ -285,17 +285,17 @@ export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
 
   const url =
     config.chainId === 1
-      ? `https://api.opensea.io/api/v1/listings/collection/${slug}/all`
-      : `https://testnets-api.opensea.io/api/v1/listings/collection/${slug}/all`;
+      ? `https://api.opensea.io/api/v2/listings/collection/${slug}/all`
+      : `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all`;
 
   try {
     const response = await axios.get(url, {
       headers:
-        _.indexOf([1, 137], config.chainId) !== -1
-          ? {
+        config.chainId === 5
+          ? {}
+          : {
               "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
-            }
-          : {},
+            },
       timeout: 20000,
     });
 
