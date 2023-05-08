@@ -47,7 +47,7 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await fastSyncContract(req.body.contract);
+      await fastSyncContract(req.body.contract, req.body.slug);
     })
   );
 
