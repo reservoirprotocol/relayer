@@ -362,6 +362,7 @@ export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
       `Seaport - Success. slug:${slug}, orders:${orders.length}`
     );
   } catch (error) {
+    logger.error("fetch_listings_by_slug", `Seaport - Error. slug:${slug}, error:${error}`);
     throw error;
   }
 };
