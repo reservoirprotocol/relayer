@@ -280,13 +280,13 @@ export const fetchAllOrders = async (
   }
 };
 
-export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
+export const fetchListingsBySlug = async (slug: string) => {
   const seaport = new Seaport();
 
   const url =
-    config.chainId === 1
-      ? `https://api.opensea.io/api/v2/listings/collection/${slug}/all`
-      : `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all`;
+    config.chainId === 5
+      ? `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all`
+      : `https://api.opensea.io/api/v2/listings/collection/${slug}/all`;
 
   try {
     const response = await axios.get(url, {
@@ -294,7 +294,7 @@ export const fetchListingsBySlug = async (slug: string, apiKey = "") => {
         config.chainId === 5
           ? {}
           : {
-              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
+              "X-Api-Key": config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
             },
       timeout: 20000,
     });
