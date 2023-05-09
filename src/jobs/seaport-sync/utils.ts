@@ -285,13 +285,8 @@ export const fetchListingsBySlug = async (slug: string) => {
 
   const url =
     config.chainId === 5
-      ? `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all`
-      : `https://api.opensea.io/api/v2/listings/collection/${slug}/all`;
-
-  logger.info(
-    "fetch_listings_by_slug",
-    `API key: ${config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey}`
-  );
+      ? `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all?limit=50`
+      : `https://api.opensea.io/api/v2/listings/collection/${slug}/all?limit=50`;
 
   try {
     const response = await axios.get(url, {
@@ -318,18 +313,16 @@ export const fetchListingsBySlug = async (slug: string) => {
           kind: parsed.kind,
           data: parsed.order.params as any,
         });
-      }
 
-      values.push({
-        hash: order.order_hash.toLowerCase(),
-        target:
-          parsed?.order.getInfo()?.contract.toLowerCase() ||
-          order.protocol_data.parameters.offer[0].token.toLowerCase(),
-        maker: order.maker.address.toLowerCase(),
-        created_at: new Date(order.created_date),
-        data: order.protocol_data as any,
-        source: "opensea",
-      });
+        values.push({
+          hash: parsed.order.hash(),
+          target: parsed.order.getInfo()?.contract,
+          maker: parsed.order.params.offerer,
+          created_at: new Date(parsed.order.params.startTime),
+          data: order.protocol_data as any,
+          source: "opensea",
+        });
+      }
     };
 
     const plimit = pLimit(20);
