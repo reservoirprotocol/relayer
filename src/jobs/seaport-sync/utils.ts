@@ -288,6 +288,11 @@ export const fetchListingsBySlug = async (slug: string) => {
       ? `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all`
       : `https://api.opensea.io/api/v2/listings/collection/${slug}/all`;
 
+  logger.info(
+    "fetch_listings_by_slug",
+    `API key: ${config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey}`
+  );
+
   try {
     const response = await axios.get(url, {
       headers:
