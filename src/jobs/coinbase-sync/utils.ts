@@ -179,8 +179,15 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
         parsedOrders.push(parsed);
       }
 
+      const hash = parsed?.hash();
+
+      if (!hash) {
+        logger.error("fetch_orders_coinbase", `no hash for ${JSON.stringify(order)}`);
+        return;
+      }
+
       values.push({
-        hash: parsed?.hash(),
+        hash,
         target: orderTarget.toLowerCase(),
         maker: makerParams[2],
         created_at: new Date(order.startTime),
