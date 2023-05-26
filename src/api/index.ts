@@ -151,11 +151,13 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      const cursor = String(req.body.cursor);
-      const startTime = Number(req.body.fromTimestamp);
+      const fromCursor = String(req.body.fromCursor);
+      const toCursor = String(req.body.toCursor);
       const contract = req.body.contract;
+      const url = req.body.url;
+      const apiKey = req.body.apiKey;
 
-      await addToBlurBackfillQueue(cursor, startTime, 0, contract);
+      await addToBlurBackfillQueue(fromCursor, toCursor, contract, url, apiKey);
     })
   );
 

@@ -26,19 +26,21 @@ if (config.doBackfillWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
-      const { cursor, startTime, contract } = job.data as {
-        cursor: string;
-        startTime: number;
+      const { fromCursor, toCursor, contract, url, apiKey } = job.data as {
+        fromCursor: string;
+        toCursor: string;
         contract?: string;
+        url?: string;
+        apiKey?: string;
       };
 
       try {
-        const { cursor: newCursor } = await fetchOrders(cursor, 2, "desc", contract);
-        if (cursor !== newCursor) {
-          await addToBlurBackfillQueue(newCursor, startTime, 0, contract);
+        const { cursor: newCursor } = await fetchOrders(toCursor, 2, "desc", contract, url, apiKey);
+        if (Number(newCursor) >= Number(fromCursor)) {
+          await addToBlurBackfillQueue(fromCursor, newCursor, 0, contract, url, apiKey);
         }
 
-        logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled from cursor=${cursor}`);
+        logger.info(BACKFILL_QUEUE_NAME, `Blur backfilled from cursor=${toCursor}`);
       } catch (error) {
         logger.error(
           BACKFILL_QUEUE_NAME,
@@ -55,10 +57,16 @@ if (config.doBackfillWork) {
 }
 
 export const addToBlurBackfillQueue = async (
-  cursor: string,
-  startTime: number,
+  fromCursor: string,
+  toCursor: string,
   delayMs: number = 0,
-  contract?: string
+  contract?: string,
+  url?: string,
+  apiKey?: string
 ) => {
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { cursor, startTime, contract }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    { fromCursor, toCursor, contract, url, apiKey },
+    { delay: delayMs }
+  );
 };

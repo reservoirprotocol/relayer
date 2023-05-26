@@ -8,6 +8,7 @@ type FetchOrdersParams = {
   cursor: string;
   contractAddress?: string;
   direction?: "asc" | "desc";
+  url?: string;
 };
 
 export type FetchedOrder = {
@@ -44,7 +45,7 @@ export const blurUrl = config.blurUrl;
 
 export class Blur {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    const endpoint = new URL(blurUrl);
+    const endpoint = new URL(params.url ?? blurUrl);
 
     if (!params.direction || params.direction === "asc") {
       endpoint.searchParams.append("afterID", params.cursor);
