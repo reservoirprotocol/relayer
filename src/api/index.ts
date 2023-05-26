@@ -157,7 +157,7 @@ export const start = async () => {
       const url = req.body.url;
       const apiKey = req.body.apiKey;
 
-      await addToBlurBackfillQueue(fromCursor, toCursor, contract, url, apiKey);
+      await addToBlurBackfillQueue(fromCursor, toCursor, 0, contract, url, apiKey);
     })
   );
 
