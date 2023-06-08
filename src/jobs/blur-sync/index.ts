@@ -9,7 +9,7 @@ import { cacheKeys, lockNames } from "./utils";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    if (_.indexOf([], config.chainId) !== -1) {
+    if (_.indexOf([1], config.chainId) !== -1) {
       const lockAcquired = await acquireLock(lockNames.syncListingsLock, 60 * 5);
       if (lockAcquired) {
         const cacheKey = cacheKeys.syncListingsCursor;
