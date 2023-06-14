@@ -69,7 +69,7 @@ export class Seaport {
         break;
 
       case 42170:
-        network = "arbitrum-nova";
+        network = "arbitrum_nova";
         break;
 
       default:
