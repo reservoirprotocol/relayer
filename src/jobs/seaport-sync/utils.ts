@@ -223,6 +223,10 @@ export const fetchAllOrders = async (
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
+      if (config.chainId === 42170) {
+        logger.info("fetch_all_orders", `Seaport Fetch all orders order=${JSON.stringify(order)}`);
+      }
+
       const parsed = await seaport.parseSeaportOrder(order);
       if (parsed) {
         parsedOrders.push({
