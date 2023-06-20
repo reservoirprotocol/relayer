@@ -62,7 +62,7 @@ export const fetchOrders = async (
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
-      if (config.chainId === 10) {
+      if (config.chainId === 10 || config.chainId === 42170) {
         logger.info("debug", JSON.stringify(orders));
       }
       total += orders.length;
@@ -223,6 +223,10 @@ export const fetchAllOrders = async (
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
+      if (config.chainId === 42170) {
+        logger.info("fetch_all_orders", `Seaport Fetch all orders order=${JSON.stringify(order)}`);
+      }
+
       const parsed = await seaport.parseSeaportOrder(order);
       if (parsed) {
         parsedOrders.push({
