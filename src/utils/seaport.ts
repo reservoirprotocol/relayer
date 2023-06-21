@@ -149,13 +149,6 @@ export class Seaport {
           kind: "seaport-v1.5",
           order: new Sdk.SeaportV15.Order(config.chainId, orderComponent),
         };
-      } else {
-        if (config.chainId === 42170) {
-          logger.info(
-            "parse-seaport-order",
-            `Unsupported protocol address ${seaportOrder.protocol_address}`
-          )
-        }
       }
     } catch (error) {
       logger.error(

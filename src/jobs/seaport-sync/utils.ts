@@ -129,10 +129,6 @@ export const fetchOrders = async (
         }
       }
 
-      if (config.chainId === 42170) {
-        logger.info("debug", `parsedOrders length=${parsedOrders.length} parsedOrders=${JSON.stringify(parsedOrders)}`);
-      }
-
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(parsedOrders, true);
       }
@@ -227,10 +223,6 @@ export const fetchAllOrders = async (
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
-      if (config.chainId === 42170) {
-        logger.info("fetch_all_orders", `Seaport Fetch all orders order=${JSON.stringify(order)}`);
-      }
-
       const parsed = await seaport.parseSeaportOrder(order);
       if (parsed) {
         parsedOrders.push({
@@ -271,10 +263,6 @@ export const fetchAllOrders = async (
           `Seaport - fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, New listings found=${result.length}, cursor=${cursor}`
         );
       }
-    }
-
-    if (config.chainId === 42170) {
-      logger.info("debug", `parsedOrders length=${parsedOrders.length} parsedOrders=${JSON.stringify(parsedOrders)}`);
     }
 
     if (parsedOrders.length) {
