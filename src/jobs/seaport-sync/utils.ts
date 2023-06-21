@@ -129,7 +129,7 @@ export const fetchOrders = async (
         }
       }
 
-      if (config.chainId = 42170) {
+      if (config.chainId === 42170) {
         logger.info("debug", `parsedOrders length=${parsedOrders.length} parsedOrders=${JSON.stringify(parsedOrders)}`);
       }
 
@@ -273,7 +273,7 @@ export const fetchAllOrders = async (
       }
     }
 
-    if (config.chainId = 42170) {
+    if (config.chainId === 42170) {
       logger.info("debug", `parsedOrders length=${parsedOrders.length} parsedOrders=${JSON.stringify(parsedOrders)}`);
     }
 
