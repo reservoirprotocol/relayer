@@ -113,3 +113,7 @@ jobs:
             ./prod/platform/relayer-bsc.yaml \
             ${{ github.sha }} \
             relayer-bsc
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-arbitrum-nova.yaml \
+            ${{ github.sha }} \
+            relayer-arbitrum-nova

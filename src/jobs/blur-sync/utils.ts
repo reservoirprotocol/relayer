@@ -1,6 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
-import _, { now } from "lodash";
+import _ from "lodash";
 import pLimit from "p-limit";
 
 import { db, pgp } from "../../common/db";
@@ -30,7 +30,9 @@ export const fetchOrders = async (
   cursor = "",
   maxIterations?: number,
   direction?: "asc" | "desc",
-  contract?: string
+  contract?: string,
+  urlOverride?: string,
+  apiKey?: string
 ): Promise<{ cursor: string }> => {
   const COMPONENT = "fetch_blur_orders";
 
@@ -48,14 +50,15 @@ export const fetchOrders = async (
       cursor: cursor || "1",
       direction,
       contractAddress: contract,
+      url: urlOverride,
     });
 
     try {
       const orders = await axios
         .get(url, {
           headers: {
-            "X-RapidAPI-Key": config.blurApiKey,
-            "X-RapidAPI-Host": new URL(blurUrl).host,
+            "X-RapidAPI-Key": apiKey ?? config.blurApiKey,
+            "X-RapidAPI-Host": new URL(urlOverride ?? blurUrl).host,
           },
           timeout: 20_000,
         })

@@ -1,5 +1,4 @@
 import cron from "node-cron";
-import _ from "lodash";
 import { config } from "../../config";
 import { acquireLock } from "../../common/redis";
 import { logger } from "../../common/logger";
@@ -8,7 +7,6 @@ import { backfillQueue } from "./backfill-queue";
 import { sub, getUnixTime, startOfHour, format } from "date-fns";
 
 import * as seaportSyncRealtimeListings from "./realtime-queue";
-import * as seaportSyncRealtimeOffers from "./realtime-queue-offers";
 
 import * as seaportSyncBackfill from "./backfill-queue";
 
@@ -44,18 +42,4 @@ if (config.doRealtimeWork) {
       );
     }
   });
-
-  if (_.indexOf([1, 5, 137], config.chainId) !== -1) {
-    cron.schedule(
-      _.indexOf([1, 137], config.chainId) !== -1 ? "*/5 * * * * *" : "*/30 * * * * *",
-      async () => {
-        const lockAcquired = await acquireLock("seaport-sync-offers-lock", 3600);
-
-        if (lockAcquired) {
-          await seaportSyncRealtimeOffers.addToRealtimeQueue();
-          logger.info(realtimeQueue.name, `Start SeaPort offers realtime`);
-        }
-      }
-    );
-  }
 }

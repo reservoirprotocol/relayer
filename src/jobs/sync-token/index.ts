@@ -50,7 +50,7 @@ if (config.doBackgroundWork) {
         logger.info("fast_sync_token", `Fast syncing token ${token} from OpenSea`);
 
         const parsedOrders: {
-          kind: "seaport" | "seaport-v1.4";
+          kind: "seaport-v1.4" | "seaport-v1.5";
           data: Sdk.SeaportBase.Types.OrderComponents;
         }[] = [];
         const insertQueries: any[] = [];
@@ -79,6 +79,10 @@ if (config.doBackgroundWork) {
 
           case 42161:
             network = "arbitrum";
+            break;
+
+          case 42170:
+            network = "arbitrum_nova";
             break;
         }
 

@@ -4,11 +4,11 @@ import { logger } from "../common/logger";
 import * as blur from "../jobs/blur-sync/utils";
 import * as seaport from "../jobs/seaport-sync/utils";
 
-export const fastSyncContract = async (contract: string) => {
-  logger.info("fast_sync_contract", `Fast syncing contract ${contract}`);
+export const fastSyncContract = async (contract: string, slug: string) => {
+  logger.info("fast_sync_contract", `Fast syncing contract / slug ${contract} ${slug}`);
 
   await Promise.all([
     blur.fetchOrders("", 5, "desc", contract),
-    seaport.fetchOrders("sell", { contract, maxOrders: 300 }),
+    slug ? seaport.fetchListingsBySlug(slug) : new Promise<void>((resolve) => resolve()),
   ]);
 };

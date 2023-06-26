@@ -62,10 +62,13 @@ export const fetchOrders = async (
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
+      if (config.chainId === 10) {
+        logger.info("debug", JSON.stringify(orders));
+      }
       total += orders.length;
 
       const parsedOrders: {
-        kind: "seaport" | "seaport-v1.4";
+        kind: "seaport-v1.4" | "seaport-v1.5";
         data: Sdk.SeaportBase.Types.OrderComponents;
       }[] = [];
 
@@ -208,7 +211,7 @@ export const fetchAllOrders = async (
 
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
-      kind: "seaport" | "seaport-v1.4";
+      kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
     }[] = [];
 
@@ -277,6 +280,91 @@ export const fetchAllOrders = async (
   }
 };
 
+export const fetchListingsBySlug = async (slug: string) => {
+  const seaport = new Seaport();
+
+  const url =
+    config.chainId === 5
+      ? `https://testnets-api.opensea.io/api/v2/listings/collection/${slug}/all?limit=50`
+      : `https://api.opensea.io/api/v2/listings/collection/${slug}/all?limit=50`;
+
+  try {
+    const response = await axios.get(url, {
+      headers:
+        config.chainId === 5
+          ? {}
+          : {
+              "X-Api-Key": config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
+            },
+      timeout: 20000,
+    });
+
+    const orders: SeaportOrder[] = response.data.listings;
+    const parsedOrders: {
+      kind: "seaport-v1.4" | "seaport-v1.5";
+      data: Sdk.SeaportBase.Types.OrderComponents;
+    }[] = [];
+    const values: any[] = [];
+
+    const handleOrder = async (order: SeaportOrder) => {
+      const parsed = await seaport.parseSeaportOrder(order);
+      if (parsed) {
+        parsedOrders.push({
+          kind: parsed.kind,
+          data: parsed.order.params as any,
+        });
+
+        values.push({
+          hash: parsed.order.hash(),
+          target: parsed.order.getInfo()?.contract,
+          maker: parsed.order.params.offerer,
+          created_at: new Date(parsed.order.params.startTime),
+          data: order.protocol_data as any,
+          source: "opensea",
+        });
+      }
+    };
+
+    const plimit = pLimit(20);
+    await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+
+    if (values.length) {
+      const columns = new pgp.helpers.ColumnSet(
+        ["hash", "target", "maker", "created_at", "data", "source"],
+        { table: "orders_v23" }
+      );
+
+      const result = await db.manyOrNone(
+        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+      );
+
+      // If result is empty all orders already exists
+      if (_.isEmpty(result)) {
+        const lastOrder = _.last(orders);
+
+        if (lastOrder) {
+          logger.info(
+            "fetch_listings_by_slug",
+            `Seaport empty result. reached to=${lastOrder.created_date}`
+          );
+        }
+      }
+    }
+
+    if (parsedOrders.length) {
+      await addToRelayOrdersQueue(parsedOrders, true);
+    }
+
+    logger.info(
+      "fetch_listings_by_slug",
+      `Seaport - Success. slug:${slug}, orders:${orders.length}`
+    );
+  } catch (error) {
+    logger.error("fetch_listings_by_slug", `Seaport - Error. slug:${slug}, error:${error}`);
+    throw error;
+  }
+};
+
 export const fetchCollectionOffers = async (contract: string, tokenId: string, apiKey = "") => {
   const seaport = new Seaport();
 
@@ -290,7 +378,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       headers:
         _.indexOf([1, 137], config.chainId) !== -1
           ? {
-              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey,
+              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
             }
           : {},
       timeout: 20000,
@@ -298,7 +386,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
 
     const orders: SeaportOrder[] = response.data.seaport_offers;
     const parsedOrders: {
-      kind: "seaport" | "seaport-v1.4";
+      kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
     }[] = [];
     const values: any[] = [];

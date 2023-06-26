@@ -1920,13 +1920,14 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@^0.0.328":
-  version "0.0.328"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.328.tgz#69945843475507e3585049e960374499d40449ed"
-  integrity sha512-GYxtUQpBtN8lR3uswiks9LlMG2oX5rXQhb14ZLWMEjTncGAjrx5KkzjdAi9vOD1mi/HbFU0fUhnkPT2DGxDMVA==
+"@reservoir0x/sdk@^0.0.335":
+  version "0.0.335"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.335.tgz#6e93a22958a511c2685aa90dc3f52631e541cc22"
+  integrity sha512-VdXky94SA9uDkEc2oFMIgwGiCy6Sa432K3w4PlsQqIkEUOc+QoAj0trce1RzBPKl5jj3dAsyKqAdgMA4E8rE+g==
   dependencies:
     "@uniswap/smart-order-router" "^3.0.4"
     ethers "^5.7.2"
+    fummpel "^0.0.4"
     merkletreejs "^0.3.9"
 
 "@semantic-release/changelog@^6.0.2":
@@ -4622,6 +4623,13 @@ fsevents@^2.3.2, fsevents@~2.3.2:
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+fummpel@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/fummpel/-/fummpel-0.0.4.tgz#19c2e1377a8af9337860e1a3d1e62f5ce53fdefb"
+  integrity sha512-1n1dXGCjMis7M+hjKlPRvPtDbqOgJKbHsuIAeNPGNkUrTXKXW6T4ZtisEgUx6MhIWy0YmvBwws2yLABIdkwiZw==
+  dependencies:
+    hash-wasm "^4.9.0"
+
 function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz"
@@ -4877,6 +4885,11 @@ hash-base@^3.0.0:
     inherits "^2.0.4"
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
+
+hash-wasm@^4.9.0:
+  version "4.9.0"
+  resolved "https://registry.yarnpkg.com/hash-wasm/-/hash-wasm-4.9.0.tgz#7e9dcc9f7d6bd0cc802f2a58f24edce999744206"
+  integrity sha512-7SW7ejyfnRxuOc7ptQHSf4LDoZaWOivfzqw+5rpcQku0nHfmicPKE51ra9BiRLAmT8+gGLestr1XroUkqdjL6w==
 
 hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
   version "1.1.7"

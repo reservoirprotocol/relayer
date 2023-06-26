@@ -73,10 +73,6 @@ export class X2Y2 {
       if (x2y2Order.is_bundle) {
         return undefined;
       }
-      // TODO: Integrate private orders
-      if (x2y2Order.taker) {
-        return undefined;
-      }
       // TODO: Integrate ERC1155 orders
       if (x2y2Order.token?.erc_type === "erc1155") {
         return undefined;
