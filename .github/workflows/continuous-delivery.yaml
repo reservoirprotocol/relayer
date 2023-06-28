@@ -117,3 +117,7 @@ jobs:
             ./prod/platform/relayer-arbitrum-nova.yaml \
             ${{ github.sha }} \
             relayer-arbitrum-nova
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-avalanche.yaml \
+            ${{ github.sha }} \
+            relayer-avalanche
