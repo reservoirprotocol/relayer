@@ -76,6 +76,10 @@ export class Seaport {
         network = "arbitrum_nova";
         break;
 
+      case 80001:
+        network = "mumbai";
+        break;
+
       default:
         throw new Error("Unsupported chain");
     }

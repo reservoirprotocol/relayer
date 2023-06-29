@@ -84,6 +84,10 @@ if (config.doBackgroundWork) {
           case 42170:
             network = "arbitrum_nova";
             break;
+
+          case 80001:
+            network = "mumbai";
+            break;
         }
 
         // Fetch recent listings

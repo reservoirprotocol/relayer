@@ -32,6 +32,10 @@ if (process.env.DATADOG_AGENT_URL) {
     case 42170:
       network = "arbitrum-nova";
       break;
+
+    case 80001:
+      network = "mumbai";
+      break;
   }
 
   const service = `relayer-${network}`;
