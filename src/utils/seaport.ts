@@ -79,6 +79,11 @@ export class Seaport {
       case 43114:
         network = "avalanche";
         break;
+        
+      case 80001:
+        hostname = "testnets-api.opensea.io";
+        network = "mumbai";
+        break;
 
       default:
         throw new Error("Unsupported chain");

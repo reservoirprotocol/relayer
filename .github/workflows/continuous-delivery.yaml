@@ -121,3 +121,7 @@ jobs:
             ./prod/platform/relayer-avalanche.yaml \
             ${{ github.sha }} \
             relayer-avalanche
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-mumbai.yaml \
+            ${{ github.sha }} \
+            relayer-mumbai
