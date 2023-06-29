@@ -86,6 +86,7 @@ if (config.doBackgroundWork) {
             break;
 
           case 80001:
+            hostname = "testnets-api.opensea.io";
             network = "mumbai";
             break;
         }
