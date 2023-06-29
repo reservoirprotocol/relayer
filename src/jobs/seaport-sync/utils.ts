@@ -52,8 +52,9 @@ export const fetchOrders = async (
       url: config.openseaApiUrl || url,
       headers: {
         url,
-        [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]:
-          config.chainId !== 5 ? details?.apiKey || config.realtimeOpenseaApiKey : "",
+        [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]: !_.includes([5, 80001], config.chainId)
+          ? details?.apiKey || config.realtimeOpenseaApiKey
+          : "",
       },
     };
 
