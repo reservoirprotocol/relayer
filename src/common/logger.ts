@@ -51,6 +51,10 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     case 42170:
       network = "arbitrum-nova";
       break;
+
+    case 80001:
+      network = "mumbai";
+      break;
   }
 
   const service = `relayer-${network}`;
