@@ -33,6 +33,10 @@ if (process.env.DATADOG_AGENT_URL) {
       network = "arbitrum-nova";
       break;
 
+    case 43114:
+      network = "avalanche";
+      break;
+      
     case 80001:
       network = "mumbai";
       break;

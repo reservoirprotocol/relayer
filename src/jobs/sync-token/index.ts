@@ -85,6 +85,10 @@ if (config.doBackgroundWork) {
             network = "arbitrum_nova";
             break;
 
+          case 43114:
+            network = "avalanche";
+            break;
+            
           case 80001:
             hostname = "testnets-api.opensea.io";
             network = "mumbai";
