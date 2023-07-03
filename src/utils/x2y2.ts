@@ -16,6 +16,7 @@ export type X2Y2Order = {
   created_at: number;
   currency: string;
   end_at: number;
+  amount: number;
   id: number;
   is_bundle: boolean;
   is_collection_offer: boolean;
@@ -73,21 +74,22 @@ export class X2Y2 {
       if (x2y2Order.is_bundle) {
         return undefined;
       }
-      // TODO: Integrate ERC1155 orders
-      if (x2y2Order.token?.erc_type === "erc1155") {
-        return undefined;
-      }
 
       return new Sdk.X2Y2.Order(config.chainId, {
         id: x2y2Order.id,
         currency: x2y2Order.currency,
         maker: x2y2Order.maker,
+        delegateType:
+          x2y2Order.token?.erc_type === "erc1155"
+            ? Sdk.X2Y2.Types.DelegationType.ERC1155
+            : Sdk.X2Y2.Types.DelegationType.ERC721,
         nft: {
           token: x2y2Order.token.contract,
           tokenId: x2y2Order.is_collection_offer ? undefined : x2y2Order.token.token_id,
         },
         taker: x2y2Order.taker || "",
         price: x2y2Order.price,
+        amount: x2y2Order.amount,
         type: x2y2Order.type,
         itemHash: x2y2Order.item_hash,
         kind: x2y2Order.is_collection_offer ? "collection-wide" : "single-token",
