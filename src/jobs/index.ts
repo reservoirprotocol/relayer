@@ -40,9 +40,6 @@ import * as flowSyncListingsBackfill from "./flow-sync/queues/backfill-queue";
 import * as flowSyncListingsRealtime from "./flow-sync/queues/realtime-queue-listings";
 import * as flowSyncOffersRealtime from "./flow-sync/queues/realtime-queue-offers";
 
-import * as blurSyncListingsBackfill from "./blur-sync/queues/backfill-queue";
-import * as blurSyncListingsRealtime from "./blur-sync/queues/realtime-queue-listings";
-
 export const allQueues = [
   looksRareV2SyncRealtime.realtimeQueue,
   relayOrders.queue,
@@ -68,6 +65,4 @@ export const allQueues = [
   flowSyncListingsBackfill.backfillQueue,
   flowSyncListingsRealtime.realtimeQueue,
   flowSyncOffersRealtime.realtimeQueue,
-  blurSyncListingsBackfill.backfillQueue,
-  blurSyncListingsRealtime.realtimeQueue,
 ];

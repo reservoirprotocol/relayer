@@ -19,7 +19,6 @@ import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue"
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
 import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 import { addToFlowBackfillQueue } from "../jobs/flow-sync/queues/backfill-queue";
-import { addToBlurBackfillQueue } from "../jobs/blur-sync/queues/backfill-queue";
 
 export const start = async () => {
   const app = express();
@@ -143,21 +142,6 @@ export const start = async () => {
       const endTime = Number(req.body.toTimestamp);
 
       await addToFlowBackfillQueue(startTime, endTime, side);
-    })
-  );
-
-  app.post(
-    "/backfill/blur",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      const fromCursor = String(req.body.fromCursor);
-      const toCursor = String(req.body.toCursor);
-      const contract = req.body.contract;
-      const url = req.body.url;
-      const apiKey = req.body.apiKey;
-
-      await addToBlurBackfillQueue(fromCursor, toCursor, 0, contract, url, apiKey);
     })
   );
 
