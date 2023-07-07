@@ -40,6 +40,10 @@ if (process.env.DATADOG_AGENT_URL) {
     case 80001:
       network = "mumbai";
       break;
+
+    case 8453:
+      network = "base";
+      break;
   }
 
   const service = `relayer-${network}`;

@@ -125,3 +125,7 @@ jobs:
             ./prod/platform/relayer-mumbai.yaml \
             ${{ github.sha }} \
             relayer-mumbai
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-base.yaml \
+            ${{ github.sha }} \
+            relayer-base
