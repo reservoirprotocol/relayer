@@ -7,7 +7,6 @@ import "./coinbase-sync";
 import "./rarible-sync";
 import "./manifold-sync";
 import "./flow-sync";
-import "./blur-sync";
 import "./looksrare-v2-sync";
 
 import * as looksRareV2SyncRealtime from "./looksrare-v2-sync/realtime-queue";
