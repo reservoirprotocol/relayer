@@ -41,7 +41,10 @@ export const fetchOrdersByCursor = async (
     let orders: RaribleOrder[] = response.data.orders.filter((order: RaribleOrder) =>
       isActiveRaribleOrder(order)
     );
-    const parsedOrders: Sdk.Rarible.Order[] = [];
+    const parsedOrders: {
+      order: Sdk.Rarible.Order;
+      originatedAt: string;
+    }[] = [];
 
     const values: any[] = [];
 
@@ -49,7 +52,10 @@ export const fetchOrdersByCursor = async (
       const parsed = await rarible.parseRaribleOrder(order);
 
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          order: parsed,
+          originatedAt: new Date(order.createdAt).toISOString(),
+        });
       }
 
       const orderTarget =
@@ -85,9 +91,10 @@ export const fetchOrdersByCursor = async (
 
     if (parsedOrders.length) {
       await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
+        parsedOrders.map(({ order, originatedAt }) => ({
           kind: "rarible",
           data: order.params,
+          originatedAt,
         })),
         true
       );
