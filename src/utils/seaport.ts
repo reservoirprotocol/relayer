@@ -87,6 +87,7 @@ export class Seaport {
 
       case 8453:
         network = "base";
+        break;
 
       default:
         throw new Error("Unsupported chain");
