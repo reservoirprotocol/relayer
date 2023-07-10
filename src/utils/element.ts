@@ -4,7 +4,7 @@ import { logger } from "ethers";
 import { config } from "../config";
 
 type FetchOrdersParams = {
-  chain: "eth" | "bsc" | "polygon" | "avalanche";
+  chain: "eth" | "bsc" | "polygon" | "avalanche" | "base";
   token_ids?: string;
   asset_contract_address?: string;
   sale_kind?: string;

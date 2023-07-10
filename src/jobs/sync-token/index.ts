@@ -93,6 +93,10 @@ if (config.doBackgroundWork) {
             hostname = "testnets-api.opensea.io";
             network = "mumbai";
             break;
+          
+          case 8453:
+            network = "base";
+            break;
         }
 
         // Fetch recent listings
