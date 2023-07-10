@@ -58,7 +58,10 @@ export const fetchOrders = async (
       );
 
       const orders: LooksRareOrderV2[] = response.data.data;
-      const parsedOrders: Sdk.LooksRareV2.Order[] = [];
+      const parsedOrders: {
+        order: Sdk.LooksRareV2.Order;
+        originatedAt: string;
+      }[] = [];
 
       const values: any[] = [];
 
@@ -67,7 +70,10 @@ export const fetchOrders = async (
         const parsed = await looksRare.parseLooksRareOrder(order);
 
         if (parsed) {
-          parsedOrders.push(parsed);
+          parsedOrders.push({
+            order: parsed,
+            originatedAt: new Date(order.createdAt).toISOString(),
+          });
         }
 
         values.push({
@@ -113,9 +119,10 @@ export const fetchOrders = async (
 
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
-          parsedOrders.map((order) => ({
+          parsedOrders.map(({ order, originatedAt }) => ({
             kind: "looks-rare-v2",
             data: order.params,
+            originatedAt,
           })),
           true
         );
