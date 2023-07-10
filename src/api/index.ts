@@ -18,7 +18,6 @@ import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
 import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
-import { addToFlowBackfillQueue } from "../jobs/flow-sync/queues/backfill-queue";
 
 export const start = async () => {
   const app = express();
@@ -129,19 +128,6 @@ export const start = async () => {
       } else {
         await addToSeaportBackfillQueue(null, null, null, 1);
       }
-    })
-  );
-
-  app.post(
-    "/backfill/flow",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      const side = String(req.body.side) === "sell" ? "sell" : "buy";
-      const startTime = Number(req.body.fromTimestamp);
-      const endTime = Number(req.body.toTimestamp);
-
-      await addToFlowBackfillQueue(startTime, endTime, side);
     })
   );
 
