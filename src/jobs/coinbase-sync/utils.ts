@@ -49,7 +49,10 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
     );
 
     const orders: CoinbaseOrder[] = response.data.orders;
-    const parsedOrders: Sdk.ZeroExV4.Order[] = [];
+    const parsedOrders: {
+      order: Sdk.ZeroExV4.Order;
+      originatedAt: string;
+    }[] = [];
 
     const values: any[] = [];
 
@@ -59,7 +62,10 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
       const parsed = await coinbase.parseCoinbaseOrder(order);
 
       if (parsed) {
-        parsedOrders.push(parsed);
+        parsedOrders.push({
+          order: parsed,
+          originatedAt: new Date(order.createdAt).toISOString(),
+        });
       }
 
       values.push({
@@ -90,10 +96,11 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
 
     if (parsedOrders.length) {
       await addToRelayOrdersQueue(
-        parsedOrders.map((order) => ({
-          kind: "zeroex-v4",
-          data: order.params,
-        })),
+        parsedOrders.map(({ order, originatedAt }) => ({
+            kind: "zeroex-v4",
+            data: order.params,
+            originatedAt,
+          })),
         true
       );
     }
