@@ -129,3 +129,7 @@ jobs:
             ./prod/platform/relayer-base.yaml \
             ${{ github.sha }} \
             relayer-base
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-zora.yaml \
+            ${{ github.sha }} \
+            relayer-zora

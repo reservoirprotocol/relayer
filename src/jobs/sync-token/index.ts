@@ -97,6 +97,10 @@ if (config.doBackgroundWork) {
           case 8453:
             network = "base";
             break;
+
+          case 7777777:
+            network = "zora";
+            break;
         }
 
         // Fetch recent listings
