@@ -149,7 +149,7 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
       if (parsed) {
         parsedOrders.push({
           order: parsed,
-          originatedAt: new Date(order.created_at).toISOString(),
+          originatedAt: new Date(order.created_at * 1000).toISOString(),
         });
       }
 
