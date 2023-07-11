@@ -40,7 +40,10 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
       });
 
       const orders: ElementOrder[] = response.data.data.orders;
-      const parsedOrders: Sdk.Element.Order[] = [];
+      const parsedOrders: {
+        order: Sdk.Element.Order;
+        originatedAt: string;
+      }[] = [];
 
       const values: any[] = [];
 
@@ -54,7 +57,10 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
             order.saleKind === SaleKind.BatchSignedOrder ||
             order.saleKind === SaleKind.ContractOffer
           ) {
-            parsedOrders.push(parsedOrder);
+            parsedOrders.push({
+              order: parsedOrder,
+              originatedAt: new Date(order.createTime).toISOString(),
+            });
           }
 
           try {
@@ -97,9 +103,10 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
 
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
-          parsedOrders.map((order) => ({
+          parsedOrders.map(({ order, originatedAt }) => ({
             kind: "element",
             data: order.params,
+            originatedAt,
           })),
           true
         );

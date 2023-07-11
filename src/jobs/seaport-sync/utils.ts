@@ -389,6 +389,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
     const parsedOrders: {
       kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
+      originatedAt: string;
     }[] = [];
     const values: any[] = [];
 
@@ -398,6 +399,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
         parsedOrders.push({
           kind: parsed.kind,
           data: parsed.order.params as any,
+          originatedAt: order.created_date,
         });
       }
 
