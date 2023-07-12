@@ -89,6 +89,10 @@ export class Seaport {
         network = "base";
         break;
 
+      case 7777777:
+        network = "zora";
+        break;
+
       default:
         throw new Error("Unsupported chain");
     }

@@ -63,6 +63,10 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     case 8453:
       network = "base";
       break;
+
+    case 7777777:
+      network = "zora";
+      break;
   }
 
   const service = `relayer-${network}`;
