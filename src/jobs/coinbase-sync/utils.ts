@@ -97,10 +97,10 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
     if (parsedOrders.length) {
       await addToRelayOrdersQueue(
         parsedOrders.map(({ order, originatedAt }) => ({
-            kind: "zeroex-v4",
-            data: order.params,
-            originatedAt,
-          })),
+          kind: "zeroex-v4",
+          data: order.params,
+          originatedAt,
+        })),
         true
       );
     }
