@@ -79,7 +79,7 @@ export class Seaport {
       case 43114:
         network = "avalanche";
         break;
-        
+
       case 80001:
         hostname = "testnets-api.opensea.io";
         network = "mumbai";
@@ -174,7 +174,11 @@ export class Seaport {
     } catch (error) {
       logger.error(
         "parse-seaport-order",
-        `Failed to parse order ${seaportOrder.order_hash} - ${error}`
+        JSON.stringify({
+          message: `Failed to parse order ${seaportOrder.order_hash} - ${error}`,
+          seaportOrder,
+          error,
+        })
       );
     }
   }

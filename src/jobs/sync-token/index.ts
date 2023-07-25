@@ -88,12 +88,12 @@ if (config.doBackgroundWork) {
           case 43114:
             network = "avalanche";
             break;
-            
+
           case 80001:
             hostname = "testnets-api.opensea.io";
             network = "mumbai";
             break;
-          
+
           case 8453:
             network = "base";
             break;

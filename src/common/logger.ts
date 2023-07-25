@@ -51,7 +51,7 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     case 42170:
       network = "arbitrum-nova";
       break;
-    
+
     case 43114:
       network = "avalanche";
       break;
