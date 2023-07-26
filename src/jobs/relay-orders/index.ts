@@ -38,6 +38,10 @@ if (config.doBackgroundWork) {
     async (job: Job) => {
       const { orders } = job.data;
 
+      if (config.chainId === 43114) {
+        logger.info("relay_orders", JSON.stringify(orders));
+      }
+
       if (orders.length) {
         logger.info("relay_orders", `Relaying ${orders.length} orders`);
 
