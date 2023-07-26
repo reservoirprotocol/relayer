@@ -158,8 +158,6 @@ export class Seaport {
         signature: seaportOrder.protocol_data.signature || undefined,
       };
 
-      logger.info("parse-seaport-order", seaportOrder.protocol_address);
-
       if (seaportOrder.protocol_address === Sdk.SeaportV14.Addresses.Exchange[config.chainId]) {
         return {
           kind: "seaport-v1.4",
