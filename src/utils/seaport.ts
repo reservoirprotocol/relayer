@@ -172,17 +172,12 @@ export class Seaport {
         };
       }
 
-      if (config.chainId === 43114) {
-        logger.info(
-          "parse-seaport-order",
-          JSON.stringify({
-            message: `Unsupported protocol address ${seaportOrder.protocol_address}`,
-            seaportOrder,
-            seaportv14: Sdk.SeaportV14.Addresses.Exchange[config.chainId],
-            seaportv15: Sdk.SeaportV15.Addresses.Exchange[config.chainId],
-          })
-        );
-      }
+      logger.error(
+        "parse-seaport-order",
+        JSON.stringify({
+          message: `Unsupported protocol address ${seaportOrder.protocol_address}`,
+        })
+      );
     } catch (error) {
       logger.error(
         "parse-seaport-order",
