@@ -85,14 +85,14 @@ export class Coinbase {
         erc20Token:
           coinbaseOrder.currencyAddress === ""
             ? coinbaseOrder.orderType === "list"
-              ? Sdk.ZeroExV4.Addresses.Eth[config.chainId]
-              : Sdk.Common.Addresses.Weth[config.chainId]
+              ? Sdk.ZeroExV4.Addresses.Native[config.chainId]
+              : Sdk.Common.Addresses.WNative[config.chainId]
             : coinbaseOrder.currencyAddress,
         erc20TokenAmount: coinbaseOrder.takerAmount,
         nft: coinbaseOrder.collectionAddress,
         nftId: coinbaseOrder.tokenId,
         fees,
-        taker: Sdk.Common.Addresses.Eth[config.chainId],
+        taker: Sdk.Common.Addresses.Native[config.chainId],
         nftProperties: [],
         nonce: coinbaseOrder.nonce,
         cbOrderId: coinbaseOrder.id,
