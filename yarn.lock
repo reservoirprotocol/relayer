@@ -1920,10 +1920,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@^0.0.337":
-  version "0.0.337"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.337.tgz#2ce43930b2df111448c022a0b5521ce334a403e0"
-  integrity sha512-I1a5jlMUeYoVjA8mJaKRYT/E/K38lP2aEPKozVR6p0WYWgrLiRa6eehoZnJsVnnwWrWxxT8bRREP6aVU03Nzbw==
+"@reservoir0x/sdk@^0.0.338":
+  version "0.0.338"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.338.tgz#4169cfd9e96eea04f44f6b049c86f698e428350d"
+  integrity sha512-881HYivGoCs89SQEcTfnAqCjqGdqaH67qF+2fhx5YpGl2lBNSMgOD64EiTma3NExsu7NpG8F5EwvD+p+ppItSA==
   dependencies:
     "@uniswap/smart-order-router" "^3.0.4"
     ethers "^5.7.2"
