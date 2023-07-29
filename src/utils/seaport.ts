@@ -179,7 +179,7 @@ export class Seaport {
         })
       );
     } catch (error) {
-      logger.error(
+      logger.warn(
         "parse-seaport-order",
         JSON.stringify({
           message: `Failed to parse order ${seaportOrder.order_hash} - ${error}`,
