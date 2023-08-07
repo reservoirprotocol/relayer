@@ -7,6 +7,7 @@ export const config = {
   offersOpenseaApiKey: String(process.env.OFFERS_OPENSEA_API_KEY || ""),
   collectionsOffersOpenseaApiKey: String(process.env.COLLECTIONS_OFFERS_OPENSEA_API_KEY || ""),
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
+  looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
