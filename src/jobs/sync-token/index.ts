@@ -100,7 +100,7 @@ if (config.doBackgroundWork) {
 
           case 84531:
             hostname = "testnets-api.opensea.io";
-            network = "base-goerli";
+            network = "base_goerli";
             break;
 
           case 7777777:
@@ -109,7 +109,7 @@ if (config.doBackgroundWork) {
 
           case 999:
             hostname = "testnets-api.opensea.io";
-            network = "zora-testnet";
+            network = "zora_testnet";
             break;
 
           case 11155111:
