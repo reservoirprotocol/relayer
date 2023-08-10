@@ -45,8 +45,20 @@ if (process.env.DATADOG_AGENT_URL) {
       network = "base";
       break;
 
+    case 84531:
+      network = "base-goerli";
+      break;
+
     case 7777777:
       network = "zora";
+      break;
+
+    case 999:
+      network = "zora-testnet";
+      break;
+
+    case 11155111:
+      network = "sepolia";
       break;
   }
 
