@@ -91,7 +91,7 @@ export class Seaport {
 
       case 84531:
         hostname = "testnets-api.opensea.io";
-        network = "base-goerli";
+        network = "base_goerli";
         break;
 
       case 7777777:
@@ -100,7 +100,7 @@ export class Seaport {
 
       case 999:
         hostname = "testnets-api.opensea.io";
-        network = "zora-testnet";
+        network = "zora_testnet";
         break;
 
       case 11155111:
