@@ -36,6 +36,12 @@ export const fetchOrdersByCursor = async (
   try {
     const response = await axios.get(url, {
       timeout: 10000,
+      headers: {
+        "X-Api-Key":
+          blockchain === "ETHEREUM"
+            ? "252a5dfe-df6d-406a-92b8-62b47a7cc218"
+            : "6a2f432b-4103-45d2-bd9a-700ecab0228c",
+      },
     });
 
     let orders: RaribleOrder[] = response.data.orders.filter((order: RaribleOrder) =>
