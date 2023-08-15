@@ -328,7 +328,7 @@ export const fetchSeaportOrders = async (
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
         logger.info(
-          "fetch_orders_looksrare_v2",
+          "fetch_seaport_orders_looksrare_v2",
           `LooksRare return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
         );
 
