@@ -41,7 +41,11 @@ export type LooksRareOrderV2 = {
 
 export class LooksRareV2 {
   // https://api.looksrare.org/api/documentation/#/Orders/OrderController.getOrders
-  public buildFetchOrdersURL(params: FetchOrdersParams, pagination?: FetchOrdersPaginationParams) {
+  public buildFetchOrdersURL(
+    params: FetchOrdersParams,
+    pagination?: FetchOrdersPaginationParams,
+    seaport?: Boolean
+  ) {
     let baseApiUrl: string;
     if (config.chainId === 1) {
       baseApiUrl = "https://api.looksrare.org/api/v2";
@@ -71,7 +75,7 @@ export class LooksRareV2 {
       searchParams.append("pagination[cursor]", pagination.cursor);
     }
 
-    return decodeURI(`${baseApiUrl}/orders?${searchParams.toString()}`);
+    return decodeURI(`${baseApiUrl}/orders${seaport ? "/seaport" : ""}?${searchParams.toString()}`);
   }
 
   public async parseLooksRareOrder(
