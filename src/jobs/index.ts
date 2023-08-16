@@ -9,6 +9,7 @@ import "./manifold-sync";
 import "./looksrare-v2-sync";
 
 import * as looksRareV2SyncRealtime from "./looksrare-v2-sync/realtime-queue";
+import * as looksRareV2SyncSeaportRealtime from "./looksrare-v2-sync/realtime-queue-seaport";
 import * as relayOrders from "./relay-orders";
 import * as seaportSyncListingsRealtime from "./seaport-sync/realtime-queue";
 import * as seaportSyncOffersRealtime from "./seaport-sync/realtime-queue-offers";
@@ -36,6 +37,7 @@ import * as manifoldSyncListingsRealtime from "./manifold-sync/realtime-queue";
 
 export const allQueues = [
   looksRareV2SyncRealtime.realtimeQueue,
+  looksRareV2SyncSeaportRealtime.realtimeQueue,
   relayOrders.queue,
   seaportSyncListingsRealtime.realtimeQueue,
   seaportSyncOffersRealtime.realtimeQueue,

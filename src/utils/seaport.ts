@@ -41,6 +41,12 @@ export type SeaportOrder = {
   client_signature: string;
 };
 
+export interface LooksRareSeaportOrder extends SeaportOrder {
+  id: string;
+  createdAt: string;
+  hash: string;
+}
+
 export class Seaport {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     let baseApiUrl: string;
