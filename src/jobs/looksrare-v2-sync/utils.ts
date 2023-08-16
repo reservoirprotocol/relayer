@@ -270,7 +270,7 @@ export const fetchSeaportOrders = async (
           maker: order.protocol_data.parameters.offerer.toLowerCase(),
           created_at: new Date(order.createdAt),
           data: order.protocol_data as any,
-          source: "opensea",
+          source: "looksrare-v2",
         });
       };
 
