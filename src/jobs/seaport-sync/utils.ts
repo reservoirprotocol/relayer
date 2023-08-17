@@ -38,7 +38,6 @@ export const fetchOrders = async (
     logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
 
     const url = seaport.buildFetchOrdersURL({
-      overrideBaseUrl: details?.overrideBaseUrl,
       contract: details?.contract,
       side,
       orderBy: "created_date",
@@ -52,10 +51,7 @@ export const fetchOrders = async (
       url: config.openseaApiUrl || url,
       headers: {
         url,
-        [process.env.OPENSEA_API_HEADER ?? "X-API-KEY"]: !_.includes(
-          [5, 80001, 84531, 999, 11155111],
-          config.chainId
-        )
+        "X-API-KEY": !_.includes([5, 80001, 84531, 999, 11155111], config.chainId)
           ? details?.apiKey || config.realtimeOpenseaApiKey
           : "",
       },
@@ -66,9 +62,7 @@ export const fetchOrders = async (
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
-      if (config.chainId === 10) {
-        logger.info("debug", JSON.stringify(orders));
-      }
+
       total += orders.length;
 
       const parsedOrders: {
@@ -142,11 +136,6 @@ export const fetchOrders = async (
         `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
       );
     } catch (error: any) {
-      logger.error(
-        "fetch_orders_seaport",
-        `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
-      );
-
       if (error.response?.status === 429 || error.response?.status === 503) {
         logger.warn(
           "fetch_orders_seaport",
@@ -154,15 +143,14 @@ export const fetchOrders = async (
         );
 
         if (cursor) {
-          logger.warn(
-            "fetch_orders_seaport",
-            `Seaport - Rate Limited - Retry. side=${side}, cursor=${cursor}, error=${error}`
-          );
-
           await new Promise((resolve) => setTimeout(resolve, 5000));
-
           continue;
         }
+      } else {
+        logger.error(
+          "fetch_orders_seaport",
+          `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
+        );
       }
 
       throw error;
