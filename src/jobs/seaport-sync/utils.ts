@@ -147,7 +147,7 @@ export const fetchOrders = async (
         `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
       );
 
-      if (error.response?.status === 429) {
+      if (error.response?.status === 429 || error.response?.status === 503) {
         logger.warn(
           "fetch_orders_seaport",
           `Seaport - Rate Limited. side=${side}, cursor=${cursor}, error=${error}`
