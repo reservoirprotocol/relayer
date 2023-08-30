@@ -41,8 +41,6 @@ if (config.doBackgroundWork) {
       if (orders.length) {
         logger.info("relay_orders", `Relaying ${orders.length} orders`);
 
-        logger.info("relay_orders_debug", JSON.stringify(orders[0]));
-
         const requests: Promise<any>[] = [];
 
         // Post orders to Indexer Lite
