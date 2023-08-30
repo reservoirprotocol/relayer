@@ -250,6 +250,7 @@ export const fetchSeaportOrders = async (
         kind: "seaport-v1.4" | "seaport-v1.5";
         data: Sdk.SeaportBase.Types.OrderComponents;
         originatedAt: string;
+        source: "looksrare-v2";
       }[] = [];
 
       const values: any[] = [];
@@ -261,6 +262,7 @@ export const fetchSeaportOrders = async (
             kind: parsed.kind,
             data: parsed.order.params as any,
             originatedAt: new Date(order.createdAt).toISOString(),
+            source: "looksrare-v2",
           });
         }
 

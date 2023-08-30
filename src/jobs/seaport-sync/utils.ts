@@ -296,6 +296,7 @@ export const fetchListingsBySlug = async (slug: string) => {
       kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
+      source: "opensea";
     }[] = [];
     const values: any[] = [];
 
@@ -306,6 +307,7 @@ export const fetchListingsBySlug = async (slug: string) => {
           kind: parsed.kind,
           data: parsed.order.params as any,
           originatedAt: order.created_date,
+          source: "opensea",
         });
 
         values.push({
@@ -383,6 +385,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
+      source: "opensea";
     }[] = [];
     const values: any[] = [];
 
@@ -393,6 +396,7 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
           kind: parsed.kind,
           data: parsed.order.params as any,
           originatedAt: order.created_date,
+          source: "opensea",
         });
       }
 
