@@ -178,7 +178,7 @@ if (config.doBackgroundWork) {
             await new Promise((resolve) => setTimeout(resolve, 1000));
           })
           .catch((error) => {
-            logger.error(QUEUE_NAME, `Error fetching token listings: ${error}`);
+            logger.error(QUEUE_NAME, `Error fetching token listings: ${error} url: ${url}`);
           });
 
         if (insertQueries.length) {
