@@ -68,6 +68,8 @@ export const fetchOrders = async (
       const parsedOrders: {
         kind: "seaport-v1.4" | "seaport-v1.5";
         data: Sdk.SeaportBase.Types.OrderComponents;
+        originatedAt: string;
+        source: "opensea";
       }[] = [];
 
       const values: any[] = [];
@@ -77,6 +79,8 @@ export const fetchOrders = async (
           parsedOrders.push({
             kind: parsed.kind,
             data: parsed.order.params as any,
+            originatedAt: order.created_date,
+            source: "opensea",
           });
         }
 
@@ -205,6 +209,8 @@ export const fetchAllOrders = async (
     const parsedOrders: {
       kind: "seaport-v1.4" | "seaport-v1.5";
       data: Sdk.SeaportBase.Types.OrderComponents;
+      originatedAt: string;
+      source: "opensea";
     }[] = [];
 
     logger.info(
@@ -220,6 +226,8 @@ export const fetchAllOrders = async (
         parsedOrders.push({
           kind: parsed.kind,
           data: parsed.order.params as any,
+          originatedAt: order.created_date,
+          source: "opensea",
         });
       }
 
