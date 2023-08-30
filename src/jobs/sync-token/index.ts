@@ -124,7 +124,7 @@ if (config.doBackgroundWork) {
         await axios
           .get(
             url,
-            _.indexOf([1, 137], config.chainId) !== -1
+            _.indexOf([1, 137, 42161], config.chainId) !== -1
               ? {
                   headers: {
                     "x-api-key": config.backfillOpenseaApiKey,
