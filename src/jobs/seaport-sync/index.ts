@@ -16,7 +16,6 @@ if (config.doRealtimeWork && config.doOpenseaWork) {
 
     if (lockAcquired) {
       await seaportSyncRealtimeListings.addToRealtimeQueue();
-      logger.info(realtimeQueue.name, `Start SeaPort realtime`);
     }
   });
 

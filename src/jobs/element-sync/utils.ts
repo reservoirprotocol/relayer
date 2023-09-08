@@ -99,8 +99,6 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
         );
       }
 
-      logger.info("debug", JSON.stringify(parsedOrders));
-
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
           parsedOrders.map(({ order, originatedAt }) => ({
