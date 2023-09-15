@@ -169,11 +169,11 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
     const values: any[] = [];
 
     const handleOrder = async (order: CoinbaseOrder) => {
-      const maxDate = addYears(new Date(), 5);
+      const maxDate = addYears(new Date(), 100);
       if (isAfter(new Date(order.expiry), maxDate)) {
         logger.warn(
           "fetch_orders_coinbase",
-          `side - ${side} Order ID ${order.id} expiry ${order.expiry} is in more than 5 years`
+          `side - ${side} Order ID ${order.id} expiry ${order.expiry} is in more than 100 years`
         );
         return;
       }
