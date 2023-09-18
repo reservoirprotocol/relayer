@@ -51,7 +51,7 @@ if (config.doBackfillWork) {
         }
 
         // If there are more order within th given time frame
-        if (lastCreatedAt && isBefore(new Date(lastCreatedAt), endTime)) {
+        if (lastCreatedAt && isBefore(new Date(lastCreatedAt), fromUnixTime(endTime))) {
           job.data.newPageToken = newPageToken;
         }
       } catch (error) {
