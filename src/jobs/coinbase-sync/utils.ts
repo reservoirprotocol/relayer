@@ -114,7 +114,7 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
 
   logger.info(
     "fetch_orders_coinbase",
-    `FINAL - Coinbase - lastCreatedAtOrder = ${lastCreatedAtOrder}, new = ${newPageToken} total orders ${numOrders}, new orders ${newOrders}`
+    `FINAL - Coinbase - createdAfter = ${createdAfter} lastCreatedAtOrder = ${lastCreatedAtOrder}, new = ${newPageToken} total orders ${numOrders}, new orders ${newOrders}`
   );
 
   return [newPageToken, lastCreatedAtOrder];
