@@ -238,7 +238,7 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
 
   logger.info(
     "fetch_orders_coinbase",
-    `FINAL - Coinbase - side = ${side}, lastCreatedAtOrder = ${lastCreatedAtOrder}, current = ${pageToken} new = ${newPageToken} total orders ${numOrders}, new orders ${newOrders}`
+    `FINAL - Coinbase - side ${side}, lastCreatedAtOrder ${lastCreatedAtOrder}, current ${pageToken} new ${newPageToken} total orders ${numOrders}, new orders ${newOrders} url ${url}`
   );
 
   return [newPageToken, lastCreatedAtOrder];
