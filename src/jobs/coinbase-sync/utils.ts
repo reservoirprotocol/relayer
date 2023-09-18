@@ -10,7 +10,7 @@ import { logger } from "../../common/logger";
 import { Coinbase, CoinbaseOrder } from "../../utils/coinbase";
 import { isAfter, addYears } from "date-fns";
 
-export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
+export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfter: string = "") => {
   logger.info(
     "fetch_orders_coinbase",
     `createdAfter = ${createdAfter} Fetching orders from Coinbase`
@@ -28,6 +28,7 @@ export const fetchOrdersByDateCreated = async (createdAfter: string = "") => {
     limit,
     isDesc,
     createdAfter,
+    side,
   });
 
   try {

@@ -45,6 +45,7 @@ if (config.doBackfillWork) {
         } else {
           const startTimeDate = fromUnixTime(startTime);
           [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(
+            side,
             startTimeDate.toISOString()
           );
         }
