@@ -35,6 +35,11 @@ if (config.doBackfillWork) {
       };
 
       const { startTime, endTime, pageToken, side }: Data = job.data;
+      logger.info(
+        "fetch_orders_coinbase",
+        `job data ${JSON.stringify(job.data)}`
+      );
+
       let newPageToken;
       let lastCreatedAt;
 
