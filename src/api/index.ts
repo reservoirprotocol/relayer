@@ -16,8 +16,8 @@ import {
 } from "../jobs/seaport-sync/backfill-queue";
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
-import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
+import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 
 export const start = async () => {
   const app = express();
