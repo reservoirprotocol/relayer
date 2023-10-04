@@ -67,9 +67,9 @@ jobs:
         working-directory: k8s-configs
         run: |
           ./utils/version_update.sh \
-            ./dev/platform/relayer-goerli.yaml \
+            ./dev/platform/relayer-sepolia.yaml \
             ${{ github.sha }} \
-            relayer-goerli
+            relayer-sepolia
 
   deploy-prod:
     name: Deploy to Production
