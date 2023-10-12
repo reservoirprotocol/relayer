@@ -29,19 +29,25 @@ export class Okx {
   public getChainName() {
     switch (config.chainId) {
       case 1:
-        return "ETH";
+        return "eth";
       case 10:
-        return "Optimism";
+        return "optimism";
       case 56:
-        return "BSC";
+        return "bsc";
       case 137:
-        return "Polygon";
+        return "polygon";
       case 324:
-        return "zkSync-Era";
+        return "zksync-era";
+      case 8453:
+        return "base";
       case 42161:
-        return "Arbitrum One";
+        return "arbitrum one";
+      case 42170:
+        return "arbitrum nova";
       case 43114:
-        return "AVAX";
+        return "avax";
+      case 59144:
+        return "linea";
       default:
         return undefined;
     }
