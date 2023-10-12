@@ -18,6 +18,7 @@ import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
 import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
+import { addToOkxBackfillQueue } from "../jobs/okx-sync/queues/backfill-queue-listings";
 
 export const start = async () => {
   const app = express();
@@ -94,6 +95,15 @@ export const start = async () => {
       res.status(202).json({ message: "Request accepted" });
 
       await addToRaribleBackfillQueue();
+    })
+  );
+
+  app.post(
+    "/backfill/okx",
+    asyncHandler(async (req, res) => {
+      res.status(202).json({ message: "Request accepted" });
+
+      await addToOkxBackfillQueue();
     })
   );
 

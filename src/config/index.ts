@@ -11,6 +11,10 @@ export const config = {
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
+  okxApiKey: String(process.env.OKX_API_KEY),
+  okxSecretKey: String(process.env.OKX_SECRET_KEY),
+  okxPassphrase: String(process.env.OKX_PASSPHRASE),
+
   blurUrl: String(process.env.BLUR_URL),
   openseaApiUrl: String(process.env.OPENSEA_API_URL),
 
@@ -18,7 +22,6 @@ export const config = {
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
   doRealtimeWork: Boolean(Number(process.env.DO_REALTIME_WORK)),
   doLiveWork: Boolean(Number(process.env.DO_LIVE_WORK)),
-
   doOpenseaWork: Boolean(Number(process.env.DO_OPENSEA_WORK)),
 
   databaseUrl: String(process.env.DATABASE_URL),
