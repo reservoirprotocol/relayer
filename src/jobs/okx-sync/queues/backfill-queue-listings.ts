@@ -43,6 +43,7 @@ if (config.doBackfillWork) {
         });
         if (minTimestamp) {
           await redis.set(getCreateBeforeKey(), minTimestamp + 1);
+          await addToOkxBackfillQueue();
         }
       } catch (error) {
         logger.error(
