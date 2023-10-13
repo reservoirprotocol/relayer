@@ -135,7 +135,7 @@ export const fetchOrders = async (options: {
 
   logger.info(
     "fetch_orders_okx",
-    `END Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, cursor=${options.cursor}) - got ${numOrders} orders`
+    `END Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, createBefore=${options.createBefore}, cursor=${options.cursor}) - got ${numOrders} orders`
   );
 
   return { minTimestamp, maxTimestamp };
