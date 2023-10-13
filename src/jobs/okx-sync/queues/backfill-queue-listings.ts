@@ -43,8 +43,7 @@ if (config.doBackfillWork) {
           createBefore: Number(createBefore),
           maxIterations: 10,
         });
-        if (minTimestamp && minTimestamp !== createBefore) {
-          logger.info("debug", `minTimestamp=${minTimestamp}, createBefore=${createBefore}`);
+        if (minTimestamp && minTimestamp + 1 !== Number(createBefore)) {
           await redis.set(getCreateBeforeKey(runId), minTimestamp + 1);
           await addToOkxBackfillQueue(runId);
         }
