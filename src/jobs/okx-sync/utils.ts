@@ -57,12 +57,17 @@ export const fetchOrders = async (options: {
 
       const handleOrder = async (order: OkxOrder) => {
         try {
-          const parsedOrder = await okx.parseOrder(order);
-          if (parsedOrder) {
+          const parsed = await okx.parseOrder(order);
+          if (parsed) {
+            parsedOrders.push({
+              order: parsed,
+              originatedAt: new Date(order.createTime * 1000).toISOString(),
+            });
+
             values.push({
-              hash: parsedOrder.hash(),
-              target: parsedOrder.getInfo()!.contract.toLowerCase(),
-              maker: parsedOrder.params.offerer.toLowerCase(),
+              hash: parsed.hash(),
+              target: parsed.getInfo()!.contract.toLowerCase(),
+              maker: parsed.params.offerer.toLowerCase(),
               created_at: fromUnixTime(order.createTime),
               data: order as any,
               source: "okx",
