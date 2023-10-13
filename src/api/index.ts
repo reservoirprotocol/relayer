@@ -103,7 +103,8 @@ export const start = async () => {
     asyncHandler(async (req, res) => {
       res.status(202).json({ message: "Request accepted" });
 
-      await addToOkxBackfillQueue();
+      const runId = String(req.body.runId);
+      await addToOkxBackfillQueue(runId);
     })
   );
 

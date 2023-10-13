@@ -1,7 +1,7 @@
 import { Job, Queue, QueueScheduler, Worker } from "bullmq";
 
 import { logger } from "../../../common/logger";
-import { redis, releaseLock } from "../../../common/redis";
+import { redis } from "../../../common/redis";
 import { config } from "../../../config";
 import { fetchOrders } from "../utils";
 
@@ -26,14 +26,16 @@ if (config.doBackfillWork) {
   const realtimeWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
+      const { runId } = job.data;
+
       try {
         const createBefore = await redis
-          .get(getCreateBeforeKey())
+          .get(getCreateBeforeKey(runId))
           .then((c) => (c ? c : Math.floor(Date.now() / 1000)));
 
         logger.info(
           BACKFILL_QUEUE_NAME,
-          `Start syncing OKX listings (createBefore=${createBefore})`
+          `Start syncing OKX listings (runId=${runId} createBefore=${createBefore})`
         );
 
         const { minTimestamp } = await fetchOrders({
@@ -42,14 +44,14 @@ if (config.doBackfillWork) {
           maxIterations: 10,
         });
         if (minTimestamp) {
-          await redis.set(getCreateBeforeKey(), minTimestamp + 1);
-          await addToOkxBackfillQueue();
+          await redis.set(getCreateBeforeKey(runId), minTimestamp + 1);
+          await addToOkxBackfillQueue(runId);
         }
       } catch (error) {
         logger.error(
           BACKFILL_QUEUE_NAME,
           JSON.stringify({
-            message: "OKX listings sync failed",
+            message: `OKX listings sync failed (runId=${runId})`,
             error,
             stack: (error as any).stack,
             attempts: job.attemptsMade,
@@ -59,30 +61,17 @@ if (config.doBackfillWork) {
         throw error;
       }
     },
-    { connection: redis.duplicate(), concurrency: 2 }
+    { connection: redis.duplicate(), concurrency: 1 }
   );
 
-  realtimeWorker.on("completed", async (job) => {
-    await releaseLock(getLockKey(), false);
-
-    if (job.attemptsMade > 0) {
-      logger.info(
-        BACKFILL_QUEUE_NAME,
-        `OKX listings sync recovered (attempts=${job.attemptsMade})`
-      );
-    }
-  });
-
   realtimeWorker.on("error", async (error) => {
-    await releaseLock(getLockKey(), false);
-
     logger.error(BACKFILL_QUEUE_NAME, `Worker errored: ${error}`);
   });
 }
 
-export const addToOkxBackfillQueue = async (delayMs: number = 0) => {
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, {}, { delay: delayMs });
+export const addToOkxBackfillQueue = async (runId = "", delayMs = 0) => {
+  await backfillQueue.add(BACKFILL_QUEUE_NAME, { runId }, { delay: delayMs });
 };
 
-const getCreateBeforeKey = () => `${BACKFILL_QUEUE_NAME}-create-before`;
-export const getLockKey = () => `${BACKFILL_QUEUE_NAME}-lock`;
+const getCreateBeforeKey = (runId: string) => `${BACKFILL_QUEUE_NAME}-${runId}-create-before`;
+export const getLockKey = (runId: string) => `${BACKFILL_QUEUE_NAME}-${runId}-lock`;
