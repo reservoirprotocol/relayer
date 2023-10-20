@@ -141,3 +141,24 @@ jobs:
             ./prod/platform/relayer-zora-testnet.yaml \
             ${{ github.sha }} \
             relayer-zora-testnet
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-bsc.yaml \
+            ${{ github.sha }} \
+            relayer-bsc
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-linea.yaml \
+            ${{ github.sha }} \
+            relayer-linea
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-polygon-zkevm.yaml \
+            ${{ github.sha }} \
+            relayer-polygon-zkevm
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-zksync.yaml \
+            ${{ github.sha }} \
+            relayer-zksync
+          ./utils/version_update.sh \
+          ./prod/platform/relayer-arbitrum-nova.yaml \
+            ${{ github.sha }} \
+            relayer-arbitrum-nova
+

@@ -79,6 +79,18 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
     case 11155111:
       network = "sepolia";
       break;
+
+    case 59144:
+      network = "linea";
+      break;
+
+    case 1101:
+      network = "polygon-zkevm";
+      break;
+
+    case 324:
+      network = "zksync";
+      break;
   }
 
   const service = `relayer-${network}`;
