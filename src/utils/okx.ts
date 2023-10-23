@@ -38,6 +38,8 @@ export class Okx {
         return "polygon";
       case 324:
         return "zksync-era";
+      case 1101:
+        return "polygon-zkevm";
       case 8453:
         return "base";
       case 42161:
