@@ -138,6 +138,10 @@ jobs:
             ${{ github.sha }} \
             relayer-base-goerli
           ./utils/version_update.sh \
+            ./prod/platform/relayer-goerli.yaml \
+            ${{ github.sha }} \
+            relayer-goerli
+          ./utils/version_update.sh \
             ./prod/platform/relayer-zora-testnet.yaml \
             ${{ github.sha }} \
             relayer-zora-testnet
