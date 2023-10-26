@@ -9,7 +9,7 @@ import { config } from "../../config";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    if ([1, 5].includes(config.chainId)) {
+    if ([1].includes(config.chainId)) {
       const lockAcquired = await acquireLock("x2y2-sync-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "x2y2-sync-cursor";
@@ -31,7 +31,7 @@ if (config.doRealtimeWork) {
 
   cron.schedule("*/5 * * * * *", async () => {
     // Only sync offers on mainnet
-    if ([1, 5].includes(config.chainId)) {
+    if ([1].includes(config.chainId)) {
       const lockAcquired = await acquireLock("x2y2-sync-offers-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "x2y2-sync-offers-cursor";

@@ -60,6 +60,18 @@ if (process.env.DATADOG_AGENT_URL) {
     case 11155111:
       network = "sepolia";
       break;
+
+    case 59144:
+      network = "linea";
+      break;
+
+    case 1101:
+      network = "polygon-zkevm";
+      break;
+
+    case 324:
+      network = "zksync";
+      break;
   }
 
   const service = `relayer-${network}`;

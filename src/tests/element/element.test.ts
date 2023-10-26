@@ -19,7 +19,6 @@ describe("Element", () => {
     const url = element.buildFetchOrdersURL({
       chain: "eth",
     });
-    // console.log("url", url)
   });
 
   test("parseOrder", async () => {
@@ -28,7 +27,6 @@ describe("Element", () => {
       const order = orders[index];
       const parsedOrder = await element.parseOrder(order);
       if (parsedOrder) {
-        // console.log(parsedOrder.getRaw())
         // hash check
         expect(parsedOrder.hash()).toEqual(order.orderHash.split("_")[0]);
         parsedOrder.checkSignature();

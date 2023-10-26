@@ -166,7 +166,8 @@ if (config.doBackgroundWork) {
                 `,
                 values: [
                   order.order_hash.toLowerCase(),
-                  order.maker_asset_bundle.asset_contract.address.toLowerCase(),
+                  parsed?.order.getInfo()?.contract.toLowerCase() ||
+                    order.protocol_data.parameters.offer[0].token.toLowerCase(),
                   order.maker.address.toLowerCase(),
                   new Date(order.created_date),
                   order.protocol_data as any,

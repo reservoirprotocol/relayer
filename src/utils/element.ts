@@ -1,5 +1,4 @@
 import * as Sdk from "@reservoir0x/sdk";
-import { logger } from "ethers";
 
 import { config } from "../config";
 
