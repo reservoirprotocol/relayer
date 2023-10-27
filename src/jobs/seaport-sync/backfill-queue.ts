@@ -33,7 +33,7 @@ if (config.doBackfillWork && config.doOpenseaWork) {
       } catch (error: any) {
         job.data.newCursor = cursor;
 
-        if (error.response?.status === 429) {
+        if ([429, 503].includes(error.response?.status)) {
           // Wait to avoid rate-limiting
           job.data.retry = true;
           await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -41,7 +41,7 @@ if (config.doBackfillWork && config.doOpenseaWork) {
 
         logger.error(
           BACKFILL_QUEUE_NAME,
-          `SeaPort Sync failed attempts=${job.attemptsMade}, error=${error}`
+          `SeaPort Sync failed attempts=${job.attemptsMade}, fromTimestamp=${fromTimestamp}, toTimestamp=${toTimestamp}, cursor=${cursor}, error=${error}`
         );
       }
     },
