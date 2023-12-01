@@ -34,9 +34,8 @@ export const fetchOrders = async (
   let total = 0;
 
   let done = false;
-  while (!done && (details?.maxOrders ? total < details.maxOrders : true)) {
-    logger.info("fetch_orders_seaport", `Seaport fetch orders. side=${side}, cursor=${cursor}`);
 
+  while (!done && (details?.maxOrders ? total < details.maxOrders : true)) {
     const url = seaport.buildFetchOrdersURL({
       contract: details?.contract,
       side,
@@ -134,11 +133,6 @@ export const fetchOrders = async (
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(parsedOrders, true);
       }
-
-      logger.info(
-        "fetch_orders_seaport",
-        `Seaport - Batch done. side=${side}, cursor=${cursor} Got ${orders.length} orders`
-      );
     } catch (error: any) {
       if (error.response?.status === 429 || error.response?.status === 503) {
         logger.warn(
