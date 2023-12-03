@@ -22,7 +22,7 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
   let done = false;
   while (!done) {
     const url = element.buildFetchOrdersURL({
-      chain: "eth",
+      chain: element.getChainName()!,
       side: side === "sell" ? "1" : "0",
       listed_after: listedAfter > 0 ? listedAfter : undefined,
       listed_before: listedBefore > 0 ? listedBefore : undefined,

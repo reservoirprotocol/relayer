@@ -3,7 +3,7 @@ import * as Sdk from "@reservoir0x/sdk";
 import { config } from "../config";
 
 type FetchOrdersParams = {
-  chain: "eth" | "bsc" | "polygon" | "avalanche" | "base";
+  chain: string;
   token_ids?: string;
   asset_contract_address?: string;
   sale_kind?: string;
@@ -54,6 +54,29 @@ export enum SaleKind {
 }
 
 export class Element {
+  public getChainName() {
+    switch (config.chainId) {
+      case 1:
+        return "eth";
+      case 56:
+        return "bsc";
+      case 137:
+        return "polygon";
+      case 324:
+        return "zksync";
+      case 8453:
+        return "base";
+      case 42161:
+        return "arbitrum";
+      case 43114:
+        return "avalanche";
+      case 59144:
+        return "linea";
+      default:
+        return undefined;
+    }
+  }
+
   // https://api.element.market/openapi/#/
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     // For now there's no support for testnets

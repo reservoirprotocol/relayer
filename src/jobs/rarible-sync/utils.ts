@@ -169,21 +169,21 @@ export const fetchOrdersByTimestamp = async (
         if (orderTimestamp > timestamp) {
           newTimestamp = orderTimestamp;
         }
+
+        const orderTarget =
+          parsed!.params.side === "buy"
+            ? parsed?.params.take.assetType?.contract || ""
+            : parsed?.params.make.assetType?.contract || "";
+
+        values.push({
+          hash: parsed?.params.hash,
+          target: orderTarget!.toLowerCase(),
+          maker: order.maker,
+          created_at: order.createdAt,
+          data: order as any,
+          source: "rarible",
+        });
       }
-
-      const orderTarget =
-        parsed!.params.side === "buy"
-          ? parsed?.params.take.assetType?.contract || ""
-          : parsed?.params.make.assetType?.contract || "";
-
-      values.push({
-        hash: parsed?.params.hash,
-        target: orderTarget!.toLowerCase(),
-        maker: order.maker,
-        created_at: order.createdAt,
-        data: order as any,
-        source: "rarible",
-      });
     };
 
     const plimit = pLimit(20);

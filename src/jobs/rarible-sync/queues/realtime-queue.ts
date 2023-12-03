@@ -42,12 +42,13 @@ if (config.doRealtimeWork) {
         } else {
           await redis.set(cacheKey, newTimestamp);
         }
-      } catch (error) {
+      } catch (error: any) {
         logger.error(
           REALTIME_QUEUE_NAME,
           JSON.stringify({
             message: `Rarible sync failed attempts=${job.attemptsMade}, error=${error}`,
             error,
+            stack: error.stack,
             attempts: job.attemptsMade,
             syncSource: "Rarible",
           })
