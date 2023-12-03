@@ -6,11 +6,11 @@ import * as realtimeQueueOffers from "./queues/realtime-queue-offers";
 import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
+import { Element } from "../../utils/element";
 
 if (config.doRealtimeWork) {
   cron.schedule("*/5 * * * * *", async () => {
-    // Element only supports mainnet
-    if (_.indexOf([1], config.chainId) !== -1) {
+    if (new Element().getChainName()) {
       const lockAcquired = await acquireLock("element-sync-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "element-sync-cursor";
@@ -31,8 +31,7 @@ if (config.doRealtimeWork) {
   });
 
   cron.schedule("*/5 * * * * *", async () => {
-    // Element only supports mainnet
-    if (_.indexOf([1], config.chainId) !== -1) {
+    if (new Element().getChainName()) {
       const lockAcquired = await acquireLock("element-sync-offers-lock", 60 * 5);
       if (lockAcquired) {
         const cacheKey = "element-sync-offers-cursor";
