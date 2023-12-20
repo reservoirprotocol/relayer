@@ -52,7 +52,6 @@ export const fetchOrders = async (
       : "",
     };
 
-
     if (config.openseaApiUrl && config.openseaNftApiKey) {
       headers["x-nft-api-key"] = config.openseaNftApiKey;
     }
