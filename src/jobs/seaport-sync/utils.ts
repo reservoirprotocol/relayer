@@ -45,15 +45,22 @@ export const fetchOrders = async (
       cursor,
     });
 
+    const headers: any = {
+      url,
+      "X-API-KEY": !_.includes([5, 80001, 84531, 999, 11155111], config.chainId)
+      ? details?.apiKey || config.realtimeOpenseaApiKey
+      : "",
+    };
+
+
+    if (config.openseaApiUrl && config.openseaNftApiKey) {
+      headers["x-nft-api-key"] = config.openseaNftApiKey;
+    }
+
     const options: AxiosRequestConfig = {
       method: "GET",
       url: config.openseaApiUrl || url,
-      headers: {
-        url,
-        "X-API-KEY": !_.includes([5, 80001, 84531, 999, 11155111], config.chainId)
-          ? details?.apiKey || config.realtimeOpenseaApiKey
-          : "",
-      },
+      headers,
     };
 
     try {
