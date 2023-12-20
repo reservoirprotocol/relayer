@@ -193,13 +193,19 @@ export const fetchAllOrders = async (
     listedBefore: toTimestamp,
   });
 
+  const headers: any = {
+    url,
+    "x-api-key": config.backfillOpenseaApiKey || "",
+  };
+
+  if (config.openseaApiUrl && config.openseaNftApiKey) {
+    headers["x-nft-api-key"] = config.openseaNftApiKey;
+  }
+
   const options: AxiosRequestConfig = {
     method: "GET",
     url: config.openseaApiUrl || url,
-    headers: {
-      url,
-      "x-api-key": config.backfillOpenseaApiKey || "",
-    },
+    headers,
   };
 
   try {
