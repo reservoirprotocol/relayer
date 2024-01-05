@@ -90,9 +90,9 @@ jobs:
         working-directory: k8s-configs
         run: |
           ./utils/version_update.sh \
-            ./prod/platform/relayer.yaml \
+            ./prod/platform/relayer-mainnet.yaml \
             ${{ github.sha }} \
-            relayer
+            relayer-mainnet
           ./utils/version_update.sh \
             ./prod/platform/relayer-arbitrum.yaml \
             ${{ github.sha }} \
@@ -102,9 +102,9 @@ jobs:
             ${{ github.sha }} \
             relayer-polygon
           ./utils/version_update.sh \
-            ./prod/platform/relayer-realtime.yaml \
+            ./prod/platform/relayer-realtime-mainnet.yaml \
             ${{ github.sha }} \
-            relayer-realtime
+            relayer-realtime-mainnet
           ./utils/version_update.sh \
             ./prod/platform/relayer-optimism.yaml \
             ${{ github.sha }} \
