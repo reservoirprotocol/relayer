@@ -71,9 +71,7 @@ export const fetchOrders = async (
       if (!orders) {
         logger.error(
           "fetch_orders_seaport",
-          `Failed to get orders from ${JSON.stringify(options)}, response ${JSON.stringify(
-            response
-          )}`
+          `Failed to get orders from ${JSON.stringify(options)}`
         );
       }
 
