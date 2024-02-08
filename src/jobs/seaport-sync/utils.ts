@@ -48,8 +48,8 @@ export const fetchOrders = async (
     const headers: any = {
       url,
       "X-API-KEY": !_.includes([5, 80001, 84531, 999, 11155111], config.chainId)
-      ? details?.apiKey || config.realtimeOpenseaApiKey
-      : "",
+        ? details?.apiKey || config.realtimeOpenseaApiKey
+        : "",
     };
 
     if (config.openseaApiUrl && config.openseaNftApiKey) {
@@ -153,7 +153,7 @@ export const fetchOrders = async (
       } else {
         logger.error(
           "fetch_orders_seaport",
-          `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}`
+          `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}, stack=${error.stack}`
         );
       }
 
