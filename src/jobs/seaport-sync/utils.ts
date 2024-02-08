@@ -68,6 +68,10 @@ export const fetchOrders = async (
 
       const orders: SeaportOrder[] = response.data.orders;
 
+      if (!orders) {
+        logger.error("fetch_orders_seaport", `Failed to get orders from ${JSON.stringify(options)}, response ${JSON.stringify(response)}`)
+      }
+
       total += orders.length;
 
       const parsedOrders: {

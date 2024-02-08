@@ -30,7 +30,7 @@ if (config.doRealtimeWork && config.doOpenseaWork) {
         logger.error(
           REALTIME_QUEUE_NAME,
           JSON.stringify({
-            message: `SeaPort sync failed attempts=${job.attemptsMade}, error=${JSON.stringify(error)}`,
+            message: `SeaPort sync failed attempts=${job.attemptsMade}, error=${error}`,
             error,
             attempts: job.attemptsMade,
             syncSource: "Seaport",
