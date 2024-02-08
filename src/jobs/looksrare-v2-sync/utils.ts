@@ -184,7 +184,7 @@ export const fetchOrders = async (
 
   logger.info(
     "fetch_orders_looksrare_v2",
-    `FINAL - LooksRare - (${startTime}, ${endTime}) Got ${numOrders} orders`
+    `FINAL - LooksRare - (${startTime}, ${endTime}) mostRecentCreatedHash=${mostRecentCreatedHash} Got ${numOrders} orders`
   );
 
   return [mostRecentCreatedHash, ""];
