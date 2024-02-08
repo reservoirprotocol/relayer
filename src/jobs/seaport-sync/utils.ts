@@ -109,7 +109,9 @@ export const fetchOrders = async (
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -118,7 +120,8 @@ export const fetchOrders = async (
         );
 
         const result = await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
 
         // If result is empty, all transactions already exists
@@ -168,7 +171,10 @@ export const fetchOrders = async (
     }
   }
 
-  logger.info("fetch_orders_seaport", `Seaport - Done. side=${side}, total=${total}`);
+  logger.info(
+    "fetch_orders_seaport",
+    `Seaport - Done. side=${side}, total=${total}`
+  );
 };
 
 export const fetchAllOrders = async (
@@ -180,11 +186,17 @@ export const fetchAllOrders = async (
   let formatToTimestamp = null;
 
   if (fromTimestamp) {
-    formatFromTimestamp = format(fromUnixTime(fromTimestamp), "yyyy-MM-dd HH:mm:ss");
+    formatFromTimestamp = format(
+      fromUnixTime(fromTimestamp),
+      "yyyy-MM-dd HH:mm:ss"
+    );
   }
 
   if (toTimestamp) {
-    formatToTimestamp = format(fromUnixTime(toTimestamp), "yyyy-MM-dd HH:mm:ss");
+    formatToTimestamp = format(
+      fromUnixTime(toTimestamp),
+      "yyyy-MM-dd HH:mm:ss"
+    );
   }
 
   const seaport = new Seaport();
@@ -247,7 +259,8 @@ export const fetchAllOrders = async (
       values.push({
         hash: order.order_hash,
         target: (
-          parsed?.order.getInfo()?.contract || order.protocol_data.parameters.offer[0].token
+          parsed?.order.getInfo()?.contract ||
+          order.protocol_data.parameters.offer[0].token
         ).toLowerCase(),
         maker: order.maker.address.toLowerCase(),
         created_at: new Date(order.created_date),
@@ -266,7 +279,8 @@ export const fetchAllOrders = async (
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       // If new listing were recorded
@@ -307,7 +321,8 @@ export const fetchListingsBySlug = async (slug: string) => {
         config.chainId === 5
           ? {}
           : {
-              "X-Api-Key": config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
+              "X-Api-Key":
+                config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
             },
       timeout: 20000,
     });
@@ -352,7 +367,8 @@ export const fetchListingsBySlug = async (slug: string) => {
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       // If result is empty all orders already exists
@@ -377,12 +393,19 @@ export const fetchListingsBySlug = async (slug: string) => {
       `Seaport - Success. slug:${slug}, orders:${orders.length}`
     );
   } catch (error) {
-    logger.error("fetch_listings_by_slug", `Seaport - Error. slug:${slug}, error:${error}`);
+    logger.error(
+      "fetch_listings_by_slug",
+      `Seaport - Error. slug:${slug}, error:${error}`
+    );
     throw error;
   }
 };
 
-export const fetchCollectionOffers = async (contract: string, tokenId: string, apiKey = "") => {
+export const fetchCollectionOffers = async (
+  contract: string,
+  tokenId: string,
+  apiKey = ""
+) => {
   const seaport = new Seaport();
 
   const url =
@@ -395,7 +418,10 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       headers:
         _.indexOf([1, 137], config.chainId) !== -1
           ? {
-              "X-API-KEY": apiKey || config.realtimeOpenseaApiKey || config.backfillOpenseaApiKey,
+              "X-API-KEY":
+                apiKey ||
+                config.realtimeOpenseaApiKey ||
+                config.backfillOpenseaApiKey,
             }
           : {},
       timeout: 20000,
@@ -443,7 +469,8 @@ export const fetchCollectionOffers = async (contract: string, tokenId: string, a
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       // If result is empty, all transactions already exists
@@ -493,7 +520,10 @@ export const refreshCollectionsToFetchOffers = async () => {
     let collections = [];
     let continuation = null;
 
-    logger.info("refresh_collections", `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`);
+    logger.info(
+      "refresh_collections",
+      `Start. max:${MAX_FETCH_OFFERS_COLLECTIONS}`
+    );
 
     const headers = {};
     if (process.env.INDEXER_API_KEY) {

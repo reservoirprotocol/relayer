@@ -9,7 +9,10 @@ import { Okx } from "../../utils/okx";
 if (config.doRealtimeWork) {
   if (new Okx().getChainName()) {
     cron.schedule("*/20 * * * * *", async () => {
-      const lockAcquired = await acquireLock(realtimeQueueListings.getLockKey(), 30);
+      const lockAcquired = await acquireLock(
+        realtimeQueueListings.getLockKey(),
+        30
+      );
       if (lockAcquired) {
         await realtimeQueueListings.addToRealtimeQueue();
       }

@@ -27,7 +27,11 @@ export const queue = new Queue(QUEUE_NAME, {
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-export const addToSyncTokenQueue = async (token: string, limit?: number, prioritized?: boolean) => {
+export const addToSyncTokenQueue = async (
+  token: string,
+  limit?: number,
+  prioritized?: boolean
+) => {
   await queue.add(
     "sync-token",
     {
@@ -47,7 +51,10 @@ if (config.doBackgroundWork) {
       const { token } = job.data;
 
       if (token) {
-        logger.info("fast_sync_token", `Fast syncing token ${token} from OpenSea`);
+        logger.info(
+          "fast_sync_token",
+          `Fast syncing token ${token} from OpenSea`
+        );
 
         const parsedOrders: {
           kind: "seaport-v1.4" | "seaport-v1.5";
@@ -179,7 +186,10 @@ if (config.doBackgroundWork) {
             await new Promise((resolve) => setTimeout(resolve, 1000));
           })
           .catch((error) => {
-            logger.error(QUEUE_NAME, `Error fetching token listings: ${error} url: ${url}`);
+            logger.error(
+              QUEUE_NAME,
+              `Error fetching token listings: ${error} url: ${url}`
+            );
           });
 
         if (insertQueries.length) {

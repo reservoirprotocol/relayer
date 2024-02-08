@@ -63,7 +63,10 @@ if (config.doRealtimeWork) {
     await releaseLock("element-sync-offers-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync offers recover attempts=${job.attemptsMade}`);
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Sync offers recover attempts=${job.attemptsMade}`
+      );
     }
   });
 

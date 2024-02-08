@@ -41,7 +41,10 @@ if (config.doBackfillWork) {
 
       try {
         if (pageToken) {
-          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(side, pageToken);
+          [newPageToken, lastCreatedAt] = await fetchOrdersByPageToken(
+            side,
+            pageToken
+          );
         } else {
           const startTimeDate = fromUnixTime(startTime);
           [newPageToken, lastCreatedAt] = await fetchOrdersByDateCreated(
@@ -51,7 +54,10 @@ if (config.doBackfillWork) {
         }
 
         // If there are more order within th given time frame
-        if (lastCreatedAt && isBefore(new Date(lastCreatedAt), fromUnixTime(endTime))) {
+        if (
+          lastCreatedAt &&
+          isBefore(new Date(lastCreatedAt), fromUnixTime(endTime))
+        ) {
           job.data.newPageToken = newPageToken;
         }
       } catch (error) {

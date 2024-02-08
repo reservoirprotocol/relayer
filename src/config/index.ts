@@ -5,7 +5,9 @@ export const config = {
   backfillOpenseaApiKey: process.env.BACKFILL_OPENSEA_API_KEY,
   realtimeOpenseaApiKey: process.env.REALTIME_OPENSEA_API_KEY,
   offersOpenseaApiKey: String(process.env.OFFERS_OPENSEA_API_KEY || ""),
-  collectionsOffersOpenseaApiKey: String(process.env.COLLECTIONS_OFFERS_OPENSEA_API_KEY || ""),
+  collectionsOffersOpenseaApiKey: String(
+    process.env.COLLECTIONS_OFFERS_OPENSEA_API_KEY || ""
+  ),
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),

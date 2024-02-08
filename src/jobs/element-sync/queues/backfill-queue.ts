@@ -78,5 +78,9 @@ export const addToElementBackfillQueue = async (
     endTime = startTime + 1;
   }
 
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { startTime, endTime }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    { startTime, endTime },
+    { delay: delayMs }
+  );
 };

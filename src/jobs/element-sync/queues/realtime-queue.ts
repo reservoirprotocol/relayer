@@ -30,7 +30,10 @@ if (config.doRealtimeWork) {
         const cacheKey = "element-sync-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrders("sell", cursor ? Number(cursor) : 0);
+        const newCursor = await fetchOrders(
+          "sell",
+          cursor ? Number(cursor) : 0
+        );
 
         if (cursor && newCursor == Number(cursor)) {
           logger.info(
@@ -64,7 +67,10 @@ if (config.doRealtimeWork) {
     await releaseLock("element-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 

@@ -10,8 +10,16 @@ import { logger } from "../../common/logger";
 import { config } from "../../config";
 import { X2Y2, X2Y2Order } from "../../utils/x2y2";
 
-export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfter = 0) => {
-  logger.info("fetch_orders_x2y2", `createdAfter = ${createdAfter} Fetching orders from X2Y2`);
+export const fetchOrdersByDateCreated = async (
+  side: "sell" | "buy",
+  createdAfter = 0,
+  createdBefore = 0,
+  contract = ""
+) => {
+  logger.info(
+    "fetch_orders_x2y2",
+    `createdAfter = ${createdAfter} Fetching orders from X2Y2`
+  );
 
   const x2y2 = new X2Y2();
   let limit = 50;
@@ -25,6 +33,8 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
       side,
       status,
       createdAfter,
+      createdBefore,
+      contract,
       limit,
     });
 
@@ -62,7 +72,9 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -71,7 +83,8 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
         );
 
         await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
       }
 
@@ -101,13 +114,22 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
     }
   }
 
-  logger.info("fetch_orders_x2y2", `FINAL - X2Y2 - (${createdAfter}) Got ${numOrders} orders`);
+  logger.info(
+    "fetch_orders_x2y2",
+    `FINAL - X2Y2 - (${createdAfter}) Got ${numOrders} orders`
+  );
 
   return newCursor;
 };
 
-export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string = "") => {
-  logger.info("fetch_orders_x2y2", `side = ${side} cursor = ${cursor} Fetching orders from X2Y2`);
+export const fetchOrdersByCursor = async (
+  side: "sell" | "buy",
+  cursor: string = ""
+) => {
+  logger.info(
+    "fetch_orders_x2y2",
+    `side = ${side} cursor = ${cursor} Fetching orders from X2Y2`
+  );
 
   const x2y2 = new X2Y2();
   let limit = 50;
@@ -173,7 +195,8 @@ export const fetchOrdersByCursor = async (side: "sell" | "buy", cursor: string =
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrders = _.size(result); // Number of newly inserted rows

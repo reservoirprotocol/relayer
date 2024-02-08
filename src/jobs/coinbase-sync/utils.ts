@@ -10,7 +10,10 @@ import { logger } from "../../common/logger";
 import { Coinbase, CoinbaseOrder } from "../../utils/coinbase";
 import { isAfter, addYears } from "date-fns";
 
-export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfter: string = "") => {
+export const fetchOrdersByDateCreated = async (
+  side: "sell" | "buy",
+  createdAfter: string = ""
+) => {
   logger.info(
     "fetch_orders_coinbase",
     `createdAfter = ${createdAfter} Fetching orders from Coinbase`
@@ -89,7 +92,8 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrders = _.size(result); // Number of newly inserted rows
@@ -121,7 +125,10 @@ export const fetchOrdersByDateCreated = async (side: "sell" | "buy", createdAfte
   return [newPageToken, lastCreatedAtOrder];
 };
 
-export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: string = "") => {
+export const fetchOrdersByPageToken = async (
+  side: "sell" | "buy",
+  pageToken: string = ""
+) => {
   logger.info(
     "fetch_orders_coinbase",
     `side = ${side}, pageToken = ${pageToken} Fetching orders from Coinbase`
@@ -190,7 +197,10 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
       const hash = parsed?.hash();
 
       if (!hash) {
-        logger.error("fetch_orders_coinbase", `no hash for ${JSON.stringify(order)}`);
+        logger.error(
+          "fetch_orders_coinbase",
+          `no hash for ${JSON.stringify(order)}`
+        );
         return;
       }
 
@@ -214,7 +224,8 @@ export const fetchOrdersByPageToken = async (side: "sell" | "buy", pageToken: st
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrders = _.size(result); // Number of newly inserted rows

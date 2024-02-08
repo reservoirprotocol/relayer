@@ -42,7 +42,10 @@ export class FetchOffersCollections {
   public async getAll(): Promise<FetchOffersCollection[]> {
     const tokens = await redis.smembers(this.key);
     if (tokens) {
-      return _.map(tokens, (token) => JSON.parse(token) as FetchOffersCollection);
+      return _.map(
+        tokens,
+        (token) => JSON.parse(token) as FetchOffersCollection
+      );
     }
 
     return [];

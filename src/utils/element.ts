@@ -93,7 +93,10 @@ export class Element {
     }
 
     if (params.asset_contract_address) {
-      queryParams.append("asset_contract_address", String(params.asset_contract_address));
+      queryParams.append(
+        "asset_contract_address",
+        String(params.asset_contract_address)
+      );
     }
 
     if (params.sale_kind) {
@@ -123,7 +126,9 @@ export class Element {
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
-  public async parseOrder(params: ElementOrder): Promise<Sdk.Element.Order | undefined> {
+  public async parseOrder(
+    params: ElementOrder
+  ): Promise<Sdk.Element.Order | undefined> {
     try {
       if (!params.exchangeData) {
         return undefined;
@@ -150,7 +155,10 @@ export class Element {
           nft: params.contractAddress,
           nftId: params.tokenId,
           nftProperties: nftProperties ?? [],
-          nftAmount: params.schema.toLowerCase() === "erc721" ? undefined : String(params.quantity),
+          nftAmount:
+            params.schema.toLowerCase() === "erc721"
+              ? undefined
+              : String(params.quantity),
         });
       }
     } catch {

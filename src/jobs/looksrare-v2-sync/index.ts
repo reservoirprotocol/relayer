@@ -25,10 +25,16 @@ if (config.doRealtimeWork) {
 
         await looksrareSyncRealtime.addToRealtimeQueue();
 
-        logger.info(realtimeQueue.name, `Start LookRareV2 sync from lastSynced=(${lastSynced})`);
+        logger.info(
+          realtimeQueue.name,
+          `Start LookRareV2 sync from lastSynced=(${lastSynced})`
+        );
       }
 
-      const seaportLockAcquired = await acquireLock("looksrare-v2-seaport-sync-lock", 120);
+      const seaportLockAcquired = await acquireLock(
+        "looksrare-v2-seaport-sync-lock",
+        120
+      );
 
       if (seaportLockAcquired) {
         const cacheKey = "looksrare-v2-seaport-sync-last";

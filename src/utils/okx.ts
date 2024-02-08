@@ -57,11 +57,16 @@ export class Okx {
 
   public buildAuthHeaders(url: string, method: "GET" | "POST", data?: object) {
     const sign = (s: string) =>
-      crypto.createHmac("sha256", config.okxSecretKey).update(s).digest("base64");
+      crypto
+        .createHmac("sha256", config.okxSecretKey)
+        .update(s)
+        .digest("base64");
 
     const timestamp = new Date().toISOString();
     const signature = sign(
-      `${timestamp}${method}${url.slice(BASE_OKX_URL.length)}${data ? JSON.stringify(data) : ""}`
+      `${timestamp}${method}${url.slice(BASE_OKX_URL.length)}${
+        data ? JSON.stringify(data) : ""
+      }`
     );
 
     return {
@@ -111,10 +116,13 @@ export class Okx {
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
-  public async parseOrder(params: OkxOrder): Promise<Sdk.SeaportV15.Order | undefined> {
+  public async parseOrder(
+    params: OkxOrder
+  ): Promise<Sdk.SeaportV15.Order | undefined> {
     try {
       if (
-        params.protocolAddress.toLowerCase() !== Sdk.SeaportV15.Addresses.Exchange[config.chainId]
+        params.protocolAddress.toLowerCase() !==
+        Sdk.SeaportV15.Addresses.Exchange[config.chainId]
       ) {
         return undefined;
       }

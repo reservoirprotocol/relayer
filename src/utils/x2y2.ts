@@ -6,6 +6,8 @@ type FetchOrdersParams = {
   side: "sell" | "buy";
   status?: string;
   createdAfter?: number;
+  createdBefore?: number;
+  contract?: string;
   endTime?: number;
   limit?: number;
   cursor?: string;
@@ -39,9 +41,9 @@ export type X2Y2Order = {
 export class X2Y2 {
   // https://hackmd.io/7AnOgEqFT2mZHqUQ4bXwsw#GET-apiorders
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    const baseApiUrl = `https://${config.chainId === 5 ? "goerli-" : ""}api.x2y2.org/v1/${
-      params.side === "sell" ? "orders" : "offers"
-    }`;
+    const baseApiUrl = `https://${
+      config.chainId === 5 ? "goerli-" : ""
+    }api.x2y2.org/v1/${params.side === "sell" ? "orders" : "offers"}`;
 
     const queryParams = new URLSearchParams();
 
@@ -51,6 +53,14 @@ export class X2Y2 {
 
     if (params.createdAfter) {
       queryParams.append("created_after", String(params.createdAfter));
+    }
+
+    if (params.createdBefore) {
+      queryParams.append("created_before", String(params.createdBefore));
+    }
+
+    if (params.contract) {
+      queryParams.append("contract", String(params.contract));
     }
 
     if (params.limit) {
@@ -68,7 +78,9 @@ export class X2Y2 {
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
-  public async parseX2Y2Order(x2y2Order: X2Y2Order): Promise<Sdk.X2Y2.Order | undefined> {
+  public async parseX2Y2Order(
+    x2y2Order: X2Y2Order
+  ): Promise<Sdk.X2Y2.Order | undefined> {
     try {
       // TODO: Integrate bundle orders
       if (x2y2Order.is_bundle) {
@@ -85,14 +97,18 @@ export class X2Y2 {
             : Sdk.X2Y2.Types.DelegationType.ERC721,
         nft: {
           token: x2y2Order.token.contract,
-          tokenId: x2y2Order.is_collection_offer ? undefined : x2y2Order.token.token_id,
+          tokenId: x2y2Order.is_collection_offer
+            ? undefined
+            : x2y2Order.token.token_id,
         },
         taker: x2y2Order.taker || "",
         price: x2y2Order.price,
         amount: x2y2Order.amount,
         type: x2y2Order.type,
         itemHash: x2y2Order.item_hash,
-        kind: x2y2Order.is_collection_offer ? "collection-wide" : "single-token",
+        kind: x2y2Order.is_collection_offer
+          ? "collection-wide"
+          : "single-token",
         deadline: x2y2Order.end_at,
         royalty_fee: x2y2Order.royalty_fee,
       });

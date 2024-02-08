@@ -19,7 +19,10 @@ export const fetchOrdersByCursor = async (
   cursor: string = "",
   blockchain = "ETHEREUM"
 ) => {
-  logger.info("fetch_orders_rarible", `cursor = ${cursor} Fetching orders from Rarible`);
+  logger.info(
+    "fetch_orders_rarible",
+    `cursor = ${cursor} Fetching orders from Rarible`
+  );
 
   const rarible = new Rarible();
   let continuation = cursor;
@@ -44,8 +47,8 @@ export const fetchOrdersByCursor = async (
       },
     });
 
-    let orders: RaribleOrder[] = response.data.orders.filter((order: RaribleOrder) =>
-      isActiveRaribleOrder(order)
+    let orders: RaribleOrder[] = response.data.orders.filter(
+      (order: RaribleOrder) => isActiveRaribleOrder(order)
     );
     const parsedOrders: {
       order: Sdk.Rarible.Order;
@@ -89,7 +92,8 @@ export const fetchOrdersByCursor = async (
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrders = _.size(result); // Number of newly inserted rows
@@ -126,7 +130,10 @@ export const fetchOrdersByTimestamp = async (
   timestamp: number,
   blockchain = "ETHEREUM"
 ) => {
-  logger.info("fetch_orders_rarible", `timestamp = ${timestamp} Fetching orders from Rarible`);
+  logger.info(
+    "fetch_orders_rarible",
+    `timestamp = ${timestamp} Fetching orders from Rarible`
+  );
 
   const rarible = new Rarible();
   let numOrders = 0;
@@ -152,7 +159,8 @@ export const fetchOrdersByTimestamp = async (
 
     let orders: RaribleOrder[] = response.data.orders.filter(
       (order: RaribleOrder) =>
-        isActiveRaribleOrder(order) && new Date(order.dbUpdatedAt).getTime() > timestamp
+        isActiveRaribleOrder(order) &&
+        new Date(order.dbUpdatedAt).getTime() > timestamp
     );
     const parsedOrders: Sdk.Rarible.Order[] = [];
 
@@ -196,7 +204,8 @@ export const fetchOrdersByTimestamp = async (
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrders = _.size(result); // Number of newly inserted rows

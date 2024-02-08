@@ -21,12 +21,19 @@ export const realtimeQueue = new Queue(REALTIME_QUEUE_NAME, {
 });
 new QueueScheduler(REALTIME_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doRealtimeWork && config.doOpenseaWork && config.collectionsOffersOpenseaApiKey !== "") {
+if (
+  config.doRealtimeWork &&
+  config.doOpenseaWork &&
+  config.collectionsOffersOpenseaApiKey !== ""
+) {
   const realtimeWorker = new Worker(
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        logger.info(REALTIME_QUEUE_NAME, `SeaPort Sync collection offers start. job=${job.name}`);
+        logger.info(
+          REALTIME_QUEUE_NAME,
+          `SeaPort Sync collection offers start. job=${job.name}`
+        );
 
         const fetchOffersCollections = await getCollectionsToFetchOffers();
 

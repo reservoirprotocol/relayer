@@ -11,8 +11,15 @@ import { logger } from "../../common/logger";
 import { config } from "../../config";
 import { Element, ElementOrder, SaleKind } from "../../utils/element";
 
-export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedBefore = 0) => {
-  logger.info("fetch_orders_element", `listedAfter = ${listedAfter} Fetching orders from Element`);
+export const fetchOrders = async (
+  side: "sell" | "buy",
+  listedAfter = 0,
+  listedBefore = 0
+) => {
+  logger.info(
+    "fetch_orders_element",
+    `listedAfter = ${listedAfter} Fetching orders from Element`
+  );
 
   const element = new Element();
   let limit = 50;
@@ -86,7 +93,9 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -95,7 +104,8 @@ export const fetchOrders = async (side: "sell" | "buy", listedAfter = 0, listedB
         );
 
         await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
       }
 

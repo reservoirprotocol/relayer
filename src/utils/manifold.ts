@@ -66,7 +66,9 @@ export class Manifold {
     try {
       const contractOrder = JSON.parse(JSON.stringify(manifoldOrder));
 
-      contractOrder.details.initialAmount = this.bnHexToString(manifoldOrder.details.initialAmount);
+      contractOrder.details.initialAmount = this.bnHexToString(
+        manifoldOrder.details.initialAmount
+      );
       contractOrder.token.id = this.bnHexToString(manifoldOrder.token.id);
       contractOrder.token.spec =
         manifoldOrder.token.spec.toLowerCase() === "erc721"

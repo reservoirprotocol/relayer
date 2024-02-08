@@ -79,7 +79,9 @@ export const fetchOrders = async (options: {
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -88,7 +90,8 @@ export const fetchOrders = async (options: {
         );
 
         await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
       }
 
