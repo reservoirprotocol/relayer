@@ -14,6 +14,7 @@ export const config = {
   okxApiKey: String(process.env.OKX_API_KEY),
   okxSecretKey: String(process.env.OKX_SECRET_KEY),
   okxPassphrase: String(process.env.OKX_PASSPHRASE),
+  openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
 
   blurUrl: String(process.env.BLUR_URL),
   openseaApiUrl: String(process.env.OPENSEA_API_URL),
