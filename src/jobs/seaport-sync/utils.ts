@@ -69,7 +69,12 @@ export const fetchOrders = async (
       const orders: SeaportOrder[] = response.data.orders;
 
       if (!orders) {
-        logger.error("fetch_orders_seaport", `Failed to get orders from ${JSON.stringify(options)}, response ${JSON.stringify(response)}`)
+        logger.error(
+          "fetch_orders_seaport",
+          `Failed to get orders from ${JSON.stringify(options)}, response ${JSON.stringify(
+            response
+          )}`
+        );
       }
 
       total += orders.length;
@@ -157,7 +162,7 @@ export const fetchOrders = async (
       } else {
         logger.error(
           "fetch_orders_seaport",
-          `Seaport - Error. side=${side}, cursor=${cursor}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}, stack=${error.stack}`
+          `Seaport - Error. side=${side}, cursor=${cursor}, config.openseaApiUrl=${config.openseaApiUrl}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}, stack=${error.stack}`
         );
       }
 
