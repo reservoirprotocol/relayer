@@ -42,7 +42,7 @@ if (config.doBackfillWork) {
         );
 
         // If there are more order within th given time frame
-        if (lastCreatedAt <= endTime) {
+        if (lastCreatedAt && lastCreatedAt <= endTime) {
           job.data.newStartTime = lastCreatedAt;
         }
       } catch (error) {
