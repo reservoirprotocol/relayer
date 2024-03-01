@@ -79,8 +79,6 @@ if (process.env.DATADOG_AGENT_URL) {
   // TODO: Disable Redis tracing since that generates
   // a lot of traces which for now are not relevant
   tracer.init({
-    // service,
-    // url: process.env.DATADOG_AGENT_URL,
     profiling: true,
     logInjection: true,
     runtimeMetrics: true,
