@@ -36,7 +36,7 @@
     "@types/ws": "^8.5.3",
     "axios": "^0.21.4",
     "bullmq": "^1.64.0",
-    "dd-trace": "^1.6.0",
+    "dd-trace": "^4.0.0",
     "dotenv": "^10.0.0",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.5.0",
