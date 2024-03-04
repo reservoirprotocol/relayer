@@ -34,7 +34,7 @@ if (config.doBackfillWork) {
       const { startTime, endTime }: Data = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrders("sell", startTime);
+        const cursor = await fetchOrders("sell", startTime, endTime);
 
         logger.info(
           BACKFILL_QUEUE_NAME,
@@ -42,8 +42,8 @@ if (config.doBackfillWork) {
         );
 
         // If there are more order within th given time frame
-        if (lastCreatedAt <= endTime) {
-          job.data.newStartTime = lastCreatedAt;
+        if (cursor >= startTime) {
+          job.data.newEndTime = cursor;
         }
       } catch (error) {
         logger.error(
@@ -56,10 +56,10 @@ if (config.doBackfillWork) {
   );
 
   backfillWorker.on("completed", async (job: Job) => {
-    // If there's newStartTime schedule the next job
-    if (job.data.newStartTime) {
+    // If there's newEndTime schedule the next job
+    if (job.data.newEndTime) {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait to avoid rate-limiting
-      await addToElementBackfillQueue(job.data.newStartTime, job.data.endTime);
+      await addToElementBackfillQueue(job.data.startTime, job.data.newEndTime);
     }
   });
 
