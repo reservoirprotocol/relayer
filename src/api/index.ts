@@ -67,7 +67,9 @@ export const start = async () => {
 
         const startTime = Number(req.body.fromTimestamp);
         const endTime = Number(req.body.toTimestamp);
-        await addToX2Y2BackfillQueue(startTime, endTime);
+        const contract = req.body.contract ?? "";
+
+        await addToX2Y2BackfillQueue({ startTime, endTime, contract });
       } else {
         res.status(501).json({ message: "X2Y2 not supported" });
       }

@@ -73,5 +73,7 @@ export const addToOkxBackfillQueue = async (runId = "", delayMs = 0) => {
   await backfillQueue.add(BACKFILL_QUEUE_NAME, { runId }, { delay: delayMs });
 };
 
-const getCreateBeforeKey = (runId: string) => `${BACKFILL_QUEUE_NAME}-${runId}-create-before`;
-export const getLockKey = (runId: string) => `${BACKFILL_QUEUE_NAME}-${runId}-lock`;
+const getCreateBeforeKey = (runId: string) =>
+  `${BACKFILL_QUEUE_NAME}-${runId}-create-before`;
+export const getLockKey = (runId: string) =>
+  `${BACKFILL_QUEUE_NAME}-${runId}-lock`;

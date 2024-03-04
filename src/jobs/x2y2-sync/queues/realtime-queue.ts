@@ -63,7 +63,10 @@ if (config.doRealtimeWork) {
     await releaseLock("x2y2-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 

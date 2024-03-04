@@ -32,7 +32,10 @@ export type CoinbaseOrder = {
 };
 
 export class Coinbase {
-  public buildFetchOrdersURL(params: FetchOrdersParams, pagination?: FetchOrdersPaginationParams) {
+  public buildFetchOrdersURL(
+    params: FetchOrdersParams,
+    pagination?: FetchOrdersPaginationParams
+  ) {
     let baseApiUrl: string;
     if (config.chainId === 1) {
       baseApiUrl = "https://nft-api.coinbase.com";
@@ -106,7 +109,10 @@ export class Coinbase {
         return order;
       }
     } catch (error) {
-      logger.error("parse-coinbase-order", `Coinbase failed to parse order, error=${error}`);
+      logger.error(
+        "parse-coinbase-order",
+        `Coinbase failed to parse order, error=${error}`
+      );
     }
   }
 }

@@ -9,7 +9,11 @@ import { addToRelayOrdersQueue } from "../relay-orders";
 import { logger } from "../../common/logger";
 import { LooksRareV2, LooksRareOrderV2 } from "../../utils/looksrare-v2";
 import { fromUnixTime } from "date-fns";
-import { LooksRareSeaportOrder, Seaport, SeaportOrder } from "../../utils/seaport";
+import {
+  LooksRareSeaportOrder,
+  Seaport,
+  SeaportOrder,
+} from "../../utils/seaport";
 
 export const fetchOrders = async (
   lastSyncedHash: string = "",
@@ -94,7 +98,9 @@ export const fetchOrders = async (
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -103,7 +109,8 @@ export const fetchOrders = async (
         );
 
         const result = await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
 
         // If result is empty, all transactions already exists
@@ -138,7 +145,10 @@ export const fetchOrders = async (
       numOrders += orders.length;
 
       // Check if we reached the last synced order
-      const lastSyncedOrder = _.filter(orders, (order) => order.hash === lastSyncedHash);
+      const lastSyncedOrder = _.filter(
+        orders,
+        (order) => order.hash === lastSyncedHash
+      );
 
       if (!_.isEmpty(orders) && _.isEmpty(lastSyncedOrder)) {
         // Last synced order wasn't found
@@ -184,7 +194,7 @@ export const fetchOrders = async (
 
   logger.info(
     "fetch_orders_looksrare_v2",
-    `FINAL - LooksRare - (${startTime}, ${endTime}) Got ${numOrders} orders`
+    `FINAL - LooksRare - (${startTime}, ${endTime}) mostRecentCreatedHash=${mostRecentCreatedHash} Got ${numOrders} orders`
   );
 
   return [mostRecentCreatedHash, ""];
@@ -255,7 +265,8 @@ export const fetchSeaportOrders = async (
 
       const values: any[] = [];
       const handleOrder = async (order: LooksRareSeaportOrder) => {
-        order.protocol_address = Sdk.SeaportV15.Addresses.Exchange[config.chainId];
+        order.protocol_address =
+          Sdk.SeaportV15.Addresses.Exchange[config.chainId];
         const parsed = await seaport.parseSeaportOrder(order);
         if (parsed) {
           parsedOrders.push({
@@ -279,7 +290,9 @@ export const fetchSeaportOrders = async (
       };
 
       const plimit = pLimit(20);
-      await Promise.all(orders.map((order) => plimit(() => handleOrder(order))));
+      await Promise.all(
+        orders.map((order) => plimit(() => handleOrder(order)))
+      );
 
       if (values.length) {
         const columns = new pgp.helpers.ColumnSet(
@@ -288,7 +301,8 @@ export const fetchSeaportOrders = async (
         );
 
         const result = await db.manyOrNone(
-          pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+          pgp.helpers.insert(values, columns) +
+            " ON CONFLICT DO NOTHING RETURNING 1"
         );
 
         // If result is empty, all transactions already exists
@@ -316,7 +330,10 @@ export const fetchSeaportOrders = async (
       numOrders += orders.length;
 
       // Check if we reached the last synced order
-      const lastSyncedOrder = _.filter(orders, (order) => order.hash === lastSyncedHash);
+      const lastSyncedOrder = _.filter(
+        orders,
+        (order) => order.hash === lastSyncedHash
+      );
 
       if (!_.isEmpty(orders) && _.isEmpty(lastSyncedOrder)) {
         // Last synced order wasn't found

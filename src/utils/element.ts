@@ -58,10 +58,14 @@ export class Element {
     switch (config.chainId) {
       case 1:
         return "eth";
+      case 10:
+        return "optimism";
       case 56:
         return "bsc";
       case 137:
         return "polygon";
+      case 204:
+        return "opbnb";
       case 324:
         return "zksync";
       case 8453:
@@ -72,6 +76,10 @@ export class Element {
         return "avalanche";
       case 59144:
         return "linea";
+      case 81457:
+        return "blast";
+      case 534352:
+        return "scroll";
       default:
         return undefined;
     }
@@ -93,7 +101,10 @@ export class Element {
     }
 
     if (params.asset_contract_address) {
-      queryParams.append("asset_contract_address", String(params.asset_contract_address));
+      queryParams.append(
+        "asset_contract_address",
+        String(params.asset_contract_address)
+      );
     }
 
     if (params.sale_kind) {
@@ -123,7 +134,9 @@ export class Element {
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
-  public async parseOrder(params: ElementOrder): Promise<Sdk.Element.Order | undefined> {
+  public async parseOrder(
+    params: ElementOrder
+  ): Promise<Sdk.Element.Order | undefined> {
     try {
       if (!params.exchangeData) {
         return undefined;
@@ -150,7 +163,10 @@ export class Element {
           nft: params.contractAddress,
           nftId: params.tokenId,
           nftProperties: nftProperties ?? [],
-          nftAmount: params.schema.toLowerCase() === "erc721" ? undefined : String(params.quantity),
+          nftAmount:
+            params.schema.toLowerCase() === "erc721"
+              ? undefined
+              : String(params.quantity),
         });
       }
     } catch {

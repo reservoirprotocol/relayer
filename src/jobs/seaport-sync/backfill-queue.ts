@@ -29,7 +29,11 @@ if (config.doBackfillWork && config.doOpenseaWork) {
 
       try {
         // If this is the first run
-        job.data.newCursor = await fetchAllOrders(fromTimestamp, toTimestamp, cursor);
+        job.data.newCursor = await fetchAllOrders(
+          fromTimestamp,
+          toTimestamp,
+          cursor
+        );
       } catch (error: any) {
         job.data.newCursor = cursor;
 
@@ -67,7 +71,10 @@ if (config.doBackfillWork && config.doOpenseaWork) {
     }
 
     if (job.attemptsMade > 0) {
-      logger.info(BACKFILL_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        BACKFILL_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 
@@ -84,7 +91,11 @@ export const createTimeFrameForBackfill = async (
   let jobs = [];
 
   // Sync specific time frame
-  for (let timestamp = fromTimestamp; timestamp <= toTimestamp; timestamp += 60) {
+  for (
+    let timestamp = fromTimestamp;
+    timestamp <= toTimestamp;
+    timestamp += 60
+  ) {
     // Add to the queue with extra seconds to each side
     jobs.push({
       fromTimestamp: timestamp - 1,

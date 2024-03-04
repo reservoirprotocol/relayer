@@ -31,7 +31,10 @@ if (config.doRealtimeWork) {
           .get(getCreateAfterKey())
           .then((c) => (c ? c : Math.floor(Date.now() / 1000 - 30)));
 
-        logger.info(REALTIME_QUEUE_NAME, `Start syncing OKX listings (createAfter=${createAfter})`);
+        logger.info(
+          REALTIME_QUEUE_NAME,
+          `Start syncing OKX listings (createAfter=${createAfter})`
+        );
 
         const { maxTimestamp } = await fetchOrders({
           side: "sell",

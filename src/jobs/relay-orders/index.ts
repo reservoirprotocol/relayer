@@ -22,7 +22,10 @@ export const queue = new Queue(QUEUE_NAME, {
 });
 new QueueScheduler(QUEUE_NAME, { connection: redis.duplicate() });
 
-export const addToRelayOrdersQueue = async (orders: any[], prioritized?: boolean) => {
+export const addToRelayOrdersQueue = async (
+  orders: any[],
+  prioritized?: boolean
+) => {
   await queue.add(
     "relay-orders",
     { orders },
@@ -47,7 +50,8 @@ if (config.doBackgroundWork) {
         if (process.env.BASE_INDEXER_LITE_API_URL) {
           const headers = {};
           if (process.env.INDEXER_ADMIN_API_KEY) {
-            (headers as any)["X-Admin-Api-Key"] = process.env.INDEXER_ADMIN_API_KEY;
+            (headers as any)["X-Admin-Api-Key"] =
+              process.env.INDEXER_ADMIN_API_KEY;
           }
 
           if (process.env.INDEXER_API_KEY) {

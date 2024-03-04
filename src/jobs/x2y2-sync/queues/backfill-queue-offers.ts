@@ -42,7 +42,7 @@ if (config.doBackfillWork) {
         );
 
         // If there are more order within th given time frame
-        if (lastCreatedAt <= endTime) {
+        if (lastCreatedAt && lastCreatedAt <= endTime) {
           job.data.newStartTime = lastCreatedAt;
         }
       } catch (error) {
@@ -78,5 +78,9 @@ export const addToX2Y2BackfillQueue = async (
     endTime = startTime + 1;
   }
 
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { startTime, endTime }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    { startTime, endTime },
+    { delay: delayMs }
+  );
 };

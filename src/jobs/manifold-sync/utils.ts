@@ -21,7 +21,8 @@ export const fetchOrders = async (id: number, page: number) => {
 
     // type_ === 2 filters fixed price listings
     const newOrders: ManifoldApiOrder[] = response.data.listings.filter(
-      (order: ManifoldApiOrder) => order.details.type_ === 2 && Number(order.id) > id
+      (order: ManifoldApiOrder) =>
+        order.details.type_ === 2 && Number(order.id) > id
     );
     const pageOrderCount = response.data.count;
     // Manifold api returns 20 orders. If we've received 20 orders, then it's time to start fetching the next page
@@ -57,7 +58,9 @@ export const fetchOrders = async (id: number, page: number) => {
     };
 
     const plimit = pLimit(20);
-    await Promise.all(newOrders.map((order) => plimit(() => handleOrder(order))));
+    await Promise.all(
+      newOrders.map((order) => plimit(() => handleOrder(order)))
+    );
 
     if (values.length) {
       const columns = new pgp.helpers.ColumnSet(
@@ -66,7 +69,8 @@ export const fetchOrders = async (id: number, page: number) => {
       );
 
       const result = await db.manyOrNone(
-        pgp.helpers.insert(values, columns) + " ON CONFLICT DO NOTHING RETURNING 1"
+        pgp.helpers.insert(values, columns) +
+          " ON CONFLICT DO NOTHING RETURNING 1"
       );
 
       newOrdersCount = _.size(result); // Number of newly inserted rows
@@ -85,7 +89,10 @@ export const fetchOrders = async (id: number, page: number) => {
     throw error;
   }
 
-  logger.info("fetch_orders_manifold", `FINAL - manifold - Got ${newOrdersCount} new orders`);
+  logger.info(
+    "fetch_orders_manifold",
+    `FINAL - manifold - Got ${newOrdersCount} new orders`
+  );
 
   return [newOrderId, newPage];
 };

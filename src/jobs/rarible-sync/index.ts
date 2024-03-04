@@ -20,7 +20,10 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueue.addToRealtimeQueue();
-        logger.info(realtimeQueue.realtimeQueue.name, `Start Rarible sync from cursor=(${cursor})`);
+        logger.info(
+          realtimeQueue.realtimeQueue.name,
+          `Start Rarible sync from cursor=(${cursor})`
+        );
       }
     });
   }

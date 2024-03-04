@@ -179,13 +179,17 @@ export class Seaport {
         signature: seaportOrder.protocol_data.signature || undefined,
       };
 
-      if (seaportOrder.protocol_address === Sdk.SeaportV14.Addresses.Exchange[config.chainId]) {
+      if (
+        seaportOrder.protocol_address ===
+        Sdk.SeaportV14.Addresses.Exchange[config.chainId]
+      ) {
         return {
           kind: "seaport-v1.4",
           order: new Sdk.SeaportV14.Order(config.chainId, orderComponent),
         };
       } else if (
-        seaportOrder.protocol_address === Sdk.SeaportV15.Addresses.Exchange[config.chainId]
+        seaportOrder.protocol_address ===
+        Sdk.SeaportV15.Addresses.Exchange[config.chainId]
       ) {
         return {
           kind: "seaport-v1.5",

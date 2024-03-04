@@ -37,7 +37,10 @@ if (config.doRealtimeWork) {
         const [newId, newPage] = await fetchOrders(id, page);
 
         if (id === newId) {
-          logger.info(REALTIME_QUEUE_NAME, `manifold realtime order id didn't change id=${id}`);
+          logger.info(
+            REALTIME_QUEUE_NAME,
+            `manifold realtime order id didn't change id=${id}`
+          );
         } else {
           logger.info(
             REALTIME_QUEUE_NAME,
@@ -47,7 +50,10 @@ if (config.doRealtimeWork) {
         }
 
         if (page === newPage) {
-          logger.info(REALTIME_QUEUE_NAME, `manifold realtime page didn't change page=${page}`);
+          logger.info(
+            REALTIME_QUEUE_NAME,
+            `manifold realtime page didn't change page=${page}`
+          );
         } else {
           logger.info(
             REALTIME_QUEUE_NAME,
@@ -75,7 +81,10 @@ if (config.doRealtimeWork) {
     await releaseLock("manifold-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 
@@ -84,6 +93,9 @@ if (config.doRealtimeWork) {
   });
 }
 
-export const addToRealtimeQueue = async (delayMs: number = 0, cursor: string = "") => {
+export const addToRealtimeQueue = async (
+  delayMs: number = 0,
+  cursor: string = ""
+) => {
   await realtimeQueue.add(REALTIME_QUEUE_NAME, { cursor }, { delay: delayMs });
 };

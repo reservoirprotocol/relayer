@@ -32,7 +32,10 @@ if (config.doRealtimeWork) {
 
   cron.schedule("*/5 * * * * *", async () => {
     if (new Element().getChainName()) {
-      const lockAcquired = await acquireLock("element-sync-offers-lock", 60 * 5);
+      const lockAcquired = await acquireLock(
+        "element-sync-offers-lock",
+        60 * 5
+      );
       if (lockAcquired) {
         const cacheKey = "element-sync-offers-cursor";
         const cursor = await redis.get(cacheKey);

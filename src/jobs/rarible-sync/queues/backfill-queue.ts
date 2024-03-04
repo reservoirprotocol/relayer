@@ -30,7 +30,11 @@ if (config.doBackfillWork) {
         const cacheKey = "rarible-backfill-cursor";
         let cursor = await redis.get(cacheKey);
 
-        const newCursor = await fetchOrdersByCursor("DB_UPDATE_ASC", 1000, cursor || "");
+        const newCursor = await fetchOrdersByCursor(
+          "DB_UPDATE_ASC",
+          1000,
+          cursor || ""
+        );
 
         if (newCursor == cursor) {
           logger.info(
@@ -58,7 +62,10 @@ if (config.doBackfillWork) {
     await releaseLock("rarible-backfill-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(BACKFILL_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        BACKFILL_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 

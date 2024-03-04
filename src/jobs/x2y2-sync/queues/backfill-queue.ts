@@ -22,19 +22,25 @@ export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
 });
 new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
 
+export type x2y2BackfillData = {
+  startTime: number;
+  endTime: number;
+  contract?: string;
+};
+
 if (config.doBackfillWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {
-      type Data = {
-        startTime: number;
-        endTime: number;
-      };
-
-      const { startTime, endTime }: Data = job.data;
+      const { startTime, endTime, contract }: x2y2BackfillData = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrdersByDateCreated("sell", startTime);
+        const lastCreatedAt = await fetchOrdersByDateCreated(
+          "sell",
+          startTime,
+          endTime,
+          contract
+        );
 
         logger.info(
           BACKFILL_QUEUE_NAME,
@@ -42,7 +48,7 @@ if (config.doBackfillWork) {
         );
 
         // If there are more order within th given time frame
-        if (lastCreatedAt <= endTime) {
+        if (lastCreatedAt && lastCreatedAt <= endTime) {
           job.data.newStartTime = lastCreatedAt;
         }
       } catch (error) {
@@ -58,7 +64,14 @@ if (config.doBackfillWork) {
   backfillWorker.on("completed", async (job: Job) => {
     // If there's newStartTime schedule the next job
     if (job.data.newStartTime) {
-      await addToX2Y2BackfillQueue(job.data.newStartTime, job.data.endTime, 1000);
+      await addToX2Y2BackfillQueue(
+        {
+          startTime: job.data.newStartTime,
+          endTime: job.data.endTime,
+          contract: job.data.contract,
+        },
+        1000
+      );
     }
   });
 
@@ -68,14 +81,21 @@ if (config.doBackfillWork) {
 }
 
 export const addToX2Y2BackfillQueue = async (
-  startTime: number,
-  endTime: number,
+  params: x2y2BackfillData,
   delayMs: number = 0
 ) => {
   // Make sure endTime is bigger than startTime
-  if (endTime < startTime) {
-    endTime = startTime + 1;
+  if (params.endTime < params.startTime) {
+    params.endTime = params.startTime + 1;
   }
 
-  await backfillQueue.add(BACKFILL_QUEUE_NAME, { startTime, endTime }, { delay: delayMs });
+  await backfillQueue.add(
+    BACKFILL_QUEUE_NAME,
+    {
+      startTime: params.startTime,
+      endTime: params.endTime,
+      contract: params.contract,
+    },
+    { delay: delayMs }
+  );
 };

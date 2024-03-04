@@ -38,7 +38,10 @@ if (config.doRealtimeWork) {
           lastSyncedHashCache = "";
         }
 
-        [lastSyncedHash, cursor] = await fetchSeaportOrders(lastSyncedHashCache, cursor);
+        [lastSyncedHash, cursor] = await fetchSeaportOrders(
+          lastSyncedHashCache,
+          cursor
+        );
 
         if (cursor) {
           await addToRealtimeQueue(1000, cursor);
@@ -68,14 +71,20 @@ if (config.doRealtimeWork) {
     let { cursor } = job.data;
 
     // Set the next sync attempt
-    const lockExtended = await extendLock("looksrare-v2-seaport-sync-lock", 120);
+    const lockExtended = await extendLock(
+      "looksrare-v2-seaport-sync-lock",
+      120
+    );
 
     if (lockExtended && cursor == "") {
       await addToRealtimeQueue(10000);
     }
 
     if (job.attemptsMade > 0) {
-      logger.info(REALTIME_QUEUE_NAME, `Sync recover attempts=${job.attemptsMade}`);
+      logger.info(
+        REALTIME_QUEUE_NAME,
+        `Sync recover attempts=${job.attemptsMade}`
+      );
     }
   });
 
@@ -84,6 +93,9 @@ if (config.doRealtimeWork) {
   });
 }
 
-export const addToRealtimeQueue = async (delayMs: number = 0, cursor: string = "") => {
+export const addToRealtimeQueue = async (
+  delayMs: number = 0,
+  cursor: string = ""
+) => {
   await realtimeQueue.add(REALTIME_QUEUE_NAME, { cursor }, { delay: delayMs });
 };

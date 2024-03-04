@@ -75,7 +75,11 @@ export class LooksRareV2 {
       searchParams.append("pagination[cursor]", pagination.cursor);
     }
 
-    return decodeURI(`${baseApiUrl}/orders${seaport ? "/seaport" : ""}?${searchParams.toString()}`);
+    return decodeURI(
+      `${baseApiUrl}/orders${
+        seaport ? "/seaport" : ""
+      }?${searchParams.toString()}`
+    );
   }
 
   public async parseLooksRareOrder(
@@ -101,7 +105,10 @@ export class LooksRareV2 {
         return order;
       }
     } catch (error) {
-      logger.error("parse-looks-rare-order", `Failed to parse order ${looksRareOrder} - ${error}`);
+      logger.error(
+        "parse-looks-rare-order",
+        `Failed to parse order ${looksRareOrder} - ${error}`
+      );
       // Skip any errors
     }
   }
