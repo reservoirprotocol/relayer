@@ -43,7 +43,7 @@ if (config.doBackfillWork) {
 
         // If there are more order within th given time frame
         if (cursor >= startTime) {
-          job.data.newEndTime = cursor === endTime ? cursor - 1 : cursor;
+          job.data.newEndTime = cursor >= endTime ? endTime - 1 : cursor;
         }
       } catch (error) {
         logger.error(
