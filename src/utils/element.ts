@@ -72,6 +72,10 @@ export class Element {
         return "avalanche";
       case 59144:
         return "linea";
+      case 534352:
+        return "scroll";
+      case 81457:
+        return "blast";
       default:
         return undefined;
     }
