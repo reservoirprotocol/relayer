@@ -58,10 +58,14 @@ export class Element {
     switch (config.chainId) {
       case 1:
         return "eth";
+      case 10:
+        return "optimism";
       case 56:
         return "bsc";
       case 137:
         return "polygon";
+      case 204:
+        return "opbnb";
       case 324:
         return "zksync";
       case 8453:
@@ -72,6 +76,10 @@ export class Element {
         return "avalanche";
       case 59144:
         return "linea";
+      case 81457:
+        return "blast";
+      case 534352:
+        return "scroll";
       default:
         return undefined;
     }
