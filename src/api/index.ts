@@ -79,15 +79,11 @@ export const start = async () => {
   app.post(
     "/backfill/element",
     asyncHandler(async (req, res) => {
-      if (config.chainId === 1) {
-        res.status(202).json({ message: "Request accepted" });
+      res.status(202).json({ message: "Request accepted" });
 
-        const startTime = Number(req.body.fromTimestamp);
-        const endTime = Number(req.body.toTimestamp);
-        await addToElementBackfillQueue(startTime, endTime);
-      } else {
-        res.status(501).json({ message: "Element not supported" });
-      }
+      const startTime = Number(req.body.fromTimestamp);
+      const endTime = Number(req.body.toTimestamp);
+      await addToElementBackfillQueue(startTime, endTime);
     })
   );
 
