@@ -156,3 +156,15 @@ jobs:
           ./prod/platform/relayer-arbitrum-nova.yaml \
             ${{ github.sha }} \
             relayer-arbitrum-nova
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-blast.yaml \
+            ${{ github.sha }} \
+            relayer-blast
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-opbnb.yaml \
+            ${{ github.sha }} \
+            relayer-opbnb
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-scroll.yaml \
+            ${{ github.sha }} \
+            relayer-scroll

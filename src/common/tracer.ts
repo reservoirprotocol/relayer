@@ -72,6 +72,18 @@ if (process.env.DATADOG_AGENT_URL) {
     case 324:
       network = "zksync";
       break;
+
+    case 81457:
+      network = "blast";
+      break;
+
+    case 534352:
+      network = "scroll";
+      break;
+
+    case 204:
+      network = "opbnb";
+      break;
   }
 
   const service = `relayer-${network}`;
