@@ -119,6 +119,10 @@ export class Element {
       queryParams.append("listed_after", String(params.listed_after));
     }
 
+    if (params.listed_before) {
+      queryParams.append("listed_before", String(params.listed_before));
+    }
+
     if (params.offset) {
       queryParams.append("offset", String(params.offset));
     }
