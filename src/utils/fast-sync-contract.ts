@@ -4,7 +4,7 @@ import { logger } from "../common/logger";
 import * as seaport from "../jobs/seaport-sync/utils";
 
 export const fastSyncContract = async (contract: string, slug: string) => {
-  logger.info(
+  logger.debug(
     "fast_sync_contract",
     `Fast syncing contract / slug ${contract} ${slug}`
   );

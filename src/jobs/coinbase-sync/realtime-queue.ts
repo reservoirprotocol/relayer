@@ -35,17 +35,18 @@ if (config.doRealtimeWork) {
           pageTokenCache = "";
         }
 
-        logger.info(
+        logger.debug(
           REALTIME_QUEUE_NAME,
           `Start Coinbase sync from pageTokenCache=${pageTokenCache}`
         );
+
         const [newPageToken] = await fetchOrdersByPageToken(
           "sell",
           pageTokenCache
         );
 
         if (newPageToken == pageTokenCache) {
-          logger.info(
+          logger.debug(
             REALTIME_QUEUE_NAME,
             `Coinbase pageToken didn't change pageToken=${pageTokenCache}, newPageToken=${newPageToken}`
           );
@@ -75,7 +76,7 @@ if (config.doRealtimeWork) {
     await releaseLock("coinbase-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         REALTIME_QUEUE_NAME,
         `Sync recover attempts=${job.attemptsMade}`
       );

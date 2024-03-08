@@ -16,7 +16,7 @@ export const fetchOrders = async (options: {
   cursor?: string;
   maxIterations?: number;
 }) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_okx",
     `START Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, cursor=${options.cursor})`
   );
@@ -136,7 +136,7 @@ export const fetchOrders = async (options: {
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_okx",
     `END Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, createBefore=${options.createBefore}, cursor=${options.cursor}) - got ${numOrders} orders`
   );

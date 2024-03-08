@@ -18,7 +18,8 @@ if (config.doRealtimeWork) {
         const page = Number((await redis.get(cachePageKey)) || 1);
 
         await manifoldSyncRealtime.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           manifoldSyncRealtime.realtimeQueue.name,
           `Start Manifold sync from id=(${id}), page=(${page})`
         );

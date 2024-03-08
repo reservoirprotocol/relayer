@@ -25,7 +25,7 @@ export const fetchOrders = async (
     maxOrders?: number;
   }
 ) => {
-  logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
+  logger.debug("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
 
@@ -129,7 +129,7 @@ export const fetchOrders = async (
           const lastOrder = _.last(orders);
 
           if (lastOrder) {
-            logger.info(
+            logger.debug(
               "fetch_orders_seaport",
               `Seaport empty result. side=${side}, cursor=${cursor}, reached to=${lastOrder.created_date}`
             );
@@ -139,7 +139,7 @@ export const fetchOrders = async (
         }
 
         if (orders.length) {
-          logger.info(
+          logger.debug(
             "fetch_orders_seaport",
             `Seaport synced up to ${orders[orders.length - 1].created_date}`
           );
@@ -171,7 +171,7 @@ export const fetchOrders = async (
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_seaport",
     `Seaport - Done. side=${side}, total=${total}`
   );

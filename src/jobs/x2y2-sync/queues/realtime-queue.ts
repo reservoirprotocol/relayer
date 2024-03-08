@@ -33,7 +33,7 @@ if (config.doRealtimeWork) {
         const newCursor = await fetchOrdersByCursor("sell", cursor || "");
 
         if (newCursor == cursor) {
-          logger.info(
+          logger.debug(
             REALTIME_QUEUE_NAME,
             `x2y2 cursor didn't change cursor=${cursor}, newCursor=${newCursor}`
           );
@@ -63,7 +63,7 @@ if (config.doRealtimeWork) {
     await releaseLock("x2y2-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         REALTIME_QUEUE_NAME,
         `Sync recover attempts=${job.attemptsMade}`
       );

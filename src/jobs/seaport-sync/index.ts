@@ -32,7 +32,7 @@ if (config.doRealtimeWork && config.doOpenseaWork) {
         90 * 1000
       );
 
-      logger.info(
+      logger.debug(
         backfillQueue.name,
         `Start SeaPort hourly full sync fromTimestamp=${format(
           fromTimestamp,
