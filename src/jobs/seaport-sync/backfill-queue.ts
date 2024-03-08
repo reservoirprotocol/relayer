@@ -63,7 +63,7 @@ if (config.doBackfillWork && config.doOpenseaWork) {
       );
     } else {
       if (_.isUndefined(job.data.retry)) {
-        logger.info(
+        logger.debug(
           "fetch_all_orders",
           `Seaport - COMPLETED - fromTimestamp=${job.data.fromTimestamp}, toTimestamp=${job.data.toTimestamp}`
         );
@@ -71,7 +71,7 @@ if (config.doBackfillWork && config.doOpenseaWork) {
     }
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         BACKFILL_QUEUE_NAME,
         `Sync recover attempts=${job.attemptsMade}`
       );

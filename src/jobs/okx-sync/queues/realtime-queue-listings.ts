@@ -31,7 +31,7 @@ if (config.doRealtimeWork) {
           .get(getCreateAfterKey())
           .then((c) => (c ? c : Math.floor(Date.now() / 1000 - 30)));
 
-        logger.info(
+        logger.debug(
           REALTIME_QUEUE_NAME,
           `Start syncing OKX listings (createAfter=${createAfter})`
         );
@@ -64,7 +64,7 @@ if (config.doRealtimeWork) {
     await releaseLock(getLockKey(), false);
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         REALTIME_QUEUE_NAME,
         `OKX listings sync recovered (attempts=${job.attemptsMade})`
       );

@@ -14,7 +14,7 @@ export const fetchOrdersByDateCreated = async (
   side: "sell" | "buy",
   createdAfter: string = ""
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_coinbase",
     `createdAfter = ${createdAfter} Fetching orders from Coinbase`
   );
@@ -117,7 +117,7 @@ export const fetchOrdersByDateCreated = async (
     throw error;
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_coinbase",
     `FINAL - Coinbase - createdAfter ${createdAfter} lastCreatedAtOrder ${lastCreatedAtOrder}, new ${newPageToken} total orders ${numOrders}, new orders ${newOrders} url ${url}`
   );
@@ -129,7 +129,7 @@ export const fetchOrdersByPageToken = async (
   side: "sell" | "buy",
   pageToken: string = ""
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_coinbase",
     `side = ${side}, pageToken = ${pageToken} Fetching orders from Coinbase`
   );
@@ -248,7 +248,7 @@ export const fetchOrdersByPageToken = async (
     throw error;
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_coinbase",
     `FINAL - Coinbase - side ${side}, lastCreatedAtOrder ${lastCreatedAtOrder}, current ${pageToken} new ${newPageToken} total orders ${numOrders}, new orders ${newOrders} url ${url}`
   );

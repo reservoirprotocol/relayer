@@ -35,7 +35,7 @@ if (config.doRealtimeWork) {
           pageTokenCache = "";
         }
 
-        logger.info(
+        logger.debug(
           REALTIME_QUEUE_NAME,
           `Start Coinbase offers sync from pageTokenCache=${pageTokenCache}`
         );
@@ -45,7 +45,7 @@ if (config.doRealtimeWork) {
         );
 
         if (newPageToken == pageTokenCache) {
-          logger.info(
+          logger.debug(
             REALTIME_QUEUE_NAME,
             `Coinbase offers pageToken didn't change pageToken=${pageTokenCache}, newPageToken=${newPageToken}`
           );
@@ -75,7 +75,7 @@ if (config.doRealtimeWork) {
     await releaseLock("coinbase-offers-sync-lock", false);
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         REALTIME_QUEUE_NAME,
         `Offers sync recover attempts=${job.attemptsMade}`
       );

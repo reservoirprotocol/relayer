@@ -22,7 +22,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueListings.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueListings.realtimeQueue.name,
           `Start Element listings sync from cursor=(${cursor})`
         );
@@ -46,7 +47,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueOffers.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueOffers.realtimeQueue.name,
           `Start Element offers sync from cursor=(${cursor})`
         );

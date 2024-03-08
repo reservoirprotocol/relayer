@@ -30,7 +30,7 @@ if (
     REALTIME_QUEUE_NAME,
     async (job: Job) => {
       try {
-        logger.info(
+        logger.debug(
           REALTIME_QUEUE_NAME,
           `SeaPort Sync collection offers start. job=${job.name}`
         );
@@ -54,7 +54,7 @@ if (
           // await new Promise((resolve) => setTimeout(resolve, 1000));
         }
 
-        logger.info(
+        logger.debug(
           REALTIME_QUEUE_NAME,
           `SeaPort Sync collection offers finished. job=${job.name}, collections=${fetchOffersCollections.length}`
         );
