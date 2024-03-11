@@ -1,4 +1,3 @@
-import _ from "lodash";
 import cron from "node-cron";
 
 import * as realtimeQueueListings from "./queues/realtime-queue-listings";
@@ -14,8 +13,7 @@ if (config.doRealtimeWork) {
         30
       );
       if (lockAcquired) {
-        await realtimeQueueListings.realtimeQueue.obliterate({ force: true, count: 500 });
-        // await realtimeQueueListings.addToRealtimeQueue();
+        await realtimeQueueListings.addToRealtimeQueue();
       }
     });
   }
