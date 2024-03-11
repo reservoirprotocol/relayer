@@ -14,7 +14,7 @@ if (config.doRealtimeWork) {
         30
       );
       if (lockAcquired) {
-        await realtimeQueueListings.addToRealtimeQueue();
+        // await realtimeQueueListings.addToRealtimeQueue();
       }
     });
   }
