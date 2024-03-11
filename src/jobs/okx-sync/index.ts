@@ -14,6 +14,7 @@ if (config.doRealtimeWork) {
         30
       );
       if (lockAcquired) {
+        await realtimeQueueListings.realtimeQueue.obliterate({ force: true, count: 500 });
         // await realtimeQueueListings.addToRealtimeQueue();
       }
     });
