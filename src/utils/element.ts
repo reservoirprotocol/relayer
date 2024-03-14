@@ -64,8 +64,8 @@ export class Element {
         return "bsc";
       // case 137:
       //   return "polygon";
-      case 204:
-        return "opbnb";
+      // case 204:
+      //   return "opbnb";
       case 324:
         return "zksync";
       // case 8453:
