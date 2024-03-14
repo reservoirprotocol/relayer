@@ -56,8 +56,8 @@ export enum SaleKind {
 export class Element {
   public getChainName() {
     switch (config.chainId) {
-      // case 1:
-      //   return "eth";
+      case 1:
+        return "eth";
       case 10:
         return "optimism";
       case 56:
@@ -72,14 +72,14 @@ export class Element {
       //   return "base";
       case 42161:
         return "arbitrum";
-      case 43114:
-        return "avalanche";
+      // case 43114:
+      //   return "avalanche";
       case 59144:
         return "linea";
       case 81457:
         return "blast";
-      case 534352:
-        return "scroll";
+      // case 534352:
+      //   return "scroll";
       default:
         return undefined;
     }

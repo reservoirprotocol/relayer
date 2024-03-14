@@ -31,7 +31,7 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule("*/15 * * * * *", async () => {
+  cron.schedule("*/10 * * * * *", async () => {
     if (new Element().getChainName()) {
       const lockAcquired = await acquireLock(
         "element-sync-offers-lock",
