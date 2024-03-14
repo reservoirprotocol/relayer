@@ -16,7 +16,7 @@ export const fetchOrders = async (
   listedAfter = 0,
   listedBefore = 0
 ) => {
-  logger.debug(
+  logger.info(
     "fetch_orders_element",
     `listedAfter = ${listedAfter} Fetching orders from Element`
   );
@@ -136,7 +136,7 @@ export const fetchOrders = async (
     }
   }
 
-  logger.debug(
+  logger.info(
     "fetch_orders_element",
     `FINAL - Element - (${listedBefore}) Got ${numOrders} orders`
   );
