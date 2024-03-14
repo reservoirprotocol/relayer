@@ -58,8 +58,8 @@ export class Element {
     switch (config.chainId) {
       // case 1:
       //   return "eth";
-      // case 10:
-      //   return "optimism";
+      case 10:
+        return "optimism";
       case 56:
         return "bsc";
       // case 137:
