@@ -62,18 +62,18 @@ export class Element {
         return "optimism";
       case 56:
         return "bsc";
-      // case 137:
-      //   return "polygon";
-      // case 204:
-      //   return "opbnb";
+      case 137:
+        return "polygon";
+      case 204:
+        return "opbnb";
       case 324:
         return "zksync";
-      // case 8453:
-      //   return "base";
+      case 8453:
+        return "base";
       case 42161:
         return "arbitrum";
-      // case 43114:
-      //   return "avalanche";
+      case 43114:
+        return "avalanche";
       case 59144:
         return "linea";
       case 81457:

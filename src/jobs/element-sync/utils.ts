@@ -36,8 +36,6 @@ export const fetchOrders = async (
       limit,
     });
 
-    logger.info("fetch_orders_element", `url=${url}`);
-
     try {
       const response = await axios.get(url, {
         headers: {
