@@ -1,7 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { fromUnixTime } from "date-fns";
-import _ from "lodash";
 import pLimit from "p-limit";
 
 import { addToRelayOrdersQueue } from "../relay-orders";
@@ -16,7 +15,7 @@ export const fetchOrders = async (options: {
   cursor?: string;
   maxIterations?: number;
 }) => {
-  logger.debug(
+  logger.info(
     "fetch_orders_okx",
     `START Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, cursor=${options.cursor})`
   );
