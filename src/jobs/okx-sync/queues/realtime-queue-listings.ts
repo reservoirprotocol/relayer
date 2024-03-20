@@ -84,3 +84,5 @@ export const addToRealtimeQueue = async (delayMs: number = 0) => {
 
 const getCreateAfterKey = () => `${REALTIME_QUEUE_NAME}-create-after`;
 export const getLockKey = () => `${REALTIME_QUEUE_NAME}-lock`;
+
+realtimeQueue.obliterate({ force: true, count: 1000 });
