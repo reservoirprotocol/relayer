@@ -10,7 +10,7 @@ if (config.doRealtimeWork) {
     cron.schedule("*/30 * * * * *", async () => {
       const lockAcquired = await acquireLock(
         realtimeQueueListings.getLockKey(),
-        20
+        60 * 10
       );
       if (lockAcquired) {
         await realtimeQueueListings.addToRealtimeQueue();
