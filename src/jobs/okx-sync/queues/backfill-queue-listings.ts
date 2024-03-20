@@ -77,5 +77,3 @@ const getCreateBeforeKey = (runId: string) =>
   `${BACKFILL_QUEUE_NAME}-${runId}-create-before`;
 export const getLockKey = (runId: string) =>
   `${BACKFILL_QUEUE_NAME}-${runId}-lock`;
-
-backfillQueue.obliterate({ force: true, count: 1000 });
