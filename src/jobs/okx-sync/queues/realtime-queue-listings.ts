@@ -39,7 +39,9 @@ if (config.doRealtimeWork) {
         const { maxTimestamp } = await fetchOrders({
           side: "sell",
           createAfter: Number(createAfter),
+          maxIterations: 10,
         });
+
         if (maxTimestamp) {
           await redis.set(getCreateAfterKey(), maxTimestamp - 1);
         }
@@ -84,3 +86,5 @@ export const addToRealtimeQueue = async (delayMs: number = 0) => {
 
 const getCreateAfterKey = () => `${REALTIME_QUEUE_NAME}-create-after`;
 export const getLockKey = () => `${REALTIME_QUEUE_NAME}-lock`;
+
+realtimeQueue.obliterate({ force: true, count: 1000 });
