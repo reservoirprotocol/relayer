@@ -257,7 +257,7 @@ export const fetchSeaportOrders = async (
 
       const orders: LooksRareSeaportOrder[] = response.data.data;
       const parsedOrders: {
-        kind: "seaport-v1.4" | "seaport-v1.5";
+        kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
         data: Sdk.SeaportBase.Types.OrderComponents;
         originatedAt: string;
         source: "looksrare";

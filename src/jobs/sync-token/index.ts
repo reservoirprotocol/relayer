@@ -57,7 +57,7 @@ if (config.doBackgroundWork) {
         );
 
         const parsedOrders: {
-          kind: "seaport-v1.4" | "seaport-v1.5";
+          kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
           data: Sdk.SeaportBase.Types.OrderComponents;
         }[] = [];
         const insertQueries: any[] = [];

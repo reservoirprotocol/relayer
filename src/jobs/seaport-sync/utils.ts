@@ -78,7 +78,7 @@ export const fetchOrders = async (
       total += orders.length;
 
       const parsedOrders: {
-        kind: "seaport-v1.4" | "seaport-v1.5";
+        kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
         data: Sdk.SeaportBase.Types.OrderComponents;
         originatedAt: string;
         source: "opensea";
@@ -232,7 +232,7 @@ export const fetchAllOrders = async (
 
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";
@@ -329,7 +329,7 @@ export const fetchListingsBySlug = async (slug: string) => {
 
     const orders: SeaportOrder[] = response.data.listings;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";
@@ -429,7 +429,7 @@ export const fetchCollectionOffers = async (
 
     const orders: SeaportOrder[] = response.data.seaport_offers;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";
