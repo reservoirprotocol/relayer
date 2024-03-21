@@ -1,4 +1,3 @@
-import _ from "lodash";
 import cron from "node-cron";
 
 import * as realtimeQueueListings from "./queues/realtime-queue-listings";
@@ -8,10 +7,10 @@ import { Okx } from "../../utils/okx";
 
 if (config.doRealtimeWork) {
   if (new Okx().getChainName()) {
-    cron.schedule("*/20 * * * * *", async () => {
+    cron.schedule("*/30 * * * * *", async () => {
       const lockAcquired = await acquireLock(
         realtimeQueueListings.getLockKey(),
-        30
+        60 * 10
       );
       if (lockAcquired) {
         await realtimeQueueListings.addToRealtimeQueue();

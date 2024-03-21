@@ -21,7 +21,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueListings.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueListings.realtimeQueue.name,
           `Start X2Y2 listings sync from cursor=(${cursor})`
         );
@@ -43,7 +44,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueOffers.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueOffers.realtimeQueue.name,
           `Start X2Y2 offers sync from cursor=(${cursor})`
         );

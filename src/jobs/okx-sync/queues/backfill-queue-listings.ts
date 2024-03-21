@@ -33,7 +33,7 @@ if (config.doBackfillWork) {
           .get(getCreateBeforeKey(runId))
           .then((c) => (c ? c : Math.floor(Date.now() / 1000)));
 
-        logger.info(
+        logger.debug(
           BACKFILL_QUEUE_NAME,
           `Start syncing OKX listings (runId=${runId} createBefore=${createBefore})`
         );

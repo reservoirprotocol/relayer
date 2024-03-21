@@ -37,12 +37,12 @@ if (config.doRealtimeWork) {
         const [newId, newPage] = await fetchOrders(id, page);
 
         if (id === newId) {
-          logger.info(
+          logger.debug(
             REALTIME_QUEUE_NAME,
             `manifold realtime order id didn't change id=${id}`
           );
         } else {
-          logger.info(
+          logger.debug(
             REALTIME_QUEUE_NAME,
             `manifold realtime order id changed id=${id}, new id=${newId}`
           );

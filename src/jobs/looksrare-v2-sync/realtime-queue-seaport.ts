@@ -81,7 +81,7 @@ if (config.doRealtimeWork) {
     }
 
     if (job.attemptsMade > 0) {
-      logger.info(
+      logger.debug(
         REALTIME_QUEUE_NAME,
         `Sync recover attempts=${job.attemptsMade}`
       );

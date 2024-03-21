@@ -22,7 +22,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueListings.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueListings.realtimeQueue.name,
           `Start Element listings sync from cursor=(${cursor})`
         );
@@ -30,7 +31,7 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule("*/5 * * * * *", async () => {
+  cron.schedule("*/30 * * * * *", async () => {
     if (new Element().getChainName()) {
       const lockAcquired = await acquireLock(
         "element-sync-offers-lock",
@@ -46,7 +47,8 @@ if (config.doRealtimeWork) {
         }
 
         await realtimeQueueOffers.addToRealtimeQueue();
-        logger.info(
+
+        logger.debug(
           realtimeQueueOffers.realtimeQueue.name,
           `Start Element offers sync from cursor=(${cursor})`
         );

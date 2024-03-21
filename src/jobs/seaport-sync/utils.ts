@@ -25,7 +25,7 @@ export const fetchOrders = async (
     maxOrders?: number;
   }
 ) => {
-  logger.info("fetch_orders_seaport", `Seaport - Start. side=${side}`);
+  logger.debug("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
 
@@ -78,7 +78,7 @@ export const fetchOrders = async (
       total += orders.length;
 
       const parsedOrders: {
-        kind: "seaport-v1.4" | "seaport-v1.5";
+        kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
         data: Sdk.SeaportBase.Types.OrderComponents;
         originatedAt: string;
         source: "opensea";
@@ -129,7 +129,7 @@ export const fetchOrders = async (
           const lastOrder = _.last(orders);
 
           if (lastOrder) {
-            logger.info(
+            logger.debug(
               "fetch_orders_seaport",
               `Seaport empty result. side=${side}, cursor=${cursor}, reached to=${lastOrder.created_date}`
             );
@@ -139,7 +139,7 @@ export const fetchOrders = async (
         }
 
         if (orders.length) {
-          logger.info(
+          logger.debug(
             "fetch_orders_seaport",
             `Seaport synced up to ${orders[orders.length - 1].created_date}`
           );
@@ -171,7 +171,7 @@ export const fetchOrders = async (
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_seaport",
     `Seaport - Done. side=${side}, total=${total}`
   );
@@ -232,7 +232,7 @@ export const fetchAllOrders = async (
 
     const orders: SeaportOrder[] = response.data.orders;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";
@@ -329,7 +329,7 @@ export const fetchListingsBySlug = async (slug: string) => {
 
     const orders: SeaportOrder[] = response.data.listings;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";
@@ -429,7 +429,7 @@ export const fetchCollectionOffers = async (
 
     const orders: SeaportOrder[] = response.data.seaport_offers;
     const parsedOrders: {
-      kind: "seaport-v1.4" | "seaport-v1.5";
+      kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
       data: Sdk.SeaportBase.Types.OrderComponents;
       originatedAt: string;
       source: "opensea";

@@ -25,7 +25,7 @@ if (config.doRealtimeWork) {
 
         await looksrareSyncRealtime.addToRealtimeQueue();
 
-        logger.info(
+        logger.debug(
           realtimeQueue.name,
           `Start LookRareV2 sync from lastSynced=(${lastSynced})`
         );
@@ -47,7 +47,7 @@ if (config.doRealtimeWork) {
 
         await looksrareSeaportSyncRealtime.addToRealtimeQueue();
 
-        logger.info(
+        logger.debug(
           realtimeQueue.name,
           `Start LookRareV2 seaport sync from lastSynced=(${lastSynced})`
         );

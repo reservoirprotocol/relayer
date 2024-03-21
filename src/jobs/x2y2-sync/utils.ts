@@ -16,7 +16,7 @@ export const fetchOrdersByDateCreated = async (
   createdBefore = 0,
   contract = ""
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_x2y2_by_date_created",
     `createdAfter=${createdAfter}, createdBefore=${createdBefore}, contract=${contract} Fetching orders from X2Y2`
   );
@@ -103,7 +103,7 @@ export const fetchOrdersByDateCreated = async (
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_x2y2_by_date_created",
     `FINAL - X2Y2 - newCursor=${newCursor}, ${createdAfter} - ${createdBefore} contract ${contract} Got ${numOrders} orders`
   );
@@ -115,7 +115,7 @@ export const fetchOrdersByCursor = async (
   side: "sell" | "buy",
   cursor: string = ""
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_x2y2",
     `side = ${side} cursor = ${cursor} Fetching orders from X2Y2`
   );
@@ -208,7 +208,7 @@ export const fetchOrdersByCursor = async (
     throw error;
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_x2y2",
     `FINAL - X2Y2 - (current = ${cursor} new = ${newCursor}) total orders ${numOrders}, new orders ${newOrders}, side = ${side}, url ${url}`
   );

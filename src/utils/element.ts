@@ -78,8 +78,8 @@ export class Element {
         return "linea";
       case 81457:
         return "blast";
-      case 534352:
-        return "scroll";
+      // case 534352:
+      //   return "scroll";
       default:
         return undefined;
     }

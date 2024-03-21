@@ -1,7 +1,6 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
 import { fromUnixTime } from "date-fns";
-import _ from "lodash";
 import pLimit from "p-limit";
 
 import { addToRelayOrdersQueue } from "../relay-orders";
@@ -130,7 +129,7 @@ export const fetchOrders = async (options: {
         done = true;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
       throw error;
     }
@@ -138,7 +137,7 @@ export const fetchOrders = async (options: {
 
   logger.info(
     "fetch_orders_okx",
-    `END Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, createBefore=${options.createBefore}, cursor=${options.cursor}) - got ${numOrders} orders`
+    `END Fetching ${options.side} orders from OKX (createAfter=${options.createAfter}, createBefore=${options.createBefore}, cursor=${options.cursor}) - got ${numOrders} orders minTimestamp ${minTimestamp} maxTimestamp ${maxTimestamp}`
   );
 
   return { minTimestamp, maxTimestamp };

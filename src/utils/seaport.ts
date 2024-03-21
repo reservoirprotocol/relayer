@@ -161,6 +161,7 @@ export class Seaport {
   ): Promise<
     | { kind: "seaport-v1.4"; order: Sdk.SeaportV14.Order }
     | { kind: "seaport-v1.5"; order: Sdk.SeaportV15.Order }
+    | { kind: "seaport-v1.6"; order: Sdk.SeaportV16.Order }
     | undefined
   > {
     try {
@@ -194,6 +195,14 @@ export class Seaport {
         return {
           kind: "seaport-v1.5",
           order: new Sdk.SeaportV15.Order(config.chainId, orderComponent),
+        };
+      } else if (
+        seaportOrder.protocol_address ===
+        Sdk.SeaportV16.Addresses.Exchange[config.chainId]
+      ) {
+        return {
+          kind: "seaport-v1.6",
+          order: new Sdk.SeaportV16.Order(config.chainId, orderComponent),
         };
       }
 

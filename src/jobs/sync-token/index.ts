@@ -51,13 +51,13 @@ if (config.doBackgroundWork) {
       const { token } = job.data;
 
       if (token) {
-        logger.info(
+        logger.debug(
           "fast_sync_token",
           `Fast syncing token ${token} from OpenSea`
         );
 
         const parsedOrders: {
-          kind: "seaport-v1.4" | "seaport-v1.5";
+          kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
           data: Sdk.SeaportBase.Types.OrderComponents;
         }[] = [];
         const insertQueries: any[] = [];
@@ -198,7 +198,7 @@ if (config.doBackgroundWork) {
 
         await addToRelayOrdersQueue(parsedOrders, true);
 
-        logger.info(
+        logger.debug(
           "fast_sync_token",
           `Got total ${totalOrders} valid ${parsedOrders.length} orders for token ${token}`
         );

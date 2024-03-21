@@ -81,7 +81,7 @@ if (config.doBackfillWork) {
         1000
       );
     } else {
-      logger.info(
+      logger.debug(
         BACKFILL_QUEUE_NAME,
         `Coinbase backfilled from startTime=${job.data.newStartTime} to endTime=${job.data.endTime}`
       );

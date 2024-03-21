@@ -22,7 +22,7 @@ export const fetchOrders = async (
   endTime: number = 0,
   backfill = false
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_orders_looksrare_v2",
     `lastSyncedHash = ${lastSyncedHash}, cursor = ${cursor} Fetching orders from LooksRareV2`
   );
@@ -115,7 +115,7 @@ export const fetchOrders = async (
 
         // If result is empty, all transactions already exists
         if (cursor != "" && _.isEmpty(result)) {
-          logger.info(
+          logger.debug(
             "fetch_orders_looksrare_v2",
             `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].hash}`
           );
@@ -163,7 +163,7 @@ export const fetchOrders = async (
 
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
-        logger.info(
+        logger.debug(
           "fetch_orders_looksrare_v2",
           `LooksRare return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
         );
@@ -192,7 +192,7 @@ export const fetchOrders = async (
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_orders_looksrare_v2",
     `FINAL - LooksRare - (${startTime}, ${endTime}) mostRecentCreatedHash=${mostRecentCreatedHash} Got ${numOrders} orders`
   );
@@ -207,7 +207,7 @@ export const fetchSeaportOrders = async (
   endTime: number = 0,
   backfill = false
 ) => {
-  logger.info(
+  logger.debug(
     "fetch_seaport_orders_looksrare_v2",
     `lastSyncedHash = ${lastSyncedHash}, cursor = ${cursor} Fetching Seaport orders from LooksRareV2`
   );
@@ -257,7 +257,7 @@ export const fetchSeaportOrders = async (
 
       const orders: LooksRareSeaportOrder[] = response.data.data;
       const parsedOrders: {
-        kind: "seaport-v1.4" | "seaport-v1.5";
+        kind: "seaport-v1.4" | "seaport-v1.5" | "seaport-v1.6";
         data: Sdk.SeaportBase.Types.OrderComponents;
         originatedAt: string;
         source: "looksrare";
@@ -307,7 +307,7 @@ export const fetchSeaportOrders = async (
 
         // If result is empty, all transactions already exists
         if (cursor != "" && _.isEmpty(result)) {
-          logger.info(
+          logger.debug(
             "fetch_seaport_orders_looksrare_v2",
             `LooksRare empty result cursor=${cursor}, most recent order=${orders[0].hash}`
           );
@@ -348,7 +348,7 @@ export const fetchSeaportOrders = async (
 
       // If this is real time sync, and we reached the max orders to fetch -> trigger the backfill process
       if (cursor != "" && numOrders >= maxOrdersToFetch) {
-        logger.info(
+        logger.debug(
           "fetch_seaport_orders_looksrare_v2",
           `LooksRare return cursor=${cursor}, numOrders=${numOrders}, maxOrdersToFetch=${maxOrdersToFetch}`
         );
@@ -363,7 +363,7 @@ export const fetchSeaportOrders = async (
       // Wait to avoid rate-limiting
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      logger.info(
+      logger.debug(
         "fetch_seaport_orders_looksrare_v2",
         `Seaport - Batch done. cursor=${cursor} Got ${orders.length} orders`
       );
@@ -387,7 +387,7 @@ export const fetchSeaportOrders = async (
     }
   }
 
-  logger.info(
+  logger.debug(
     "fetch_seaport_orders_looksrare_v2",
     `FINAL - LooksRare - (${startTime}, ${endTime}) Got ${numOrders} orders`
   );
