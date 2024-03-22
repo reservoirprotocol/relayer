@@ -7,7 +7,7 @@ import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 
 if (config.doRealtimeWork) {
-  if (_.indexOf([1], config.chainId) !== -1) {
+  if (_.indexOf([1, 137], config.chainId) !== -1) {
     cron.schedule("*/5 * * * * *", async () => {
       const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);
       if (lockAcquired) {

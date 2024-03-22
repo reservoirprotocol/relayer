@@ -4,10 +4,8 @@ import { IPart } from "@reservoir0x/sdk/dist/rarible/types";
 import { config } from "../config";
 
 type FetchOrdersParams = {
-  blockchain: string;
   continuation?: string;
   size?: number;
-  sort?: "DB_UPDATE_DESC" | "DB_UPDATE_ASC";
 };
 
 export type RaribleOrder = {
@@ -53,8 +51,7 @@ export type RaribleOrder = {
   end?: number;
   signature: string;
   createdAt: string;
-  lastUpdateAt: string;
-  dbUpdatedAt: string;
+  lastUpdatedAt: string;
   hash: string;
   makeBalance: string;
   makePrice: number;
@@ -66,21 +63,23 @@ export type RaribleOrder = {
 
 export class Rarible {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
-    //TESTNET: https://testnet-api.rarible.org/v0.1/doc
-    let baseApiUrl = "";
-    if (config.chainId === 1) {
-      baseApiUrl = "https://api.rarible.org/v0.1/orders/sync/";
+    let baseApiUrl: string;
+    if ([1, 137].includes(config.chainId)) {
+      baseApiUrl = "https://api.rarible.org/v0.1/orders/sell/";
     } else if (config.chainId === 5) {
-      baseApiUrl = "https://testnet-api.rarible.org/v0.1/orders/sync/";
+      baseApiUrl = "https://testnet-api.rarible.org/v0.1/orders/sell/";
     } else {
       throw new Error("Unsupported chain");
     }
 
     const queryParams = new URLSearchParams();
 
-    if (params.blockchain) {
-      queryParams.append("blockchain", params.blockchain);
-    }
+    queryParams.append("platform", "RARIBLE");
+
+    queryParams.append(
+      "blockchain",
+      config.chainId === 137 ? "POLYGON" : "ETHEREUM"
+    );
 
     if (params.size) {
       queryParams.append("size", String(params.size));
@@ -88,10 +87,6 @@ export class Rarible {
 
     if (params.continuation) {
       queryParams.append("continuation", params.continuation);
-    }
-
-    if (params.sort) {
-      queryParams.append("sort", String(params.sort));
     }
 
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);

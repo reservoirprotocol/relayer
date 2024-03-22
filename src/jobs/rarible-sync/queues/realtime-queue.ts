@@ -32,11 +32,7 @@ if (config.doRealtimeWork) {
         let timestamp = Number((await redis.get(cacheKey)) || 0);
 
         // Using the cursor with DESC sorting goes back in time. Do not use cursor for realtime fetching.
-        const newTimestamp = await fetchOrdersByTimestamp(
-          "DB_UPDATE_DESC",
-          1000,
-          timestamp
-        );
+        const newTimestamp = await fetchOrdersByTimestamp(1000, timestamp);
 
         if (timestamp == newTimestamp) {
           logger.info(

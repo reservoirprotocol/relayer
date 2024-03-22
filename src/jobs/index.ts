@@ -26,7 +26,6 @@ import * as x2y2SyncListingsBackfill from "./x2y2-sync/queues/backfill-queue";
 import * as x2y2SyncOffersBackfill from "./x2y2-sync/queues/backfill-queue-offers";
 
 import * as raribleSyncRealtime from "./rarible-sync/queues/realtime-queue";
-import * as raribleSyncBackfill from "./rarible-sync/queues/backfill-queue";
 
 import * as elementSyncListingsRealtime from "./element-sync/queues/realtime-queue";
 import * as elementSyncOffersRealtime from "./element-sync/queues/realtime-queue-offers";
@@ -69,7 +68,6 @@ export const allQueues = [
   coinbaseSyncOffersRealtime.realtimeQueue,
 
   raribleSyncRealtime.realtimeQueue,
-  raribleSyncBackfill.backfillQueue,
 
   manifoldSyncListingsRealtime.realtimeQueue,
 
