@@ -2020,10 +2020,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
-"@reservoir0x/sdk@^0.0.362":
-  version "0.0.362"
-  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.362.tgz#60f1f79aa33af5938b665665ce8f4bb7fce9a426"
-  integrity sha512-VfQp5t7aJU4yF9rg1Jl0glE8Jzc65gNRhUoTveK6rEgByEG4U5Tl6JbFgkEWHHU+dji/oQGRmJ+wsyM0u2QMQw==
+"@reservoir0x/sdk@^0.0.363":
+  version "0.0.363"
+  resolved "https://registry.yarnpkg.com/@reservoir0x/sdk/-/sdk-0.0.363.tgz#0955cf2d659087a330b055613e52d8d5dfd779bc"
+  integrity sha512-jolqPN+G4+4aAnvd2TT5hYIqGJU8ZfaQF9ZjKuo47K5YNqLI3RpACEH8EVp8VA/27MQgdVA5Pm7qfXd+OZEHwA==
   dependencies:
     "@uniswap/smart-order-router" "^3.26.0"
     ethers "^5.7.2"
