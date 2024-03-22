@@ -1,12 +1,13 @@
 import * as Sdk from "@reservoir0x/sdk";
 import axios from "axios";
-import _, { orderBy } from "lodash";
+import _ from "lodash";
 import pLimit from "p-limit";
 
 import { addToRelayOrdersQueue } from "../relay-orders";
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { Rarible, RaribleOrder } from "../../utils/rarible";
+import { config } from "../../config";
 
 const isActiveRaribleOrder = (order: RaribleOrder) =>
   ((order.type || "").toLowerCase().includes("rarible") ||
@@ -14,10 +15,8 @@ const isActiveRaribleOrder = (order: RaribleOrder) =>
   (order.status || "").toLowerCase() === "active";
 
 export const fetchOrdersByCursor = async (
-  sort: "DB_UPDATE_DESC" | "DB_UPDATE_ASC",
   size: number = 100,
-  cursor: string = "",
-  blockchain = "ETHEREUM"
+  cursor: string = ""
 ) => {
   logger.info(
     "fetch_orders_rarible",
@@ -30,20 +29,17 @@ export const fetchOrdersByCursor = async (
   let newOrders = 0;
 
   const url = rarible.buildFetchOrdersURL({
-    blockchain,
     size,
     continuation,
-    sort,
   });
 
   try {
     const response = await axios.get(url, {
       timeout: 10000,
       headers: {
-        "X-Api-Key":
-          blockchain === "ETHEREUM"
-            ? "252a5dfe-df6d-406a-92b8-62b47a7cc218"
-            : "6a2f432b-4103-45d2-bd9a-700ecab0228c",
+        "X-Api-Key": [1, 137].includes(config.chainId)
+          ? "252a5dfe-df6d-406a-92b8-62b47a7cc218"
+          : "6a2f432b-4103-45d2-bd9a-700ecab0228c",
       },
     });
 
@@ -125,10 +121,8 @@ export const fetchOrdersByCursor = async (
 };
 
 export const fetchOrdersByTimestamp = async (
-  sort: "DB_UPDATE_DESC" | "DB_UPDATE_ASC",
   size: number = 100,
-  timestamp: number,
-  blockchain = "ETHEREUM"
+  timestamp: number
 ) => {
   logger.info(
     "fetch_orders_rarible",
@@ -140,27 +134,24 @@ export const fetchOrdersByTimestamp = async (
   let newOrders = 0;
   let newTimestamp = timestamp;
   const url = rarible.buildFetchOrdersURL({
-    blockchain,
     size,
     continuation: "",
-    sort,
   });
 
   try {
     const response = await axios.get(url, {
       timeout: 10000,
       headers: {
-        "X-Api-Key":
-          blockchain === "ETHEREUM"
-            ? "252a5dfe-df6d-406a-92b8-62b47a7cc218"
-            : "6a2f432b-4103-45d2-bd9a-700ecab0228c",
+        "X-Api-Key": [1, 137].includes(config.chainId)
+          ? "252a5dfe-df6d-406a-92b8-62b47a7cc218"
+          : "6a2f432b-4103-45d2-bd9a-700ecab0228c",
       },
     });
 
     let orders: RaribleOrder[] = response.data.orders.filter(
       (order: RaribleOrder) =>
         isActiveRaribleOrder(order) &&
-        new Date(order.dbUpdatedAt).getTime() > timestamp
+        new Date(order.lastUpdatedAt).getTime() > timestamp
     );
     const parsedOrders: Sdk.Rarible.Order[] = [];
 
@@ -173,7 +164,7 @@ export const fetchOrdersByTimestamp = async (
         parsedOrders.push(parsed);
 
         // Update timestamp if newer
-        const orderTimestamp = new Date(order.dbUpdatedAt).getTime();
+        const orderTimestamp = new Date(order.lastUpdatedAt).getTime();
         if (orderTimestamp > timestamp) {
           newTimestamp = orderTimestamp;
         }

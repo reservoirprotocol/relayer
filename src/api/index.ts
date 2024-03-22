@@ -9,7 +9,6 @@ import { config } from "../config";
 import { fastSyncContract } from "../utils/fast-sync-contract";
 
 import { allQueues } from "../jobs";
-import { addToRaribleBackfillQueue } from "../jobs/rarible-sync/queues/backfill-queue";
 import {
   addToSeaportBackfillQueue,
   createTimeFrameForBackfill,
@@ -84,15 +83,6 @@ export const start = async () => {
       const startTime = Number(req.body.fromTimestamp);
       const endTime = Number(req.body.toTimestamp);
       await addToElementBackfillQueue(startTime, endTime);
-    })
-  );
-
-  app.post(
-    "/backfill/rarible",
-    asyncHandler(async (req, res) => {
-      res.status(202).json({ message: "Request accepted" });
-
-      await addToRaribleBackfillQueue();
     })
   );
 
