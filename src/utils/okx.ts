@@ -116,9 +116,13 @@ export class Okx {
     return decodeURI(`${baseApiUrl}?${queryParams.toString()}`);
   }
 
-  public async parseOrder(
-    params: OkxOrder
-  ): Promise<Sdk.SeaportV15.Order | Sdk.SeaportV16.Order | undefined> {
+  public async parseOrder(params: OkxOrder): Promise<
+    | {
+        kind: "seaport-v1.5" | "seaport-v1.6";
+        order: Sdk.SeaportV15.Order | Sdk.SeaportV16.Order;
+      }
+    | undefined
+  > {
     try {
       if (
         ![
@@ -145,7 +149,10 @@ export class Okx {
 
       (order.params as any).okxOrderId = params.orderId;
 
-      return order;
+      return {
+        kind: isV15 ? "seaport-v1.5" : "seaport-v1.6",
+        order,
+      };
     } catch {
       // Skip any errors
     }

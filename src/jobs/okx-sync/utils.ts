@@ -48,6 +48,7 @@ export const fetchOrders = async (options: {
 
       const orders: OkxOrder[] = response.data.data.data;
       const parsedOrders: {
+        kind: "seaport-v1.5" | "seaport-v1.6";
         order: Sdk.SeaportV15.Order | Sdk.SeaportV16.Order;
         originatedAt: string;
       }[] = [];
@@ -59,14 +60,15 @@ export const fetchOrders = async (options: {
           const parsed = await okx.parseOrder(order);
           if (parsed) {
             parsedOrders.push({
-              order: parsed,
+              kind: parsed.kind,
+              order: parsed.order,
               originatedAt: new Date(order.createTime * 1000).toISOString(),
             });
 
             values.push({
-              hash: parsed.hash(),
-              target: parsed.getInfo()!.contract.toLowerCase(),
-              maker: parsed.params.offerer.toLowerCase(),
+              hash: parsed.order.hash(),
+              target: parsed.order.getInfo()!.contract.toLowerCase(),
+              maker: parsed.order.params.offerer.toLowerCase(),
               created_at: fromUnixTime(order.createTime),
               data: order as any,
               source: "okx",
@@ -96,8 +98,8 @@ export const fetchOrders = async (options: {
 
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(
-          parsedOrders.map(({ order, originatedAt }) => ({
-            kind: "seaport-v1.5",
+          parsedOrders.map(({ kind, order, originatedAt }) => ({
+            kind,
             data: order.params,
             originatedAt,
             source: "okx",
