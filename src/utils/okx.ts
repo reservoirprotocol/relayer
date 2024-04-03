@@ -118,20 +118,30 @@ export class Okx {
 
   public async parseOrder(
     params: OkxOrder
-  ): Promise<Sdk.SeaportV15.Order | undefined> {
+  ): Promise<Sdk.SeaportV15.Order | Sdk.SeaportV16.Order | undefined> {
     try {
       if (
-        params.protocolAddress.toLowerCase() !==
-        Sdk.SeaportV15.Addresses.Exchange[config.chainId]
+        ![
+          Sdk.SeaportV15.Addresses.Exchange[config.chainId],
+          Sdk.SeaportV16.Addresses.Exchange[config.chainId],
+        ].includes(params.protocolAddress.toLowerCase())
       ) {
         return undefined;
       }
 
+      const isV15 =
+        Sdk.SeaportV15.Addresses.Exchange[config.chainId] ===
+        params.protocolAddress.toLowerCase();
       const signature = params.protocolData.signature;
-      const order = new Sdk.SeaportV15.Order(config.chainId, {
-        ...params.protocolData.parameters,
-        signature: signature && signature !== "0x" ? signature : undefined,
-      });
+      const order = isV15
+        ? new Sdk.SeaportV15.Order(config.chainId, {
+            ...params.protocolData.parameters,
+            signature: signature && signature !== "0x" ? signature : undefined,
+          })
+        : new Sdk.SeaportV16.Order(config.chainId, {
+            ...params.protocolData.parameters,
+            signature: signature && signature !== "0x" ? signature : undefined,
+          });
 
       (order.params as any).okxOrderId = params.orderId;
 

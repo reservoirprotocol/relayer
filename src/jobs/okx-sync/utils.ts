@@ -48,7 +48,7 @@ export const fetchOrders = async (options: {
 
       const orders: OkxOrder[] = response.data.data.data;
       const parsedOrders: {
-        order: Sdk.SeaportV15.Order;
+        order: Sdk.SeaportV15.Order | Sdk.SeaportV16.Order;
         originatedAt: string;
       }[] = [];
 
