@@ -86,6 +86,10 @@ export class Seaport {
         network = "avalanche";
         break;
 
+      case 81457:
+        network = "blast";
+        break;
+
       case 80001:
         hostname = "testnets-api.opensea.io";
         network = "mumbai";
