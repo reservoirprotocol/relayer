@@ -168,3 +168,7 @@ jobs:
             ./prod/platform/relayer-scroll.yaml \
             ${{ github.sha }} \
             relayer-scroll
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-amoy.yaml \
+            ${{ github.sha }} \
+            relayer-amoy
