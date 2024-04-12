@@ -60,6 +60,10 @@ const log = (level: "debug" | "error" | "info" | "warn") => {
       network = "mumbai";
       break;
 
+    case 80002:
+      network = "amoy";
+      break;
+
     case 8453:
       network = "base";
       break;
