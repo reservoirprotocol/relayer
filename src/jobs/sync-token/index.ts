@@ -101,6 +101,11 @@ if (config.doBackgroundWork) {
             network = "mumbai";
             break;
 
+          case 80002:
+            hostname = "testnets-api.opensea.io";
+            network = "amoy";
+            break;
+
           case 8453:
             network = "base";
             break;
