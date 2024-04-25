@@ -41,6 +41,10 @@ if (process.env.DATADOG_AGENT_URL) {
       network = "mumbai";
       break;
 
+    case 80002:
+      network = "amoy";
+      break;
+
     case 8453:
       network = "base";
       break;
