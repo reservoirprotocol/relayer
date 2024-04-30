@@ -123,6 +123,10 @@ export class Seaport {
         network = "sepolia";
         break;
 
+      case 666666666:
+        network = "degen";
+        break;
+
       default:
         throw new Error("Unsupported chain");
     }

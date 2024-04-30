@@ -88,6 +88,10 @@ if (process.env.DATADOG_AGENT_URL) {
     case 204:
       network = "opbnb";
       break;
+
+    case 666666666:
+      network = "degen";
+      break;
   }
 
   const service = `relayer-${network}`;

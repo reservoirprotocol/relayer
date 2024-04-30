@@ -128,6 +128,10 @@ if (config.doBackgroundWork) {
             hostname = "testnets-api.opensea.io";
             network = "sepolia";
             break;
+
+          case 666666666:
+            network = "degen";
+            break;
         }
 
         // Fetch recent listings
