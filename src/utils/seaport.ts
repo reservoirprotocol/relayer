@@ -54,7 +54,7 @@ export class Seaport {
     const hostname = config.openseaHostname;
     const network = config.openseaChainName;
 
-    if (!hostname) {
+    if (!network) {
       throw new Error("Unsupported chain");
     }
 
