@@ -1,11 +1,11 @@
 export const config = {
   port: Number(process.env.PORT),
   chainId: Number(process.env.CHAIN_ID),
-  networkName: String(process.env.NETWORK_NAME || "unknown"),
+  chainName: String(process.env.CHAIN_NAME || "unknown"),
   environment: String(process.env.ENVIRONMENT),
 
   openseaHostname: process.env.OPENSEA_HOSTNAME,
-  openseaNetworkName: process.env.OPENSEA_NETOWRK_NAME,
+  openseaChainName: process.env.OPENSEA_CHAIN_NAME,
   backfillOpenseaApiKey: process.env.BACKFILL_OPENSEA_API_KEY,
   realtimeOpenseaApiKey: process.env.REALTIME_OPENSEA_API_KEY,
   offersOpenseaApiKey: String(process.env.OFFERS_OPENSEA_API_KEY || ""),

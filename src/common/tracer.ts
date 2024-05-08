@@ -3,7 +3,7 @@ import tracer from "dd-trace";
 import { config } from "../config";
 
 if (process.env.DATADOG_AGENT_URL) {
-  const service = `relayer-${config.networkName}`;
+  const service = `relayer-${config.chainName}`;
 
   // TODO: Disable Redis tracing since that generates
   // a lot of traces which for now are not relevant

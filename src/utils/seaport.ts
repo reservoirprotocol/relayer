@@ -52,7 +52,7 @@ export class Seaport {
     let baseApiUrl: string;
 
     const hostname = config.openseaHostname;
-    const network = config.openseaNetworkName;
+    const network = config.openseaChainName;
 
     if (!hostname) {
       throw new Error("Unsupported chain");

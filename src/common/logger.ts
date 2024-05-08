@@ -22,7 +22,7 @@ for (const name of Object.keys(nets)) {
 }
 
 const log = (level: "debug" | "error" | "info" | "warn") => {
-  const service = `relayer-${config.networkName}`;
+  const service = `relayer-${config.chainName}`;
 
   const logger = createLogger({
     exitOnError: false,
