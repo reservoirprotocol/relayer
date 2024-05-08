@@ -64,70 +64,12 @@ if (config.doBackgroundWork) {
         const [contract, tokenId] = token.split(":");
         let totalOrders = 0;
 
-        let hostname = "api.opensea.io";
-        let network = "ethereum";
-        switch (config.chainId) {
-          case 4:
-            hostname = "testnets-api.opensea.io";
-            network = "rinkeby";
-            break;
+        const hostname = config.openseaHostname;
+        const network = config.openseaChainName;
 
-          case 10:
-            network = "optimism";
-            break;
-
-          case 56:
-            network = "bsc";
-            break;
-
-          case 137:
-            network = "matic";
-            break;
-
-          case 42161:
-            network = "arbitrum";
-            break;
-
-          case 42170:
-            network = "arbitrum_nova";
-            break;
-
-          case 43114:
-            network = "avalanche";
-            break;
-
-          case 80001:
-            hostname = "testnets-api.opensea.io";
-            network = "mumbai";
-            break;
-
-          case 80002:
-            hostname = "testnets-api.opensea.io";
-            network = "amoy";
-            break;
-
-          case 8453:
-            network = "base";
-            break;
-
-          case 84531:
-            hostname = "testnets-api.opensea.io";
-            network = "base_goerli";
-            break;
-
-          case 7777777:
-            network = "zora";
-            break;
-
-          case 999:
-            hostname = "testnets-api.opensea.io";
-            network = "zora_testnet";
-            break;
-
-          case 11155111:
-            hostname = "testnets-api.opensea.io";
-            network = "sepolia";
-            break;
+        if (!hostname) {
+          logger.debug("fast_sync_token",`${config.chainId} not supported`);
+          return;
         }
 
         // Fetch recent listings
