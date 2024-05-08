@@ -1,8 +1,11 @@
 export const config = {
   port: Number(process.env.PORT),
   chainId: Number(process.env.CHAIN_ID),
+  networkName: String(process.env.NETWORK_NAME || "unknown"),
   environment: String(process.env.ENVIRONMENT),
 
+  openseaHostname: process.env.OPENSEA_HOSTNAME,
+  openseaNetworkName: process.env.OPENSEA_NETOWRK_NAME,
   backfillOpenseaApiKey: process.env.BACKFILL_OPENSEA_API_KEY,
   realtimeOpenseaApiKey: process.env.REALTIME_OPENSEA_API_KEY,
   offersOpenseaApiKey: String(process.env.OFFERS_OPENSEA_API_KEY || ""),
@@ -12,11 +15,13 @@ export const config = {
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),
+  elementChainName: process.env.ELEMENT_CHAIN_NAME,
   coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
   okxApiKey: String(process.env.OKX_API_KEY),
   okxSecretKey: String(process.env.OKX_SECRET_KEY),
   okxPassphrase: String(process.env.OKX_PASSPHRASE),
+  okxChainName: process.env.OKX_CHAIN_NAME,
   openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
 
   blurUrl: String(process.env.BLUR_URL),

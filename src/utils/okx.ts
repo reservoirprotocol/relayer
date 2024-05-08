@@ -27,32 +27,7 @@ const BASE_OKX_URL = "https://www.okx.com";
 
 export class Okx {
   public getChainName() {
-    switch (config.chainId) {
-      case 1:
-        return "eth";
-      case 10:
-        return "optimism";
-      case 56:
-        return "bsc";
-      case 137:
-        return "polygon";
-      case 324:
-        return "zksync-era";
-      case 1101:
-        return "polygon-zkevm";
-      case 8453:
-        return "base";
-      case 42161:
-        return "arbitrum one";
-      case 42170:
-        return "arbitrum nova";
-      case 43114:
-        return "avax";
-      case 59144:
-        return "linea";
-      default:
-        return undefined;
-    }
+    return config.okxChainName;
   }
 
   public buildAuthHeaders(url: string, method: "GET" | "POST", data?: object) {
