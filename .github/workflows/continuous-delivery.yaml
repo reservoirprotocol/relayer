@@ -50,6 +50,7 @@ jobs:
           tags: |
             ghcr.io/reservoirprotocol/relayer:latest
             ghcr.io/reservoirprotocol/relayer:${{ github.sha }}
+            ghcr.io/reservoirprotocol/relayer:${{ github.ref_name }}-${{ github.sha }}
 
   deploy-dev:
     name: Deploy to Development
@@ -121,10 +122,6 @@ jobs:
             ${{ github.sha }} \
             relayer-avalanche
           ./utils/version_update.sh \
-            ./prod/platform/relayer-mumbai.yaml \
-            ${{ github.sha }} \
-            relayer-mumbai
-          ./utils/version_update.sh \
             ./prod/platform/relayer-base.yaml \
             ${{ github.sha }} \
             relayer-base
@@ -168,3 +165,7 @@ jobs:
             ./prod/platform/relayer-scroll.yaml \
             ${{ github.sha }} \
             relayer-scroll
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-amoy.yaml \
+            ${{ github.sha }} \
+            relayer-amoy

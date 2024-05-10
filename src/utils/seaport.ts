@@ -51,71 +51,11 @@ export class Seaport {
   public buildFetchOrdersURL(params: FetchOrdersParams) {
     let baseApiUrl: string;
 
-    let hostname = "api.opensea.io";
-    let network = "ethereum";
-    switch (config.chainId) {
-      case 1:
-        break;
+    const hostname = config.openseaHostname;
+    const network = config.openseaChainName;
 
-      case 5:
-        hostname = "testnets-api.opensea.io";
-        network = "goerli";
-        break;
-
-      case 10:
-        network = "optimism";
-        break;
-
-      case 56:
-        network = "bsc";
-        break;
-
-      case 137:
-        network = "matic";
-        break;
-
-      case 42161:
-        network = "arbitrum";
-        break;
-
-      case 42170:
-        network = "arbitrum_nova";
-        break;
-
-      case 43114:
-        network = "avalanche";
-        break;
-
-      case 80001:
-        hostname = "testnets-api.opensea.io";
-        network = "mumbai";
-        break;
-
-      case 8453:
-        network = "base";
-        break;
-
-      case 84531:
-        hostname = "testnets-api.opensea.io";
-        network = "base_goerli";
-        break;
-
-      case 7777777:
-        network = "zora";
-        break;
-
-      case 999:
-        hostname = "testnets-api.opensea.io";
-        network = "zora_testnet";
-        break;
-
-      case 11155111:
-        hostname = "testnets-api.opensea.io";
-        network = "sepolia";
-        break;
-
-      default:
-        throw new Error("Unsupported chain");
+    if (!network) {
+      throw new Error("Unsupported chain");
     }
 
     const baseUrl = params.overrideBaseUrl ?? `https://${hostname}`;
