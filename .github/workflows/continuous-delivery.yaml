@@ -50,6 +50,7 @@ jobs:
           tags: |
             ghcr.io/reservoirprotocol/relayer:latest
             ghcr.io/reservoirprotocol/relayer:${{ github.sha }}
+            ghcr.io/reservoirprotocol/relayer:${{ github.ref_name }}-${{ github.sha }}
 
   deploy-dev:
     name: Deploy to Development
