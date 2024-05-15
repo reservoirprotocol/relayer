@@ -26,7 +26,7 @@ export type ElementOrder = {
   listingTime: number;
 
   orderHash: string;
-  orderId: string;
+  elementId: string;
 
   maker: string;
   taker: string;
@@ -149,8 +149,8 @@ export class Element {
       }
 
       const json = JSON.parse(params.exchangeData);
-      let order: Sdk.Element.Order;
 
+      let order: Sdk.Element.Order;
       if (params.saleKind === SaleKind.BatchSignedOrder) {
         order = new Sdk.Element.Order(config.chainId, {
           ...json,
@@ -177,13 +177,14 @@ export class Element {
               : String(params.quantity),
         });
       }
+
       if (json.oracleSignature) {
-        (order.params as any).elementOrderId = params.orderId;
+        (order.params as any).elementId = params.elementId;
       }
+
       return order;
-    } catch (err) {
-      console.log("err", err);
-      // Skip any errors
+    } catch {
+      // Skip errors
     }
   }
 }
