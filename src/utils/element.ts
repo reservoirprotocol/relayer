@@ -26,7 +26,7 @@ export type ElementOrder = {
   listingTime: number;
 
   orderHash: string;
-  elementId: string;
+  orderId?: string;
 
   maker: string;
   taker: string;
@@ -152,7 +152,7 @@ export class Element {
       }
 
       if (json.oracleSignature) {
-        (order.params as any).elementId = params.elementId;
+        (order.params as any).elementId = params.orderId;
       }
 
       return order;
