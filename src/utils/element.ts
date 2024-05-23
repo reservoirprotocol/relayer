@@ -26,6 +26,8 @@ export type ElementOrder = {
   listingTime: number;
 
   orderHash: string;
+  orderId?: string;
+
   maker: string;
   taker: string;
 
@@ -120,8 +122,10 @@ export class Element {
       }
 
       const json = JSON.parse(params.exchangeData);
+
+      let order: Sdk.Element.Order;
       if (params.saleKind === SaleKind.BatchSignedOrder) {
-        return new Sdk.Element.Order(config.chainId, {
+        order = new Sdk.Element.Order(config.chainId, {
           ...json,
           erc20Token: json.paymentToken,
         });
@@ -130,7 +134,7 @@ export class Element {
           params.schema.toLowerCase() === "erc721"
             ? json.order.nftProperties
             : json.order.erc1155TokenProperties;
-        return new Sdk.Element.Order(config.chainId, {
+        order = new Sdk.Element.Order(config.chainId, {
           direction:
             params.side === 1
               ? Sdk.Element.Types.TradeDirection.SELL
@@ -146,8 +150,14 @@ export class Element {
               : String(params.quantity),
         });
       }
+
+      if (json.oracleSignature) {
+        (order.params as any).elementId = params.orderId;
+      }
+
+      return order;
     } catch {
-      // Skip any errors
+      // Skip errors
     }
   }
 }

@@ -169,3 +169,7 @@ jobs:
             ./prod/platform/relayer-amoy.yaml \
             ${{ github.sha }} \
             relayer-amoy
+          ./utils/version_update.sh \
+            ./prod/platform/relayer-cyber.yaml \
+            ${{ github.sha }} \
+            relayer-cyber

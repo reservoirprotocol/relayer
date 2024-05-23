@@ -163,6 +163,15 @@ export const fetchOrders = async (
           await new Promise((resolve) => setTimeout(resolve, 5000));
           continue;
         }
+      } else if (error.response?.status === 401) {
+        logger.error(
+          "fetch_orders_seaport",
+          JSON.stringify({
+            message: `UnauthorizedError. context=fetchOrders, message=${error.message}, url=${error.config?.url}`,
+            requestHeaders: error.config?.headers,
+            responseData: JSON.stringify(error.response?.data),
+          })
+        );
       } else {
         logger.error(
           "fetch_orders_seaport",
