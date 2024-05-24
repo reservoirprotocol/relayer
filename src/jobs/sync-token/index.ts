@@ -68,7 +68,7 @@ if (config.doBackgroundWork) {
         const network = config.openseaChainName;
 
         if (!hostname) {
-          logger.debug("fast_sync_token",`${config.chainId} not supported`);
+          logger.debug("fast_sync_token", `${config.chainId} not supported`);
           return;
         }
 
