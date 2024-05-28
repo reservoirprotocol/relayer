@@ -70,10 +70,7 @@ jobs:
       - name: Deploy to Dev Environment
         working-directory: k8s-configs
         run: |
-          ./utils/version_update.sh \
-            ./dev/platform/relayer-sepolia.yaml \
-            ${{ github.sha }} \
-            relayer-sepolia
+          ./utils/version_update_batch.sh relayer ${{ github.sha }} $(grep -rl 'application: relayer-' dev/platform/ | tr '\n' ' ')
 
   deploy-prod:
     name: Deploy to Production
@@ -93,83 +90,4 @@ jobs:
       - name: Deploy to Prod Environment
         working-directory: k8s-configs
         run: |
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-mainnet.yaml \
-            ${{ github.sha }} \
-            relayer-mainnet
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-arbitrum.yaml \
-            ${{ github.sha }} \
-            relayer-arbitrum
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-polygon.yaml \
-            ${{ github.sha }} \
-            relayer-polygon
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-realtime-mainnet.yaml \
-            ${{ github.sha }} \
-            relayer-realtime-mainnet
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-optimism.yaml \
-            ${{ github.sha }} \
-            relayer-optimism
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-arbitrum-nova.yaml \
-            ${{ github.sha }} \
-            relayer-arbitrum-nova
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-avalanche.yaml \
-            ${{ github.sha }} \
-            relayer-avalanche
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-base.yaml \
-            ${{ github.sha }} \
-            relayer-base
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-zora.yaml \
-            ${{ github.sha }} \
-            relayer-zora
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-sepolia.yaml \
-            ${{ github.sha }} \
-            relayer-sepolia
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-bsc.yaml \
-            ${{ github.sha }} \
-            relayer-bsc
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-linea.yaml \
-            ${{ github.sha }} \
-            relayer-linea
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-polygon-zkevm.yaml \
-            ${{ github.sha }} \
-            relayer-polygon-zkevm
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-zksync.yaml \
-            ${{ github.sha }} \
-            relayer-zksync
-          ./utils/version_update.sh \
-          ./prod/platform/relayer-arbitrum-nova.yaml \
-            ${{ github.sha }} \
-            relayer-arbitrum-nova
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-blast.yaml \
-            ${{ github.sha }} \
-            relayer-blast
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-opbnb.yaml \
-            ${{ github.sha }} \
-            relayer-opbnb
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-scroll.yaml \
-            ${{ github.sha }} \
-            relayer-scroll
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-amoy.yaml \
-            ${{ github.sha }} \
-            relayer-amoy
-          ./utils/version_update.sh \
-            ./prod/platform/relayer-cyber.yaml \
-            ${{ github.sha }} \
-            relayer-cyber
+          ./utils/version_update_batch.sh relayer ${{ github.sha }} $(grep -rl 'application: relayer-' prod/platform/ | tr '\n' ' ')
