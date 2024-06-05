@@ -16,7 +16,6 @@ import {
 import { addToSyncTokenQueue } from "../jobs/sync-token";
 import { addToX2Y2BackfillQueue } from "../jobs/x2y2-sync/queues/backfill-queue";
 import { addToElementBackfillQueue } from "../jobs/element-sync/queues/backfill-queue";
-import { addToCoinbaseBackfillQueue } from "../jobs/coinbase-sync/backfill-queue";
 import { addToOkxBackfillQueue } from "../jobs/okx-sync/queues/backfill-queue-listings";
 
 export const start = async () => {
@@ -93,22 +92,6 @@ export const start = async () => {
 
       const runId = String(req.body.runId);
       await addToOkxBackfillQueue(runId);
-    })
-  );
-
-  app.post(
-    "/backfill/coinbase",
-    asyncHandler(async (req, res) => {
-      if (config.chainId === 1) {
-        res.status(202).json({ message: "Request accepted" });
-
-        const side = String(req.body.side) === "sell" ? "sell" : "buy";
-        const startTime = Number(req.body.fromTimestamp);
-        const endTime = Number(req.body.toTimestamp);
-        await addToCoinbaseBackfillQueue(side, startTime, endTime);
-      } else {
-        res.status(501).json({ message: "Element not supported" });
-      }
     })
   );
 

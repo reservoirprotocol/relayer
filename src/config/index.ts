@@ -16,7 +16,6 @@ export const config = {
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   elementChainName: process.env.ELEMENT_CHAIN_NAME,
-  coinbaseApiKey: String(process.env.COINBASE_API_KEY),
   blurApiKey: String(process.env.BLUR_API_KEY),
   okxApiKey: String(process.env.OKX_API_KEY),
   okxSecretKey: String(process.env.OKX_SECRET_KEY),
