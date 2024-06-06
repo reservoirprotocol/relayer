@@ -167,6 +167,7 @@ export const fetchOrders = async (
         logger.error(
           "fetch_orders_seaport",
           JSON.stringify({
+            topic: "opensea-unauthorized-api-key",
             message: `UnauthorizedError. context=fetchOrders, message=${error.message}, url=${error.config?.url}`,
             requestHeaders: error.config?.headers,
             responseData: JSON.stringify(error.response?.data),
