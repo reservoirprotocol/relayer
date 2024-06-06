@@ -3,7 +3,6 @@ import "./seaport-sync";
 import "./sync-token";
 import "./x2y2-sync";
 import "./element-sync";
-import "./coinbase-sync";
 import "./rarible-sync";
 import "./manifold-sync";
 import "./looksrare-v2-sync";
@@ -32,10 +31,6 @@ import * as elementSyncOffersRealtime from "./element-sync/queues/realtime-queue
 import * as elementSyncListingsBackfill from "./element-sync/queues/backfill-queue";
 import * as elementSyncOffersBackfill from "./element-sync/queues/backfill-queue-offers";
 
-import * as coinbaseSyncListingsRealtime from "./coinbase-sync/realtime-queue";
-import * as coinbaseSyncListingsBackfill from "./coinbase-sync/backfill-queue";
-import * as coinbaseSyncOffersRealtime from "./coinbase-sync/realtime-queue-offers";
-
 import * as manifoldSyncListingsRealtime from "./manifold-sync/realtime-queue";
 
 import * as okxSyncListingsRealtime from "./okx-sync/queues/realtime-queue-listings";
@@ -62,10 +57,6 @@ export const allQueues = [
   elementSyncOffersRealtime.realtimeQueue,
   elementSyncListingsBackfill.backfillQueue,
   elementSyncOffersBackfill.backfillQueue,
-
-  coinbaseSyncListingsRealtime.realtimeQueue,
-  coinbaseSyncListingsBackfill.backfillQueue,
-  coinbaseSyncOffersRealtime.realtimeQueue,
 
   raribleSyncRealtime.realtimeQueue,
 
