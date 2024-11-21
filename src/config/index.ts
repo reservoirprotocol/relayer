@@ -17,14 +17,18 @@ export const config = {
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   elementChainName: process.env.ELEMENT_CHAIN_NAME,
   blurApiKey: String(process.env.BLUR_API_KEY),
-  okxApiKey: String(process.env.OKX_API_KEY),
-  okxSecretKey: String(process.env.OKX_SECRET_KEY),
-  okxPassphrase: String(process.env.OKX_PASSPHRASE),
-  okxChainName: process.env.OKX_CHAIN_NAME,
+
   openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
 
   blurUrl: String(process.env.BLUR_URL),
   openseaApiUrl: String(process.env.OPENSEA_API_URL),
+
+  // OKX
+  okxApiKey: String(process.env.OKX_API_KEY),
+  okxSecretKey: String(process.env.OKX_SECRET_KEY),
+  okxPassphrase: String(process.env.OKX_PASSPHRASE),
+  okxChainName: process.env.OKX_CHAIN_NAME,
+  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK)),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
