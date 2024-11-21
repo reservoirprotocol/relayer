@@ -28,7 +28,7 @@ export const config = {
   okxSecretKey: String(process.env.OKX_SECRET_KEY),
   okxPassphrase: String(process.env.OKX_PASSPHRASE),
   okxChainName: process.env.OKX_CHAIN_NAME,
-  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK)),
+  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK || 1)),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
