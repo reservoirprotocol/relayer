@@ -22,7 +22,7 @@ export const backfillQueue = new Queue(BACKFILL_QUEUE_NAME, {
 });
 new QueueScheduler(BACKFILL_QUEUE_NAME, { connection: redis.duplicate() });
 
-if (config.doBackfillWork) {
+if (config.doBackfillWork && config.doElementWork) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {

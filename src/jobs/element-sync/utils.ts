@@ -66,7 +66,7 @@ export const fetchOrders = async (
           ) {
             parsedOrders.push({
               order: parsedOrder,
-              originatedAt: new Date(order.createTime).toISOString(),
+              originatedAt: new Date(order.createTime * 1000).toISOString(),
             });
           }
 
