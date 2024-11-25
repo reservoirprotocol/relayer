@@ -8,10 +8,10 @@ import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 import { Element } from "../../utils/element";
 
-if (config.doRealtimeWork) {
-  cron.schedule("*/5 * * * * *", async () => {
+if (config.doRealtimeWork && config.doElementWork) {
+  cron.schedule("*/1 * * * *", async () => {
     if (new Element().getChainName()) {
-      const lockAcquired = await acquireLock("element-sync-lock", 60 * 5);
+      const lockAcquired = await acquireLock("element-sync-lock", 60 - 5);
       if (lockAcquired) {
         const cacheKey = "element-sync-cursor";
         const cursor = await redis.get(cacheKey);
@@ -31,11 +31,11 @@ if (config.doRealtimeWork) {
     }
   });
 
-  cron.schedule("*/30 * * * * *", async () => {
+  cron.schedule("*/1 * * * *", async () => {
     if (new Element().getChainName()) {
       const lockAcquired = await acquireLock(
         "element-sync-offers-lock",
-        60 * 5
+        60 - 5
       );
       if (lockAcquired) {
         const cacheKey = "element-sync-offers-cursor";

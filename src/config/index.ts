@@ -14,8 +14,7 @@ export const config = {
   ),
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
-  elementApiKey: String(process.env.ELEMENT_API_KEY),
-  elementChainName: process.env.ELEMENT_CHAIN_NAME,
+
   blurApiKey: String(process.env.BLUR_API_KEY),
 
   openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
@@ -29,6 +28,11 @@ export const config = {
   okxPassphrase: String(process.env.OKX_PASSPHRASE),
   okxChainName: process.env.OKX_CHAIN_NAME,
   doOkxWork: Boolean(Number(process.env.DO_OKX_WORK || 1)),
+
+  // Element
+  elementApiKey: String(process.env.ELEMENT_API_KEY),
+  elementChainName: process.env.ELEMENT_CHAIN_NAME,
+  doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK || 1)),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
