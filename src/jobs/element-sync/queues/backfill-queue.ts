@@ -29,12 +29,15 @@ if (config.doBackfillWork && config.doElementWork) {
       type Data = {
         startTime: number;
         endTime: number;
+        offset?: number;
       };
 
+      const limit = 50;
       const { startTime, endTime }: Data = job.data;
+      let offset = job.data?.offset ?? 0;
 
       try {
-        const cursor = await fetchOrders("sell", startTime, endTime);
+        const cursor = await fetchOrders("sell", startTime, endTime, offset, limit);
 
         logger.info(
           BACKFILL_QUEUE_NAME,
@@ -44,6 +47,7 @@ if (config.doBackfillWork && config.doElementWork) {
         // If there are more order within th given time frame
         if (cursor >= startTime) {
           job.data.newEndTime = cursor >= endTime ? endTime - 10 : cursor;
+          job.data.offset = offset + limit;
         }
       } catch (error) {
         logger.error(
@@ -59,7 +63,7 @@ if (config.doBackfillWork && config.doElementWork) {
     // If there's newEndTime schedule the next job
     if (job.data.newEndTime) {
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait to avoid rate-limiting
-      await addToElementBackfillQueue(job.data.startTime, job.data.newEndTime);
+      await addToElementBackfillQueue(job.data.startTime, job.data.newEndTime, job.data.offset );
     }
   });
 
@@ -71,6 +75,7 @@ if (config.doBackfillWork && config.doElementWork) {
 export const addToElementBackfillQueue = async (
   startTime: number,
   endTime: number,
+  offset: number = 0,
   delayMs: number = 0
 ) => {
   // Make sure endTime is bigger than startTime
@@ -80,7 +85,7 @@ export const addToElementBackfillQueue = async (
 
   await backfillQueue.add(
     BACKFILL_QUEUE_NAME,
-    { startTime, endTime },
+    { startTime, endTime, offset },
     { delay: delayMs }
   );
 };

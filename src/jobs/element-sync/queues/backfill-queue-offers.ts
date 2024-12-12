@@ -34,7 +34,7 @@ if (config.doBackfillWork && config.doElementWork) {
       const { startTime, endTime }: Data = job.data;
 
       try {
-        const lastCreatedAt = await fetchOrders("buy", startTime);
+        const cursor = await fetchOrders("buy", startTime);
 
         logger.info(
           BACKFILL_QUEUE_NAME,
@@ -42,8 +42,8 @@ if (config.doBackfillWork && config.doElementWork) {
         );
 
         // If there are more order within th given time frame
-        if (lastCreatedAt <= endTime) {
-          job.data.newStartTime = lastCreatedAt;
+        if (cursor <= endTime) {
+          job.data.newStartTime = cursor;
         }
       } catch (error) {
         logger.error(

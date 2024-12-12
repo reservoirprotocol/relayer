@@ -14,7 +14,9 @@ import { Element, ElementOrder, SaleKind } from "../../utils/element";
 export const fetchOrders = async (
   side: "sell" | "buy",
   listedAfter = 0,
-  listedBefore = 0
+  listedBefore = 0,
+  offset = 0,
+  limit = 50
 ) => {
   logger.debug(
     "fetch_orders_element",
@@ -22,7 +24,6 @@ export const fetchOrders = async (
   );
 
   const element = new Element();
-  let limit = 50;
   let newCursor = 0;
   let numOrders = 0;
 
@@ -34,6 +35,7 @@ export const fetchOrders = async (
       listed_after: listedAfter > 0 ? listedAfter : undefined,
       listed_before: listedBefore > 0 ? listedBefore : undefined,
       limit,
+      offset
     });
 
     try {
@@ -126,7 +128,7 @@ export const fetchOrders = async (
         const lastOrder = _.last(orders);
 
         if (lastOrder) {
-          newCursor = lastOrder.createTime;
+          newCursor = lastOrder.listingTime;
         }
       }
 
