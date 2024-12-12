@@ -62,7 +62,7 @@ export const fetchOrders = async (options: {
 
           if (parsed) {
             if (config.chainId === 324) {
-              logger.error(
+              logger.info(
                   "fetch_orders_okx",
                   JSON.stringify({
                     message: `handleOrder. hash=${parsed.order.hash()}`,
