@@ -7,7 +7,6 @@ import { addToRelayOrdersQueue } from "../relay-orders";
 import { db, pgp } from "../../common/db";
 import { logger } from "../../common/logger";
 import { Okx, OkxOrder } from "../../utils/okx";
-import {config} from "../../config";
 
 export const fetchOrders = async (options: {
   side: "buy" | "sell";
@@ -61,17 +60,6 @@ export const fetchOrders = async (options: {
           const parsed = await okx.parseOrder(order);
 
           if (parsed) {
-            if (config.chainId === 324) {
-              logger.info(
-                  "fetch_orders_okx",
-                  JSON.stringify({
-                    message: `handleOrder. hash=${parsed.order.hash()}`,
-                    order,
-                    orderJSON: JSON.stringify(order),
-                  })
-              );
-            }
-
             parsedOrders.push({
               kind: parsed.kind,
               order: parsed.order,
