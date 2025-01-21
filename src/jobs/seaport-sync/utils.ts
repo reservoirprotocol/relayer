@@ -47,12 +47,12 @@ export const fetchOrders = async (
 
     const headers: any = {
       url,
-      "X-API-KEY": !_.includes(
+      "X-API-KEY": _.includes(
         [5, 80001, 80002, 84531, 999, 11155111],
         config.chainId
-      )
-        ? details?.apiKey || config.realtimeOpenseaApiKey
-        : "",
+      ) || config.openseaApiUrl && config.openseaNftApiKey
+        ? ""
+        : details?.apiKey || config.realtimeOpenseaApiKey,
     };
 
     if (config.openseaApiUrl && config.openseaNftApiKey) {
