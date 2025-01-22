@@ -156,7 +156,14 @@ export const fetchOrders = async (
       if (error.response?.status === 429 || error.response?.status === 503) {
         logger.warn(
           "fetch_orders_seaport",
-          `Seaport - Rate Limited. side=${side}, cursor=${cursor}, error=${error}`
+          JSON.stringify(
+            {
+              message: `Seaport - Rate Limited. side=${side}, cursor=${cursor}, url=${url}, error=${error}`,
+              openseaApiUrl: config.openseaApiUrl,
+              openseaNftApiKey: config.openseaNftApiKey,
+              headers
+            }
+          )
         );
 
         if (cursor) {
