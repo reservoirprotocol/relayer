@@ -158,10 +158,12 @@ export const fetchOrders = async (
           "fetch_orders_seaport",
           JSON.stringify(
             {
-              message: `Seaport - Rate Limited. side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error}`,
+              message: `Seaport - Rate Limited. side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error.message}`,
               openseaApiUrl: config.openseaApiUrl,
               openseaNftApiKey: config.openseaNftApiKey,
-              options
+              options,
+              responseData: error.response?.data,
+              responseStatus: error.response?.status,
             }
           )
         );
