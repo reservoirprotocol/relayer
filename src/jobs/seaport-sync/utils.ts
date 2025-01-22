@@ -50,7 +50,7 @@ export const fetchOrders = async (
       "X-API-KEY": _.includes(
         [5, 80001, 80002, 84531, 999, 11155111],
         config.chainId
-      ) || config.openseaApiUrl && config.openseaNftApiKey
+      ) || (config.openseaApiUrl && config.openseaNftApiKey)
         ? ""
         : details?.apiKey || config.realtimeOpenseaApiKey,
     };
@@ -158,10 +158,10 @@ export const fetchOrders = async (
           "fetch_orders_seaport",
           JSON.stringify(
             {
-              message: `Seaport - Rate Limited. side=${side}, cursor=${cursor}, url=${url}, error=${error}`,
+              message: `Seaport - Rate Limited. side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error}`,
               openseaApiUrl: config.openseaApiUrl,
               openseaNftApiKey: config.openseaNftApiKey,
-              headers
+              options
             }
           )
         );
