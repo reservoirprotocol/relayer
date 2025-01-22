@@ -69,19 +69,6 @@ export const fetchOrders = async (
     try {
       const response = await axios.request(options);
 
-      logger.warn(
-        "fetch_orders_seaport",
-        JSON.stringify(
-          {
-            message: `Seaport - Debug. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${options.url}, nextCursor=${response.data.next}`,
-            openseaApiUrl: config.openseaApiUrl,
-            openseaNftApiKey: config.openseaNftApiKey,
-            options,
-            useProxy,
-          }
-        )
-      );
-
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
@@ -169,20 +156,22 @@ export const fetchOrders = async (
       }
     } catch (error: any) {
       if (error.response?.status === 429 || error.response?.status === 503) {
-        logger.warn(
-          "fetch_orders_seaport",
-          JSON.stringify(
-            {
-              message: `Seaport - Rate Limited. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${options.url}, error=${error.message}`,
-              openseaApiUrl: config.openseaApiUrl,
-              openseaNftApiKey: config.openseaNftApiKey,
-              options,
-              responseData: error.response?.data,
-              responseStatus: error.response?.status,
-              useProxy,
-            }
-          )
-        );
+        if (useProxy) {
+          logger.warn(
+            "fetch_orders_seaport",
+            JSON.stringify(
+              {
+                message: `Seaport - Rate Limited. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${options.url}, error=${error.message}`,
+                openseaApiUrl: config.openseaApiUrl,
+                openseaNftApiKey: config.openseaNftApiKey,
+                options,
+                responseData: error.response?.data,
+                responseStatus: error.response?.status,
+                useProxy,
+              }
+            )
+          );
+        }
 
         if (!useProxy && config.openseaApiUrl && config.openseaNftApiKey) {
           headers["x-nft-api-key"] = config.openseaNftApiKey;
