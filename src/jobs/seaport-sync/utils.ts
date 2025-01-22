@@ -24,7 +24,7 @@ export const fetchOrders = async (
     contract?: string;
     maxOrders?: number;
   },
-  userNftTools = false
+  useProxy = false
 ) => {
   logger.debug("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
@@ -51,18 +51,18 @@ export const fetchOrders = async (
       "X-API-KEY": _.includes(
         [5, 80001, 80002, 84531, 999, 11155111],
         config.chainId
-      ) || (userNftTools && config.openseaApiUrl && config.openseaNftApiKey)
+      ) || (useProxy && config.openseaApiUrl && config.openseaNftApiKey)
         ? ""
         : details?.apiKey || config.realtimeOpenseaApiKey,
     };
 
-    if (userNftTools && config.openseaApiUrl && config.openseaNftApiKey) {
+    if (useProxy && config.openseaApiUrl && config.openseaNftApiKey) {
       headers["x-nft-api-key"] = config.openseaNftApiKey;
     }
 
     const options: AxiosRequestConfig = {
       method: "GET",
-      url: config.openseaApiUrl || url,
+      url: useProxy ? config.openseaApiUrl || url : url,
       headers,
     };
 
@@ -159,18 +159,18 @@ export const fetchOrders = async (
           "fetch_orders_seaport",
           JSON.stringify(
             {
-              message: `Seaport - Rate Limited. userNftTools=${userNftTools}, side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error.message}`,
+              message: `Seaport - Rate Limited. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error.message}`,
               openseaApiUrl: config.openseaApiUrl,
               openseaNftApiKey: config.openseaNftApiKey,
               options,
               responseData: error.response?.data,
               responseStatus: error.response?.status,
-              userNftTools,
+              useProxy,
             }
           )
         );
 
-        if (!userNftTools && config.openseaApiUrl && config.openseaNftApiKey) {
+        if (!useProxy && config.openseaApiUrl && config.openseaNftApiKey) {
           headers["x-nft-api-key"] = config.openseaNftApiKey;
 
           await fetchOrders(side, details, true);
