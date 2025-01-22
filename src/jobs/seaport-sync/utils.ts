@@ -68,6 +68,20 @@ export const fetchOrders = async (
 
     try {
       const response = await axios.request(options);
+
+      logger.warn(
+        "fetch_orders_seaport",
+        JSON.stringify(
+          {
+            message: `Seaport - Debug. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${options.url}, nextCursor=${response.data.next}`,
+            openseaApiUrl: config.openseaApiUrl,
+            openseaNftApiKey: config.openseaNftApiKey,
+            options,
+            useProxy,
+          }
+        )
+      );
+
       cursor = response.data.next;
 
       const orders: SeaportOrder[] = response.data.orders;
@@ -159,7 +173,7 @@ export const fetchOrders = async (
           "fetch_orders_seaport",
           JSON.stringify(
             {
-              message: `Seaport - Rate Limited. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${config.openseaApiUrl || url}, error=${error.message}`,
+              message: `Seaport - Rate Limited. useProxy=${useProxy}, side=${side}, cursor=${cursor}, url=${options.url}, error=${error.message}`,
               openseaApiUrl: config.openseaApiUrl,
               openseaNftApiKey: config.openseaNftApiKey,
               options,
