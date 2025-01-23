@@ -9,7 +9,7 @@ import { realtimeQueue } from "./realtime-queue";
 import * as looksrareSyncRealtime from "./realtime-queue";
 import * as looksrareSeaportSyncRealtime from "./realtime-queue-seaport";
 
-if (config.doRealtimeWork) {
+if (config.doRealtimeWork && config.doLooksrareWork) {
   cron.schedule("* * * * *", async () => {
     if ([0].includes(config.chainId)) {
       const lockAcquired = await acquireLock("looksrare-v2-sync-lock", 120);

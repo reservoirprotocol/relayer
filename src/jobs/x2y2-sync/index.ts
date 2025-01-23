@@ -7,7 +7,7 @@ import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 
-if (config.doRealtimeWork) {
+if (config.doRealtimeWork && config.doX2Y2Work) {
   cron.schedule("*/5 * * * * *", async () => {
     if ([1].includes(config.chainId)) {
       const lockAcquired = await acquireLock("x2y2-sync-lock", 60 * 5);

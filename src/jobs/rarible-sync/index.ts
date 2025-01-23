@@ -6,7 +6,7 @@ import { logger } from "../../common/logger";
 import { acquireLock, redis } from "../../common/redis";
 import { config } from "../../config";
 
-if (config.doRealtimeWork) {
+if (config.doRealtimeWork && config.doRaribleWork) {
   if (_.indexOf([0], config.chainId) !== -1) {
     cron.schedule("*/5 * * * * *", async () => {
       const lockAcquired = await acquireLock("rarible-sync-lock", 60 * 5);

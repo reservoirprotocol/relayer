@@ -28,7 +28,7 @@ export type x2y2BackfillData = {
   contract?: string;
 };
 
-if (config.doBackfillWork) {
+if (config.doBackfillWork && config.doX2Y2Work) {
   const backfillWorker = new Worker(
     BACKFILL_QUEUE_NAME,
     async (job: Job) => {

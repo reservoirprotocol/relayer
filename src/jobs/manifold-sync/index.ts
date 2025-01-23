@@ -7,7 +7,7 @@ import { logger } from "../../common/logger";
 
 import * as manifoldSyncRealtime from "./realtime-queue";
 
-if (config.doRealtimeWork) {
+if (config.doRealtimeWork && config.doManifoldWork) {
   cron.schedule("* * * * *", async () => {
     if (_.indexOf([1, 5], config.chainId) !== -1) {
       const lockAcquired = await acquireLock("manifold-sync-lock", 60 * 5);
