@@ -197,7 +197,7 @@ export const fetchOrders = async (
       } else {
         logger.error(
           "fetch_orders_seaport",
-          `Seaport - Error. side=${side}, cursor=${cursor}, config.openseaApiUrl=${config.openseaApiUrl}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}, stack=${error.stack}`
+          `Seaport - Error. side=${side}, cursor=${cursor}, openseaApiUrl=${config.openseaApiUrl}, url=${url}, apiKey=${details?.apiKey}, realtimeOpenseaApiKey=${config.realtimeOpenseaApiKey}, error=${error}, stack=${error.stack}`
         );
       }
 
@@ -214,7 +214,8 @@ export const fetchOrders = async (
 export const fetchAllOrders = async (
   fromTimestamp: number | null = null,
   toTimestamp: number | null = null,
-  cursor: string | null = null
+  cursor: string | null = null,
+  useProxy = false
 ) => {
   let formatFromTimestamp = null;
   let formatToTimestamp = null;
@@ -248,7 +249,12 @@ export const fetchAllOrders = async (
 
   const headers: any = {
     url,
-    "x-api-key": config.backfillOpenseaApiKey || "",
+    "X-API-KEY": _.includes(
+      [5, 80001, 80002, 84531, 999, 11155111],
+      config.chainId
+    ) || (useProxy && config.openseaApiUrl && config.openseaNftApiKey)
+      ? ""
+      : config.backfillOpenseaApiKey,
   };
 
   if (config.openseaApiUrl && config.openseaNftApiKey) {
@@ -336,7 +342,48 @@ export const fetchAllOrders = async (
     );
 
     return response.data.next;
-  } catch (error) {
+  } catch (error: any) {
+    if (error.response?.status === 429 || error.response?.status === 503) {
+      if (useProxy) {
+        logger.warn(
+          "fetch_all_orders",
+          JSON.stringify(
+            {
+              message: `Seaport - Rate Limited. useProxy=${useProxy}, fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}, url=${options.url}, error=${error.message}`,
+              openseaApiUrl: config.openseaApiUrl,
+              openseaNftApiKey: config.openseaNftApiKey,
+              options,
+              responseData: error.response?.data,
+              responseStatus: error.response?.status,
+              useProxy,
+            }
+          )
+        );
+      }
+
+      if (!useProxy && config.openseaApiUrl && config.openseaNftApiKey) {
+        headers["x-nft-api-key"] = config.openseaNftApiKey;
+
+        await fetchAllOrders(fromTimestamp, toTimestamp, cursor, true);
+        return;
+      }
+    } else if (error.response?.status === 401) {
+      logger.error(
+        "fetch_all_orders",
+        JSON.stringify({
+          topic: "opensea-unauthorized-api-key",
+          message: `UnauthorizedError. context=fetchOrders, message=${error.message}, url=${error.config?.url}`,
+          requestHeaders: error.config?.headers,
+          responseData: JSON.stringify(error.response?.data),
+        })
+      );
+    } else {
+      logger.error(
+        "fetch_all_orders",
+        `Seaport - Error. cursor=${cursor}, openseaApiUrl=${config.openseaApiUrl}, url=${url}, backfillOpenseaApiKey=${config.backfillOpenseaApiKey}, error=${error}, stack=${error.stack}`
+      );
+    }
+
     throw error;
   }
 };
