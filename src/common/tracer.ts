@@ -8,38 +8,22 @@ if (process.env.DATADOG_AGENT_URL) {
   // TODO: Disable Redis tracing since that generates
   // a lot of traces which for now are not relevant
   tracer.init({
-    profiling: true,
+    profiling: false,
     logInjection: true,
-    runtimeMetrics: true,
+    runtimeMetrics: false,
     clientIpEnabled: true,
     service,
     url: process.env.DATADOG_AGENT_URL,
     env: config.environment,
   });
 
-  tracer.use("hapi", {
-    headers: ["x-api-key", "referer"],
-  });
-
-  tracer.use("ioredis", {
-    enabled: false,
-  });
-
-  tracer.use("amqplib", {
-    enabled: false,
-  });
-
-  tracer.use("pg", {
-    enabled: false,
-  });
-
-  tracer.use("elasticsearch", {
-    enabled: true,
-  });
-
-  tracer.use("fetch", {
-    enabled: false,
-  });
+  for (const disabledDatadogPluginTracing of config.disabledDatadogPluginsTracing) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    tracer.use(disabledDatadogPluginTracing, {
+      enabled: false,
+    });
+  }
 }
 
 export default tracer;

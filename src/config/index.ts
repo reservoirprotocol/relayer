@@ -42,4 +42,8 @@ export const config = {
 
   databaseUrl: String(process.env.DATABASE_URL),
   redisUrl: String(process.env.REDIS_URL),
+
+  disabledDatadogPluginsTracing: process.env.DISABLED_DATADOG_PLUGINS_TRACING
+    ? String(process.env.DISABLED_DATADOG_PLUGINS_TRACING).split(",")
+    : "ioredis,amqplib,pg,fetch,kafkajs,elasticsearch,http,dns,net".split(","),
 };
