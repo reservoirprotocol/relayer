@@ -15,11 +15,8 @@ export const config = {
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
 
-  blurApiKey: String(process.env.BLUR_API_KEY),
-
   openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
 
-  blurUrl: String(process.env.BLUR_URL),
   openseaApiUrl: String(process.env.OPENSEA_API_URL),
 
   // OKX
@@ -27,18 +24,23 @@ export const config = {
   okxSecretKey: String(process.env.OKX_SECRET_KEY),
   okxPassphrase: String(process.env.OKX_PASSPHRASE),
   okxChainName: process.env.OKX_CHAIN_NAME,
-  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK || 1)),
 
   // Element
   elementApiKey: String(process.env.ELEMENT_API_KEY),
   elementChainName: process.env.ELEMENT_CHAIN_NAME,
-  doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK || 1)),
 
   doBackgroundWork: Boolean(Number(process.env.DO_BACKGROUND_WORK)),
   doBackfillWork: Boolean(Number(process.env.DO_BACKFILL_WORK)),
   doRealtimeWork: Boolean(Number(process.env.DO_REALTIME_WORK)),
   doLiveWork: Boolean(Number(process.env.DO_LIVE_WORK)),
+
   doOpenseaWork: Boolean(Number(process.env.DO_OPENSEA_WORK)),
+  doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK)),
+  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK)),
+  doLooksrareWork: Boolean(Number(process.env.DO_LOOKSRARE_WORK || 1)),
+  doManifoldWork: Boolean(Number(process.env.DO_MANIFOLD_WORK || 1)),
+  doRaribleWork: Boolean(Number(process.env.DO_RARIBLE_WORK || 1)),
+  doX2Y2Work: Boolean(Number(process.env.DO_X2Y2_WORK || 1)),
 
   databaseUrl: String(process.env.DATABASE_URL),
   redisUrl: String(process.env.REDIS_URL),
