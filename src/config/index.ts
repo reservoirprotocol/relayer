@@ -15,11 +15,8 @@ export const config = {
   x2y2ApiKey: String(process.env.X2Y2_API_KEY),
   looksrareApiKey: String(process.env.LOOKSRARE_API_KEY),
 
-  blurApiKey: String(process.env.BLUR_API_KEY),
-
   openseaNftApiKey: String(process.env.OPENSEA_NFT_API_KEY),
 
-  blurUrl: String(process.env.BLUR_URL),
   openseaApiUrl: String(process.env.OPENSEA_API_URL),
 
   // OKX
@@ -38,7 +35,6 @@ export const config = {
   doLiveWork: Boolean(Number(process.env.DO_LIVE_WORK)),
 
   doOpenseaWork: Boolean(Number(process.env.DO_OPENSEA_WORK)),
-  doBlurWork: Boolean(Number(process.env.DO_BLUR_WORK || 1)),
   doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK)),
   doOkxWork: Boolean(Number(process.env.DO_OKX_WORK)),
   doLooksrareWork: Boolean(Number(process.env.DO_LOOKSRARE_WORK || 1)),
