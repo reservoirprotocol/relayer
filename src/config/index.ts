@@ -39,8 +39,8 @@ export const config = {
 
   doOpenseaWork: Boolean(Number(process.env.DO_OPENSEA_WORK)),
   doBlurWork: Boolean(Number(process.env.DO_BLUR_WORK || 1)),
-  doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK || 1)),
-  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK || 1)),
+  doElementWork: Boolean(Number(process.env.DO_ELEMENT_WORK)),
+  doOkxWork: Boolean(Number(process.env.DO_OKX_WORK)),
   doLooksrareWork: Boolean(Number(process.env.DO_LOOKSRARE_WORK || 1)),
   doManifoldWork: Boolean(Number(process.env.DO_MANIFOLD_WORK || 1)),
   doRaribleWork: Boolean(Number(process.env.DO_RARIBLE_WORK || 1)),
