@@ -69,6 +69,8 @@ jobs:
 
       - name: Deploy to Dev Environment
         working-directory: k8s-configs
+        env:
+          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
         run: |
           ./utils/version_update_batch.sh relayer ${{ github.sha }} $(grep -rl 'application: relayer-' dev/platform/ | tr '\n' ' ')
 
@@ -89,5 +91,7 @@ jobs:
 
       - name: Deploy to Prod Environment
         working-directory: k8s-configs
+        env:
+          DEVOPSBOT_GPG_PRIVATE_KEY: ${{ secrets.DEVOPSBOT_GPG_PRIVATE_KEY }}
         run: |
           ./utils/version_update_batch.sh relayer ${{ github.sha }} $(grep -rl 'application: relayer-' prod/platform/ | tr '\n' ' ')
