@@ -26,7 +26,7 @@ export const fetchOrders = async (
   },
   useProxy = false
 ) => {
-  logger.debug("fetch_orders_seaport", `Seaport - Start. side=${side}`);
+  logger.warn("fetch_orders_seaport", `Seaport - Start. side=${side}`);
 
   const seaport = new Seaport();
 
@@ -134,7 +134,7 @@ export const fetchOrders = async (
           const lastOrder = _.last(orders);
 
           if (lastOrder) {
-            logger.debug(
+            logger.warn(
               "fetch_orders_seaport",
               `Seaport empty result. side=${side}, cursor=${cursor}, reached to=${lastOrder.created_date}`
             );
@@ -144,7 +144,7 @@ export const fetchOrders = async (
         }
 
         if (orders.length) {
-          logger.debug(
+          logger.warn(
             "fetch_orders_seaport",
             `Seaport synced up to ${orders[orders.length - 1].created_date}`
           );
@@ -153,6 +153,13 @@ export const fetchOrders = async (
 
       if (parsedOrders.length) {
         await addToRelayOrdersQueue(parsedOrders, true);
+      }
+
+      if (config.chainId == 137) {
+        logger.warn(
+          "fetch_orders_seaport",
+          `Seaport - Debug. side=${side}, orders=${orders.length}, parsedOrders=${parsedOrders.length}, url=${url}`
+        );
       }
     } catch (error: any) {
       if (error.response?.status === 429 || error.response?.status === 503) {
@@ -205,7 +212,7 @@ export const fetchOrders = async (
     }
   }
 
-  logger.debug(
+  logger.warn(
     "fetch_orders_seaport",
     `Seaport - Done. side=${side}, total=${total}`
   );
@@ -278,11 +285,6 @@ export const fetchAllOrders = async (
       source: "opensea";
     }[] = [];
 
-    logger.info(
-      "fetch_all_orders",
-      `Seaport Fetch all orders received ${orders.length} orders fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, cursor=${cursor}`
-    );
-
     const values: any[] = [];
 
     const handleOrder = async (order: SeaportOrder) => {
@@ -336,9 +338,9 @@ export const fetchAllOrders = async (
       await addToRelayOrdersQueue(parsedOrders, true);
     }
 
-    logger.info(
+    logger.warn(
       "fetch_all_orders",
-      `Seaport - fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, newCursor=${response.data.next} Got ${orders.length} orders`
+      `Seaport - fromTimestamp=${formatFromTimestamp}, toTimestamp=${formatToTimestamp}, newCursor=${response.data.next}, orders=${orders.length} orders, parsedOrders=${parsedOrders.length}, url=${url}`
     );
 
     return response.data.next;
